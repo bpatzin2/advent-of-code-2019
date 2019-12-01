@@ -1,7 +1,7 @@
 (ns advent-of-code-2019.core
-  (:gen-class))
+  (:gen-class)
+  (:require [advent-of-code-2019.rocket-equation :as re]
+            [advent-of-code-2019.input-handling :as input]))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+(defn day1pt1 []
+  (re/total-fuel-required (input/day1-num-seq)))

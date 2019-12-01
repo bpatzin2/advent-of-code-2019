@@ -4,6 +4,6 @@
 
 (describe "works"
           (it "works for real input"
-              (should= 1 (identity 1))))
+              (should= 3361299 (day1pt1))))
 
 (run-specs)
