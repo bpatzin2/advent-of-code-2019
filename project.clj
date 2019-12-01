@@ -6,4 +6,8 @@
   :dependencies [[org.clojure/clojure "1.10.0"]]
   :main ^:skip-aot advent-of-code-2019.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all} 
+             :dev {:dependencies [[speclj "3.3.0"]]}}
+  :plugins [[speclj "3.3.0"]]
+  :test-paths ["spec"]
+  )
