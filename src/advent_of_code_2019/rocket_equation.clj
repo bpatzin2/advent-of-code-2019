@@ -9,7 +9,9 @@
       (- 2)))
 
 (defn fuel-for-modules [module-masses]
-  (reduce + (map fuel-required module-masses)))
+  (->> module-masses
+       (map fuel-required)
+       (reduce +)))
 
 (defn fuel-for-fuel [fuel-mass]
   (loop [mass fuel-mass acc 0]
@@ -23,4 +25,6 @@
     (+ module-fuel (fuel-for-fuel module-fuel))))
 
 (defn total-fuel [module-masses]
-  (reduce + (map total-module-fuel module-masses)))
+  (->> module-masses
+       (map total-module-fuel)
+       (reduce +)))
