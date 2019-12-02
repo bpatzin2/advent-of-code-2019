@@ -13,3 +13,6 @@
 
 (defn day2-num-vec []
   (csv-as-int-vec "day2_input_modified.txt"))
+
+(defn day2-unmodified-num-vec []
+  (csv-as-int-vec "day2_input.txt"))

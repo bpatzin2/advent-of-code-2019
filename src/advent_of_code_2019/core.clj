@@ -12,3 +12,6 @@
 
 (defn day2pt1 []
   ((intcode/execute (input/day2-num-vec)) 0))
+
+(defn test-day2pt2 []
+  (intcode/find-inputs (input/day2-unmodified-num-vec)))
