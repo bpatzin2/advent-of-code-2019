@@ -10,4 +10,8 @@
           (it "works for real input"
               (should= 5039071 (day1pt2))))
 
+(describe "day2pt1"
+          (it "works for real input"
+              (should= 3931283 (day2pt1))))
+
 (run-specs)
