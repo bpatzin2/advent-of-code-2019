@@ -4,7 +4,9 @@
 ; Specifically, to find the fuel required for a module, 
 ; take its mass, divide by three, round down, and subtract 2.
 (defn fuel-required [mass]
-  (- (quot mass 3) 2))
+  (-> mass
+      (quot 3)
+      (- 2)))
 
 (defn fuel-for-modules [module-masses]
   (reduce + (map fuel-required module-masses)))
