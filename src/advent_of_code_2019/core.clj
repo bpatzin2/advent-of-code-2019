@@ -13,5 +13,8 @@
 (defn day2pt1 []
   ((intcode/execute (input/day2-num-vec)) 0))
 
-(defn test-day2pt2 []
-  (intcode/find-inputs (input/day2-unmodified-num-vec)))
+(defn day2pt2 []
+  (let [inputs (intcode/find-inputs 19690720 (input/day2-unmodified-num-vec))
+        noun (first inputs)
+        verb (second inputs)]
+    (+ (* 100 noun) verb)))

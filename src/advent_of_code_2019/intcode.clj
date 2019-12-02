@@ -47,7 +47,7 @@
 (defn pluck-input [program]
   [(nth program 1) (nth program 2)])
 
-(defn find-inputs [program desired-output]
+(defn find-inputs [desired-output program]
   (->> program
        (all-test-programs) 
        (map execute)
