@@ -4,4 +4,7 @@
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
-  (re/total-fuel-required (input/day1-num-seq)))
+  (re/fuel-for-modules (input/day1-num-seq)))
+
+(defn day1pt2 []
+  (re/total-fuel (input/day1-num-seq)))
