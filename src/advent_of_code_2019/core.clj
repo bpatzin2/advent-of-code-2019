@@ -2,6 +2,7 @@
   (:gen-class)
   (:require [advent-of-code-2019.rocket-equation :as re]
             [advent-of-code-2019.intcode :as intcode]
+            [advent-of-code-2019.crossed-wires :as cw]
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -18,3 +19,7 @@
         noun (first inputs)
         verb (second inputs)]
     (+ (* 100 noun) verb)))
+
+(defn day3pt1 []
+  (let [string-pair (input/day3-string-pair)] 
+    (cw/closet-overlap-dist (first string-pair) (second string-pair))))
