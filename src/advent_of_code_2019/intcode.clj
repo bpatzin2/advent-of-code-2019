@@ -55,11 +55,11 @@
   (let [output-addr (get instruction 1)]
    (assoc program output-addr (inputter))))
 
-(defn execute-output [instruction prev-output]
-  (let [output-val (get instruction 1)]
+(defn execute-output [instruction program prev-output]
+  (let [output-val (get-param 1 instruction program)]
    (conj prev-output output-val)))
 
-(defn execute-instruction [instruction program inputter output]
+(defn execute-instruction [instruction program inputter output prev-ins]
   (let [opcode (get-opcode (get instruction 0))
         new-program (case opcode
                        1 (execute-add instruction program)
@@ -67,27 +67,37 @@
                        3 (execute-input instruction program inputter)
                        4 program)]
     {:program new-program 
-     :output (if (= opcode 4) (execute-output instruction output) output)}
+     :output (if (= opcode 4) (execute-output instruction program output) output)
+     :ins (conj prev-ins instruction) 
+     }
     ))
 
 (defn execute-with-output
-  ([program inputter]
+  ([program inputter] (execute-with-output program inputter -1))
+  ([program inputter num-instructs]
    (loop [instruction-address 0
+          n num-instructs
           output []
+          ins []
           curr-program program]
      (let [instruction (get-instruction curr-program instruction-address)
            opcode (get-opcode (first instruction))
            next-addr (next-instruction-address instruction-address opcode)]
        (if
-        (= opcode 99)
-          {:program curr-program
-           :output output}
-         (let [exe-result (execute-instruction instruction curr-program inputter output)]
+        (or (= opcode 99) (= 0 n))
+         {:program curr-program
+          :output output}
+         (let [exe-result (execute-instruction instruction curr-program inputter output ins)]
            (recur
             next-addr
+            (dec n)
             (get exe-result :output)
+            (get exe-result :ins)
             (get exe-result :program))))))))
 
 (defn execute
   ([program] (execute program #(identity 0)))
   ([program inputter] (get (execute-with-output program inputter) :program)))
+
+(defn diagnostic-code [program inputter]
+  (last (get (execute-with-output program inputter) :output)))

@@ -26,5 +26,4 @@
     (cw/closet-overlap-dist (first string-pair) (second string-pair))))
 
 (defn day5pt1 []
-  (let [exe-results (intcode/execute-with-output (input/day5-num-vec) #(identity 1))]
-    (get exe-results :ouput)))
+  (intcode/diagnostic-code (input/day5-num-vec) #(identity 1)))
