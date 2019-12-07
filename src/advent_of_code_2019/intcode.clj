@@ -51,15 +51,16 @@
         add-result (* a b)]
     (assoc program output-addr add-result)))
 
-(defn execute-input [input-fetcher output-addr program]
-  (assoc program output-addr (input-fetcher)))
+(defn execute-input [instruction program input-fetcher]
+  (let [output-addr (get instruction 1)]
+   (assoc program output-addr (input-fetcher))))
 
 (defn execute-instruction [instruction program input-fetcher]
   (let [opcode (get-opcode (get instruction 0))]
     (case opcode
       1 (execute-add instruction program)
       2 (execute-mult instruction program)
-      3 program
+      3 (execute-input instruction program input-fetcher)
       4 program)))
 
 (defn execute 
