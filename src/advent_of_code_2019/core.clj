@@ -2,7 +2,7 @@
   (:gen-class)
   (:require [advent-of-code-2019.rocket-equation :as re]
             [advent-of-code-2019.intcode :as intcode]
-            [advent-of-code-2019.intcode-tester :as intcode-tester]
+            [advent-of-code-2019.intcode-harness :as intcode-harness]
             [advent-of-code-2019.crossed-wires :as cw]
             [advent-of-code-2019.input-handling :as input]))
 
@@ -16,7 +16,7 @@
   ((intcode/execute (input/day2-num-vec)) 0))
 
 (defn day2pt2 []
-  (let [inputs (intcode-tester/find-inputs 19690720 (input/day2-unmodified-num-vec))
+  (let [inputs (intcode-harness/find-inputs 19690720 (input/day2-unmodified-num-vec))
         noun (first inputs)
         verb (second inputs)]
     (+ (* 100 noun) verb)))

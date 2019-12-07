@@ -1,7 +1,7 @@
-(ns advent-of-code-2019.intcode-tester-spec
+(ns advent-of-code-2019.intcode-harness-spec
   (:require [speclj.core :refer :all]
             [advent-of-code-2019.input-handling :refer :all]
-            [advent-of-code-2019.intcode-tester :refer :all]))
+            [advent-of-code-2019.intcode-harness :refer :all]))
 
 (describe "find-inputs"
           (it "works for test input"
