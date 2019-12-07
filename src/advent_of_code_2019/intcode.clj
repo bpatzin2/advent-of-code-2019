@@ -87,3 +87,21 @@
             next-addr 
             (get exe-result :output) 
             (get exe-result :program))))))))
+
+(defn execute-with-output
+  ([program inputter]
+   (loop [instruction-address 0
+          output []
+          curr-program program]
+     (let [instruction (get-instruction curr-program instruction-address)
+           opcode (get-opcode (first instruction))
+           next-addr (next-instruction-address instruction-address opcode)]
+       (if
+        (= opcode 99)
+          {:program curr-program
+           :output output}
+         (let [exe-result (execute-instruction instruction curr-program inputter output)]
+           (recur
+            next-addr
+            (get exe-result :output)
+            (get exe-result :program))))))))

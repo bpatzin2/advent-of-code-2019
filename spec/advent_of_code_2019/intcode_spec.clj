@@ -15,10 +15,15 @@
               (execute [1,9,10,3,2,3,11,0,99,30,40,50]))
      )
  
- (it "input and output opcodes"
+ (it "input opcode"
      (should= [0 0 4 0 99] (execute [3 0 4 0 99]))
      (should= [2 0 4 0 99] (execute [3 0 4 0 99], #(identity 2)))
      )
+
+ (it "output opcode"
+     (should= {:program [4 1 99] :output [1]} (execute-with-output [4 1 99] #(identity 2)))
+     
+     ) 
  
  (it "immediate mode"
      (should= [3,1,2,0,99] (execute [1101,1,2,0,99]))
