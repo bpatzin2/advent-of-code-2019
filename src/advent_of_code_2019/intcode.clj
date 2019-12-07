@@ -25,21 +25,22 @@
   (let [param-addr (get instruction num)]
     (if-not (= param-addr nil) (program param-addr))))
 
-(defn execute-add [first-param second-param instruction program]
+(defn execute-add [first-param second-param third-param program]
   (let [add-result (+ first-param second-param)]
-    (assoc program (instruction 3) add-result)))
+    (assoc program third-param add-result)))
 
-(defn execute-mult [first-param second-param instruction program]
+(defn execute-mult [first-param second-param third-param program]
   (let [mult-result (* first-param second-param)]
-    (assoc program (instruction 3) mult-result)))
+    (assoc program third-param mult-result)))
 
 (defn execute-instruction [instruction program]
   (let [opcode (get instruction 0)
         first-param (get-param 1 instruction program)
-        second-param (get-param 2 instruction program)]
+        second-param (get-param 2 instruction program)
+        third-param (get instruction 3)]
     (case opcode
-      1 (execute-add first-param second-param instruction program)
-      2 (execute-mult first-param second-param instruction program)
+      1 (execute-add first-param second-param third-param program)
+      2 (execute-mult first-param second-param third-param program)
       3 program
       4 program)))
 
