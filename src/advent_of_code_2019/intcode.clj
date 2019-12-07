@@ -37,32 +37,40 @@
         (program param-val)
         param-val))))
 
-(defn execute-add [a b output-addr program]
-  (let [add-result (+ a b)]
+(defn execute-add [instruction program]
+  (let [a (get-param 1 instruction program)
+        b (get-param 2 instruction program)
+        output-addr (get instruction 3)
+        add-result (+ a b)]
     (assoc program output-addr add-result)))
 
-(defn execute-mult [a b output-addr program]
-  (let [mult-result (* a b)]
-    (assoc program output-addr mult-result)))
+(defn execute-mult [instruction program]
+  (let [a (get-param 1 instruction program)
+        b (get-param 2 instruction program)
+        output-addr (get instruction 3)
+        add-result (* a b)]
+    (assoc program output-addr add-result)))
 
-(defn execute-instruction [instruction program]
-  (let [opcode (get-opcode (get instruction 0))
-        first-param (get-param 1 instruction program)
-        second-param (get-param 2 instruction program)
-        output-addr (get instruction 3)]
+(defn execute-input [input-fetcher output-addr program]
+  (assoc program output-addr (input-fetcher)))
+
+(defn execute-instruction [instruction program input-fetcher]
+  (let [opcode (get-opcode (get instruction 0))]
     (case opcode
-      1 (execute-add first-param second-param output-addr program)
-      2 (execute-mult first-param second-param output-addr program)
+      1 (execute-add instruction program)
+      2 (execute-mult instruction program)
       3 program
       4 program)))
 
-(defn execute [program]
-  (loop [instruction-address 0
-         curr-program program]
-    (let [instruction (get-instruction curr-program instruction-address)
-          opcode (get-opcode (first instruction))
-          next-addr (next-instruction-address instruction-address opcode)]
-      (if
-       (= opcode 99)
-        curr-program
-        (recur next-addr (execute-instruction instruction curr-program))))))
+(defn execute 
+  ([program] (execute program #(identity 0)))
+  ([program input-fetcher]
+   (loop [instruction-address 0
+          curr-program program]
+     (let [instruction (get-instruction curr-program instruction-address)
+           opcode (get-opcode (first instruction))
+           next-addr (next-instruction-address instruction-address opcode)]
+       (if
+        (= opcode 99)
+         curr-program
+         (recur next-addr (execute-instruction instruction curr-program input-fetcher)))))))
