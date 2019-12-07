@@ -3,7 +3,7 @@
   (:require [clojure.math.combinatorics :as combo]))
 
 (defn get-instruction [program instruction-index]
-  (vec ((vec (partition 4 4 [0 0 0] program)) instruction-index)))
+  (vec ((vec (partition 4 4 [] program)) instruction-index)))
 
 (defn first-input [instruction program]
   (program (instruction 1)))
