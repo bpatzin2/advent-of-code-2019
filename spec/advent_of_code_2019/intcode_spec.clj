@@ -21,7 +21,12 @@
      )
 
  (it "output opcode"
-     (should= {:program [4 1 99] :output [1]} (execute-with-output [4 1 99] #(identity 2)))
+     (should= 
+      {:program [4 1 99] :output [1]} 
+      (execute-with-output [4 1 99] #(identity 2)))
+     (should=
+      {:program [3 3 4 2 99 4 0] :output [2]}
+      (execute-with-output [3 3 4 1 99 4 0] #(identity 2)))
      
      ) 
  
