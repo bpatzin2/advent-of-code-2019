@@ -1,6 +1,5 @@
 (ns advent-of-code-2019.intcode
-  (:gen-class)
-  (:require [clojure.math.combinatorics :as combo]))
+  (:gen-class))
 
 (defn opcode-ins-lengh [opcode]
   (case opcode
@@ -45,28 +44,3 @@
         1 (recur next-addr (execute-add instruction curr-program))
         2 (recur next-addr (execute-mult instruction curr-program))))))
 
-(defn all-test-inputs [] 
-  (combo/cartesian-product (range 0 100) (range 0 100)))
-
-(defn create-test-program [program, test-input-pair]
-  (assoc program 1 (first test-input-pair) 2 (second test-input-pair)))
-
-(defn all-test-programs [program]
-  (map #(create-test-program program %) (all-test-inputs)))
-
-(defn is-desired-program [program desired-output]
-  (= desired-output (first program)))
-
-(defn filter-desired-output [desired-output programs]
-  (filter #(is-desired-program % desired-output) programs))
-
-(defn pluck-input [program]
-  [(nth program 1) (nth program 2)])
-
-(defn find-inputs [desired-output program]
-  (->> program
-       (all-test-programs) 
-       (map execute)
-       (filter-desired-output desired-output)
-       (first)
-       (pluck-input)))
