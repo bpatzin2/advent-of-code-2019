@@ -24,3 +24,7 @@
 (defn day3pt1 []
   (let [string-pair (input/day3-string-pair)] 
     (cw/closet-overlap-dist (first string-pair) (second string-pair))))
+
+(defn day5pt1 []
+  (let [exe-results (intcode/execute-with-output (input/day5-num-vec) #(identity 1))]
+    (get exe-results :ouput)))

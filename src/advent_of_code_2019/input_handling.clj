@@ -19,3 +19,6 @@
 
 (defn day3-string-pair []
   (str/split (slurp "day3_input.txt"), #"\n"))
+
+(defn day5-num-vec []
+  (csv-as-int-vec "day5_input.txt"))
