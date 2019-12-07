@@ -14,10 +14,15 @@
      (should= [3500,9,10,70,2,3,11,0,99,30,40,50]
               (execute [1,9,10,3,2,3,11,0,99,30,40,50]))
      )
+ 
  (it "input and output opcodes"
      (should= [3 0 4 0 99] (execute [3 0 4 0 99]))
      (should= [3 0 4 0 99]
               (execute [3 0 4 0 99])))
+ 
+ (it "immediate mode"
+     (should= [3,1,2,0,99] (execute [1101,1,2,0,99]))
+     )
  )
 
 (run-specs)

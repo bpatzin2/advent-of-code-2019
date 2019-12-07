@@ -9,8 +9,11 @@
     3 2
     4 2))
 
+(defn get-opcode [first-instr-val]
+  (rem first-instr-val 100))
+
 (defn instruction-length [program instruction-address]
-  (opcode-ins-lengh (program instruction-address)))
+  (opcode-ins-lengh (get-opcode (program instruction-address))))
 
 (defn get-instruction [program instruction-address]
   (subvec 
@@ -21,9 +24,17 @@
 (defn next-instruction-address [instruction-address opcode]
   (+ instruction-address (opcode-ins-lengh opcode)))
 
+(defn get-mode [instruction]
+  (rem (quot (instruction 0) 100) 10))
+
 (defn get-param [num instruction program]
-  (let [param-addr (get instruction num)]
-    (if-not (= param-addr nil) (program param-addr))))
+  (let [mode (get-mode instruction)
+        param-val (get instruction num)]
+    (if-not (= param-val nil) 
+      (if 
+       (= mode 0) 
+        (program param-val)
+        param-val))))
 
 (defn execute-add [a b output-addr program]
   (let [add-result (+ a b)]
@@ -34,7 +45,7 @@
     (assoc program output-addr mult-result)))
 
 (defn execute-instruction [instruction program]
-  (let [opcode (get instruction 0)
+  (let [opcode (get-opcode (get instruction 0))
         first-param (get-param 1 instruction program)
         second-param (get-param 2 instruction program)
         output-addr (get instruction 3)]
@@ -48,7 +59,7 @@
   (loop [instruction-address 0
          curr-program program]
     (let [instruction (get-instruction curr-program instruction-address)
-          opcode (first instruction)
+          opcode (get-opcode (first instruction))
           next-addr (next-instruction-address instruction-address opcode)]
       (if
        (= opcode 99)
