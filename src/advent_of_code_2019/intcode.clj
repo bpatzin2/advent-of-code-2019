@@ -8,7 +8,11 @@
     1 4
     2 4
     3 2
-    4 2))
+    4 2
+    5 3
+    6 3
+    7 4
+    8 4))
 
 (defn get-opcode [first-instr-val]
   (rem first-instr-val 100))
@@ -62,10 +66,14 @@
 (defn execute-instruction [instruction program inputter output prev-ins]
   (let [opcode (get-opcode (get instruction 0))
         new-program (case opcode
-                       1 (execute-add instruction program)
-                       2 (execute-mult instruction program)
-                       3 (execute-input instruction program inputter)
-                       4 program)]
+                      1 (execute-add instruction program)
+                      2 (execute-mult instruction program)
+                      3 (execute-input instruction program inputter)
+                      4 program
+                      5 program
+                      6 program
+                      7 program
+                      8 program)]
     {:program new-program 
      :output (if (= opcode 4) (execute-output instruction program output) output)
      :ins (conj prev-ins instruction) 
