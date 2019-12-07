@@ -87,9 +87,10 @@
         (or (= opcode 99) (= 0 n))
          {:program curr-program
           :output output}
-         (let [exe-result (execute-instruction instruction curr-program inputter output ins)]
+         (let [exe-result (execute-instruction instruction curr-program inputter output ins)
+               next-addr-from-instr (get exe-result :next-addr)]
            (recur
-            next-addr
+            (or next-addr-from-instr next-addr)
             (dec n)
             (get exe-result :output)
             (get exe-result :ins)
