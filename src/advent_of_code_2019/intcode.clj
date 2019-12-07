@@ -2,8 +2,23 @@
   (:gen-class)
   (:require [clojure.math.combinatorics :as combo]))
 
-(defn get-instruction [program instruction-index]
-  (vec ((vec (partition 4 4 [] program)) instruction-index)))
+(defn opcode-ins-lengh [opcode]
+  (case opcode
+    99 1
+    1 4
+    2 4))
+
+(defn instruction-length [program instruction-address]
+  (opcode-ins-lengh (program instruction-address)))
+
+(defn get-instruction [program instruction-address]
+  (subvec 
+   program 
+   instruction-address 
+   (+ instruction-address (instruction-length program instruction-address))))
+
+(defn next-instruction-address [instruction-address opcode]
+  (+ instruction-address (opcode-ins-lengh opcode)))
 
 (defn first-input [instruction program]
   (program (instruction 1)))
@@ -20,14 +35,15 @@
     (assoc program (instruction 3) mult-result)))
 
 (defn execute [program]
-  (loop [instruction-index 0
+  (loop [instruction-address 0
          curr-program program]
-    (let [instruction (get-instruction curr-program instruction-index)
-          opcode (first instruction)]
+    (let [instruction (get-instruction curr-program instruction-address)
+          opcode (first instruction)
+          next-addr (next-instruction-address instruction-address opcode)]
       (case opcode
         99 curr-program
-        1 (recur (inc instruction-index) (execute-add instruction curr-program))
-        2 (recur (inc instruction-index) (execute-mult instruction curr-program))))))
+        1 (recur next-addr (execute-add instruction curr-program))
+        2 (recur next-addr (execute-mult instruction curr-program))))))
 
 (defn all-test-inputs [] 
   (combo/cartesian-product (range 0 100) (range 0 100)))
