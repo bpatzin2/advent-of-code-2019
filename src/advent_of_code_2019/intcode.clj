@@ -70,24 +70,6 @@
      :output (if (= opcode 4) (execute-output instruction output) output)}
     ))
 
-(defn execute 
-  ([program] (execute program #(identity 0)))
-  ([program inputter]
-   (loop [instruction-address 0
-          output []
-          curr-program program]
-     (let [instruction (get-instruction curr-program instruction-address)
-           opcode (get-opcode (first instruction))
-           next-addr (next-instruction-address instruction-address opcode)]
-       (if
-        (= opcode 99)
-         curr-program
-         (let [exe-result (execute-instruction instruction curr-program inputter output)]
-           (recur 
-            next-addr 
-            (get exe-result :output) 
-            (get exe-result :program))))))))
-
 (defn execute-with-output
   ([program inputter]
    (loop [instruction-address 0
@@ -105,3 +87,7 @@
             next-addr
             (get exe-result :output)
             (get exe-result :program))))))))
+
+(defn execute
+  ([program] (execute program #(identity 0)))
+  ([program inputter] (get (execute-with-output program inputter) :program)))
