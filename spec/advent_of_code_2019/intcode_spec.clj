@@ -22,6 +22,7 @@
  
  (it "immediate mode"
      (should= [3,1,2,0,99] (execute [1101,1,2,0,99]))
+     (should= [1002,4,3,4,99] (execute [1002,4,3,4,33]))
      )
  )
 

@@ -1,5 +1,6 @@
 (ns advent-of-code-2019.intcode
-  (:gen-class))
+  (:gen-class)
+  (:require [clojure.math.numeric-tower :as math]))
 
 (defn opcode-ins-lengh [opcode]
   (case opcode
@@ -24,12 +25,12 @@
 (defn next-instruction-address [instruction-address opcode]
   (+ instruction-address (opcode-ins-lengh opcode)))
 
-(defn get-mode [instruction]
-  (rem (quot (instruction 0) 100) 10))
+(defn get-mode [instruction p-num]
+  (rem (quot (instruction 0) (math/expt 10 (+ 1 p-num))) 10))
 
-(defn get-param [num instruction program]
-  (let [mode (get-mode instruction)
-        param-val (get instruction num)]
+(defn get-param [p-num instruction program]
+  (let [mode (get-mode instruction p-num)
+        param-val (get instruction p-num)]
     (if-not (= param-val nil) 
       (if 
        (= mode 0) 
