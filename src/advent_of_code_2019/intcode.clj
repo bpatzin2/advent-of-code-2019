@@ -5,7 +5,9 @@
   (case opcode
     99 1
     1 4
-    2 4))
+    2 4
+    3 2
+    4 2))
 
 (defn instruction-length [program instruction-address]
   (opcode-ins-lengh (program instruction-address)))
@@ -42,5 +44,6 @@
       (case opcode
         99 curr-program
         1 (recur next-addr (execute-add instruction curr-program))
-        2 (recur next-addr (execute-mult instruction curr-program))))))
-
+        2 (recur next-addr (execute-mult instruction curr-program))
+        3 (recur next-addr curr-program)
+        4 (recur next-addr curr-program)))))
