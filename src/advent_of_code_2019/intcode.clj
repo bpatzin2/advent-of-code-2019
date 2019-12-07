@@ -35,15 +35,21 @@
   (let [mult-result (* (first-input instruction program) (second-input instruction program))]
     (assoc program (instruction 3) mult-result)))
 
+(defn execute-instruction [instruction program]
+  (let [opcode (first instruction)]
+    (case opcode
+      1 (execute-add instruction program)
+      2 (execute-mult instruction program)
+      3 program
+      4 program)))
+
 (defn execute [program]
   (loop [instruction-address 0
          curr-program program]
     (let [instruction (get-instruction curr-program instruction-address)
           opcode (first instruction)
           next-addr (next-instruction-address instruction-address opcode)]
-      (case opcode
-        99 curr-program
-        1 (recur next-addr (execute-add instruction curr-program))
-        2 (recur next-addr (execute-mult instruction curr-program))
-        3 (recur next-addr curr-program)
-        4 (recur next-addr curr-program)))))
+      (if
+       (= opcode 99)
+        curr-program
+        (recur next-addr (execute-instruction instruction curr-program))))))
