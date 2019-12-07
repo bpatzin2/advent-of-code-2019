@@ -1,6 +1,7 @@
 (ns advent-of-code-2019.crossed-wires
   (:gen-class)
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.set :as set-lib]))
 
 (defn right-coord [start-coord index]
   [ (+ (first start-coord) 1 index) (second start-coord)])
@@ -41,7 +42,7 @@
   (not= '(0 0) coord))
 
 (defn closest-overlap-coords [coordsA coordsB]
-  (let [overlaps (clojure.set/intersection (set coordsA) (set coordsB))]
+  (let [overlaps (set-lib/intersection (set coordsA) (set coordsB))]
     (first (sort-by manhattan-distance (filter not-origin overlaps)))))
 
 (defn closet-overlap [wire-directions-str1 wire-directions-str2]
