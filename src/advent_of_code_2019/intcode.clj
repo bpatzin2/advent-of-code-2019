@@ -51,22 +51,30 @@
         add-result (* a b)]
     (assoc program output-addr add-result)))
 
-(defn execute-input [instruction program input-fetcher]
+(defn execute-input [instruction program inputter]
   (let [output-addr (get instruction 1)]
-   (assoc program output-addr (input-fetcher))))
+   (assoc program output-addr (inputter))))
 
-(defn execute-instruction [instruction program input-fetcher]
-  (let [opcode (get-opcode (get instruction 0))]
-    (case opcode
-      1 (execute-add instruction program)
-      2 (execute-mult instruction program)
-      3 (execute-input instruction program input-fetcher)
-      4 program)))
+(defn execute-output [instruction prev-output]
+  (let [output-val (get instruction 1)]
+   (conj prev-output output-val)))
+
+(defn execute-instruction [instruction program inputter output]
+  (let [opcode (get-opcode (get instruction 0))
+        new-program (case opcode
+                       1 (execute-add instruction program)
+                       2 (execute-mult instruction program)
+                       3 (execute-input instruction program inputter)
+                       4 program)]
+    {:program new-program 
+     :output (if (= opcode 4) (execute-output instruction output) output)}
+    ))
 
 (defn execute 
   ([program] (execute program #(identity 0)))
-  ([program input-fetcher]
+  ([program inputter]
    (loop [instruction-address 0
+          output []
           curr-program program]
      (let [instruction (get-instruction curr-program instruction-address)
            opcode (get-opcode (first instruction))
@@ -74,4 +82,8 @@
        (if
         (= opcode 99)
          curr-program
-         (recur next-addr (execute-instruction instruction curr-program input-fetcher)))))))
+         (let [exe-result (execute-instruction instruction curr-program inputter output)]
+           (recur 
+            next-addr 
+            (get exe-result :output) 
+            (get exe-result :program))))))))
