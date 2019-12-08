@@ -89,3 +89,14 @@
           outputs (:output (updated-amps curr-index))
           next-index (rem (inc curr-index) 5)]
       (recur updated-amps next-index (last outputs))))))
+
+(defn find-largest-loop-output [program phase-settings]
+  (let [possible-settings (combo/permutations phase-settings)]
+    (loop [rem-possible-settings possible-settings
+           largest-output 0]
+      (if (empty? rem-possible-settings)
+        largest-output
+        (recur
+         (rest rem-possible-settings)
+         (let [output (run-in-loop program (first rem-possible-settings))]
+           (max output largest-output)))))))
