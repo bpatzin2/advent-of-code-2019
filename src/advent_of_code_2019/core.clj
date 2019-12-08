@@ -4,6 +4,7 @@
             [advent-of-code-2019.intcode :as intcode]
             [advent-of-code-2019.intcode-harness :as intcode-harness]
             [advent-of-code-2019.crossed-wires :as cw]
+            [advent-of-code-2019.image-decoding :as decoding]            
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -33,3 +34,9 @@
 
 (defn day7pt1 []
   (intcode-harness/find-largest-output (input/day7-num-vec) [0 1 2 3 4]))
+
+(defn day8pt1 []
+  (decoding/checksum (input/day8-num-vec) 6 25))
+
+(defn day8pt2 []
+  (decoding/decode-combined (input/day8-num-vec) 6 25))

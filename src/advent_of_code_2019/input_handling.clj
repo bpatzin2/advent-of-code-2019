@@ -25,3 +25,12 @@
 
 (defn day7-num-vec []
   (csv-as-int-vec "day7_input.txt"))
+
+(defn nums-str-as-vec [s]
+  (vec (map #(Integer/parseInt %) (str/split s #""))))
+
+(defn nums-as-vec [file-name]
+  (nums-str-as-vec (slurp file-name)))
+
+(defn day8-num-vec []
+  (nums-as-vec "day8_input.txt"))

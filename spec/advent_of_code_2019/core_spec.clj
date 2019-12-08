@@ -26,4 +26,19 @@
           (it "works for real input"
               (should= 15508323 (day5pt1))))
 
+(describe "day8pt1"
+          (it "works for real input"
+              (should= 1560 (day8pt1))))
+
+(describe "day8pt2"
+          (it "works for real input"
+              (should= 
+               '([1 0 0 1 0 0 1 1 0 0 0 1 1 0 0 1 0 0 1 0 1 0 0 1 0] 
+                 [1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0] 
+                 [1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 1 0 0 1 0 1 1 1 1 0] 
+                 [1 0 0 1 0 1 0 1 1 0 1 0 0 0 0 1 0 0 1 0 1 0 0 1 0] 
+                 [1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0] 
+                 [0 1 1 0 0 0 1 1 1 0 0 1 1 0 0 0 1 1 0 0 1 0 0 1 0])
+               (day8pt2))))
+
 (run-specs)
