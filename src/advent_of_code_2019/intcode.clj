@@ -85,18 +85,17 @@
         output-addr (get instruction 3)]
     (assoc program output-addr val)))
 
-(defn execute-instruction [instruction program inputs output]
+(defn execute-instruction [instruction program input output]
   (let [opcode (get-opcode (get instruction 0))
         new-program (case opcode
                       1 (execute-add instruction program)
                       2 (execute-mult instruction program)
-                      3 (execute-input instruction program (first inputs))
+                      3 (execute-input instruction program input)
                       7 (less-than instruction program)
                       8 (eq-instr instruction program)
                       program)]
     {:program new-program 
      :output (if (= opcode 4) (execute-output instruction program output) output)
-     :inputs (if (= opcode 3) (rest inputs) inputs)
      :next-addr (case opcode
                   5 (jump-if-true instruction program)
                   6 (jump-if-false instruction program)
@@ -116,12 +115,12 @@
         (= opcode 99)
          {:program curr-program
           :output output}
-         (let [exe-result (execute-instruction instruction curr-program inputs output)
+         (let [exe-result (execute-instruction instruction curr-program (first inputs) output)
                next-addr-from-instr (get exe-result :next-addr)]
            (recur
             (or next-addr-from-instr next-addr)
             (get exe-result :output)
-            (get exe-result :inputs)
+            (if (= opcode 3) (rest inputs) inputs)
             (get exe-result :program)))))))
 
 (defn execute
