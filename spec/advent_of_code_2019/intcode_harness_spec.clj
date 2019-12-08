@@ -16,4 +16,18 @@
           (it "works for three phase settings"
               (should= 3 (run-in-series [3 11 3 12 1 11 12 12 4 12 99 -1 -1] [1 1 1]))))
 
+(describe "find-largest-output"
+          (it "works for test input"
+              (should= 43210 (find-largest-output 
+                              [3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0]
+                              [0 1 2 3 4]))
+              (should= 54321 (find-largest-output
+                              [3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0]
+                              [0 1 2 3 4]))
+              (should= 65210 (find-largest-output
+                              [3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0]
+                              [0 1 2 3 4]))
+              ))
+
+
 (run-specs)

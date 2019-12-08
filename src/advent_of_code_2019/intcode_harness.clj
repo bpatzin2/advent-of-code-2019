@@ -39,3 +39,14 @@
          (intcode/diagnostic-code 
           program 
           [(first rem-phase-settings) input-signal])))))
+
+(defn find-largest-output [program phase-settings]
+  (let [possible-settings (combo/permutations phase-settings)]
+    (loop [rem-possible-settings possible-settings
+           largest-output 0]
+    (if (empty? rem-possible-settings)
+        largest-output
+        (recur 
+         (rest rem-possible-settings) 
+         (let [output (run-in-series program (first rem-possible-settings))]
+               (max output largest-output)))))))
