@@ -85,17 +85,18 @@
         output-addr (get instruction 3)]
     (assoc program output-addr val)))
 
-(defn execute-instruction [instruction program next-input output]
+(defn execute-instruction [instruction program inputs output]
   (let [opcode (get-opcode (get instruction 0))
         new-program (case opcode
                       1 (execute-add instruction program)
                       2 (execute-mult instruction program)
-                      3 (execute-input instruction program next-input)
+                      3 (execute-input instruction program (first inputs))
                       7 (less-than instruction program)
                       8 (eq-instr instruction program)
                       program)]
     {:program new-program 
      :output (if (= opcode 4) (execute-output instruction program output) output)
+     :inputs (if (= opcode 3) (rest inputs) inputs)
      :next-addr (case opcode
                   5 (jump-if-true instruction program)
                   6 (jump-if-false instruction program)
@@ -103,50 +104,25 @@
      }
     ))
 
-(defn execute-until-blocked [instruction-address
-                             input
-                             outputs
-                             program]
-  (loop [instruction-address instruction-address
-         outputs outputs
-         is-input-consumed false
-         curr-program program]
-    (let [instruction (get-instruction curr-program instruction-address)
-          opcode (get-opcode (first instruction))
-          next-addr (next-instruction-address instruction-address opcode)]
-      (if
-       (or (= opcode 99) (and is-input-consumed (= opcode 3)))
-        {:program curr-program
-         :output outputs
-         :state (if (= opcode 3) :blocked :complete)
-         :next-addr instruction-address}
-        (let [exe-result (execute-instruction instruction curr-program input outputs)
-              next-addr-from-instr (get exe-result :next-addr)]
-          (recur
-           (or next-addr-from-instr next-addr)
-           (get exe-result :output)
-           (= opcode 3)
-           (get exe-result :program)))))))
-
 (defn execute-with-output [program inputs]
-  (loop [rem-inputs inputs
-         instruction-address 0
-         outputs []
-         curr-program program]
-    (let [run-res (execute-until-blocked 
-                   instruction-address 
-                   (first rem-inputs) 
-                   outputs
-                   curr-program)
-          state (get run-res :state)
-          next-addr (get run-res :next-addr)
-          outputs (get run-res :outputs)
-          curr-program (get run-res :program)]
-      (if 
-       (= state :complete)
-        (select-keys run-res [:program :output])
-        (recur (rest rem-inputs) next-addr outputs curr-program)))
-    ))
+   (loop [instruction-address 0
+          output []
+          inputs inputs
+          curr-program program]
+     (let [instruction (get-instruction curr-program instruction-address)
+           opcode (get-opcode (first instruction))
+           next-addr (next-instruction-address instruction-address opcode)]
+       (if
+        (= opcode 99)
+         {:program curr-program
+          :output output}
+         (let [exe-result (execute-instruction instruction curr-program inputs output)
+               next-addr-from-instr (get exe-result :next-addr)]
+           (recur
+            (or next-addr-from-instr next-addr)
+            (get exe-result :output)
+            (get exe-result :inputs)
+            (get exe-result :program)))))))
 
 (defn execute
   ([program] (execute program [0]))
