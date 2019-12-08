@@ -51,3 +51,14 @@
 
 (defn closet-overlap-dist [wire-directions-str1 wire-directions-str2]
   (manhattan-distance (closet-overlap wire-directions-str1  wire-directions-str2)))
+
+(defn shortest-wire-dist [coordsA coordsB coord]
+  (+ (.indexOf coordsA coord) (.indexOf coordsB coord)))
+
+(defn shortest-overlap-dist-from-coords [coordsA coordsB]
+  (let [overlaps (set-lib/intersection (set coordsA) (set coordsB))]
+     (apply min (map #(shortest-wire-dist coordsA coordsB %) (filter not-origin overlaps)))))
+
+(defn shortest-overlap [wire-directions-str1 wire-directions-str2]
+  (shortest-overlap-dist-from-coords (wire-coords (parse wire-directions-str1))
+                                     (wire-coords (parse wire-directions-str2))))

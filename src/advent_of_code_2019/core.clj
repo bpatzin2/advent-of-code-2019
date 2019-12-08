@@ -26,6 +26,10 @@
   (let [string-pair (input/day3-string-pair)] 
     (cw/closet-overlap-dist (first string-pair) (second string-pair))))
 
+(defn day3pt2 []
+  (let [string-pair (input/day3-string-pair)]
+    (cw/shortest-overlap (first string-pair) (second string-pair))))
+
 (defn day5pt1 []
   (intcode/diagnostic-code (input/day5-num-vec) [1]))
 
