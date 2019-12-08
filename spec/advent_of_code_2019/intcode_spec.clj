@@ -27,13 +27,50 @@
      (should=
       {:program [3 3 4 2 1101 1 2 9 4 3 99 0] :output [4 2]}
       (execute-with-output [3 3 4 2 1101 1 2 9 4 3 99 0] #(identity 2)))
-     
-     ) 
+     )
  
  (it "immediate mode"
      (should= [3,1,2,0,99] (execute [1101,1,2,0,99]))
      (should= [1002,4,3,4,99] (execute [1002,4,3,4,33]))
      (should= [1101,100,-1,4,99] (execute [1101,100,-1,4,0]))
+     )
+
+ (it "equals op code"
+     (should= 
+      0
+      (diagnostic-code [3,9,8,9,10,9,4,9,99,-1,8] #(identity 2)))
+     
+     (should=
+      1
+      (diagnostic-code [3,9,8,9,10,9,4,9,99,-1,8] #(identity 8)))
+     
+     (should=
+      0
+      (diagnostic-code [3,3,1108,-1,8,3,4,3,99] #(identity 2)))
+
+     (should=
+      1
+      (diagnostic-code [3,3,1108,-1,8,3,4,3,99] #(identity 8)))
+
+     )
+
+ (it "less than op code"
+     (should= 
+      1
+      (diagnostic-code [3,9,7,9,10,9,4,9,99,-1,8] #(identity 2)))
+     
+     (should=
+      0
+      (diagnostic-code [3,9,7,9,10,9,4,9,99,-1,8] #(identity 8)))
+     
+     (should= 
+      1
+      (diagnostic-code [3,3,1107,-1,8,3,4,3,99] #(identity 2)))
+     
+     (should=
+      0
+      (diagnostic-code [3,3,1107,-1,8,3,4,3,99] #(identity 8)))
+     
      )
  )
 
