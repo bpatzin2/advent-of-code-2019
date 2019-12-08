@@ -76,15 +76,8 @@
  (it "branching op codes"
      (should= 0 (diagnostic-code [3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9] #(identity 0)))
      (should= 1 (diagnostic-code [3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9] #(identity 8)))
-     
-     (should= 
-      0
-      (diagnostic-code [3,3,1105,-1,9,1101,0,0,12,4,12,99,1] #(identity 0)))
-     
-     (should=
-      1
-      (diagnostic-code [3,3,1105,-1,9,1101,0,0,12,4,12,99,1] #(identity 8)))
-     
+     (should= 0 (diagnostic-code [3,3,1105,-1,9,1101,0,0,12,4,12,99,1] #(identity 0)))
+     (should= 1 (diagnostic-code [3,3,1105,-1,9,1101,0,0,12,4,12,99,1] #(identity 8)))
      )
  )
 
