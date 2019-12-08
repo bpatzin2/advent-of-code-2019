@@ -23,10 +23,10 @@
  (it "output opcode"
      (should= 
       {:program [4 0 99] :output [4]} 
-      (execute-with-output [4 0 99] [2]))
+      (select-keys (execute-with-output [4 0 99] [2]) [:program :output]))
      (should=
       {:program [3 3 4 2 1101 1 2 9 4 3 99 0] :output [4 2]}
-      (execute-with-output [3 3 4 2 1101 1 2 9 4 3 99 0] [2]))
+      (select-keys (execute-with-output [3 3 4 2 1101 1 2 9 4 3 99 0] [2]) [:program :output]))
      )
  
  (it "immediate mode"

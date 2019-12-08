@@ -118,9 +118,6 @@
    :addr 0
    :status :paused})
 
-(defn publish-state [state]
-  (select-keys state [:program :output]))
-
 (defn execute-segment [program addr input output]
    (loop [instruction-address addr
           output output
@@ -145,7 +142,7 @@
          inputs inputs]
     (if 
      (= :stopped (:status state))
-      (publish-state state)
+      state
       (let [prog (:program state)
             addr (:addr state)
             output (:output state)
