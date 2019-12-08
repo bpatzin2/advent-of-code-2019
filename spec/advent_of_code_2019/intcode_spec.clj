@@ -17,16 +17,16 @@
  
  (it "input opcode"
      (should= [0 0 4 0 99] (execute [3 0 4 0 99]))
-     (should= [2 0 4 0 99] (execute [3 0 4 0 99], #(identity 2)))
+     (should= [2 0 4 0 99] (execute [3 0 4 0 99], [2]))
      )
 
  (it "output opcode"
      (should= 
       {:program [4 0 99] :output [4]} 
-      (execute-with-output [4 0 99] #(identity 2)))
+      (execute-with-output [4 0 99] [2]))
      (should=
       {:program [3 3 4 2 1101 1 2 9 4 3 99 0] :output [4 2]}
-      (execute-with-output [3 3 4 2 1101 1 2 9 4 3 99 0] #(identity 2)))
+      (execute-with-output [3 3 4 2 1101 1 2 9 4 3 99 0] [2]))
      )
  
  (it "immediate mode"
@@ -38,58 +38,58 @@
  (it "equals op code"
      (should= 
       0
-      (diagnostic-code [3,9,8,9,10,9,4,9,99,-1,8] #(identity 2)))
+      (diagnostic-code [3,9,8,9,10,9,4,9,99,-1,8] [2]))
      
      (should=
       1
-      (diagnostic-code [3,9,8,9,10,9,4,9,99,-1,8] #(identity 8)))
+      (diagnostic-code [3,9,8,9,10,9,4,9,99,-1,8] [8]))
      
      (should=
       0
-      (diagnostic-code [3,3,1108,-1,8,3,4,3,99] #(identity 2)))
+      (diagnostic-code [3,3,1108,-1,8,3,4,3,99] [2]))
 
      (should=
       1
-      (diagnostic-code [3,3,1108,-1,8,3,4,3,99] #(identity 8)))
+      (diagnostic-code [3,3,1108,-1,8,3,4,3,99] [8]))
 
      )
 
  (it "less than op code"
      (should= 
       1
-      (diagnostic-code [3,9,7,9,10,9,4,9,99,-1,8] #(identity 2)))
+      (diagnostic-code [3,9,7,9,10,9,4,9,99,-1,8] [2]))
      
      (should=
       0
-      (diagnostic-code [3,9,7,9,10,9,4,9,99,-1,8] #(identity 8)))
+      (diagnostic-code [3,9,7,9,10,9,4,9,99,-1,8] [8]))
      
      (should= 
       1
-      (diagnostic-code [3,3,1107,-1,8,3,4,3,99] #(identity 2)))
+      (diagnostic-code [3,3,1107,-1,8,3,4,3,99] [2]))
      
      (should=
       0
-      (diagnostic-code [3,3,1107,-1,8,3,4,3,99] #(identity 8)))
+      (diagnostic-code [3,3,1107,-1,8,3,4,3,99] [8]))
      
      )
 
  (it "branching op codes"
-     (should= 0 (diagnostic-code [3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9] #(identity 0)))
-     (should= 1 (diagnostic-code [3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9] #(identity 8)))
-     (should= 0 (diagnostic-code [3,3,1105,-1,9,1101,0,0,12,4,12,99,1] #(identity 0)))
-     (should= 1 (diagnostic-code [3,3,1105,-1,9,1101,0,0,12,4,12,99,1] #(identity 8)))
+     (should= 0 (diagnostic-code [3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9] [0]))
+     (should= 1 (diagnostic-code [3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9] [8]))
+     (should= 0 (diagnostic-code [3,3,1105,-1,9,1101,0,0,12,4,12,99,1] [0]))
+     (should= 1 (diagnostic-code [3,3,1105,-1,9,1101,0,0,12,4,12,99,1] [8]))
      )
 
  (it "complex input"
      (should= 999 (diagnostic-code 
                  [3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99] 
-                 #(identity 0)))
+                 [0]))
      (should= 1000 (diagnostic-code 
                  [3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99] 
-                 #(identity 8)))
+                 [8]))
      (should= 1001 (diagnostic-code 
                  [3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99] 
-                 #(identity 9)))     
+                 [9]))     
      )
  )
 
