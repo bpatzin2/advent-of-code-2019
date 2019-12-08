@@ -55,21 +55,21 @@
   (assoc amps index new-amp))
 
 (defn process-amp [amp prev-output] 
-    (loop [rem-inputs (concat (get amp :input) [prev-output])
-           addr (get amp :addr 0)
-           outputs (get amp :output [])
-           updated-amp amp
-           program (get amp :program)]
-     (if
-      (empty? rem-inputs)
-       updated-amp
-       (let [input (first rem-inputs)
-             new-state (intcode/execute-segment program addr input outputs)
-             new-amp (merge updated-amp new-state)
-             next-addr (:addr new-amp)
-             new-outputs (vec (concat outputs (:output new-amp)))
-             new-prog (:program new-amp)]
-         (recur (rest rem-inputs) next-addr new-outputs new-amp new-prog)))))
+  (loop [rem-inputs (concat (get amp :input) [prev-output])
+         addr (get amp :addr 0)
+         outputs (get amp :output [])
+         updated-amp amp
+         program (get amp :program)]
+    (if
+     (empty? rem-inputs)
+      (assoc updated-amp :input [])
+      (let [input (first rem-inputs)
+            new-state (intcode/execute-segment program addr input outputs)
+            new-amp (merge updated-amp new-state)
+            next-addr (:addr new-amp)
+            new-outputs (vec (concat outputs (:output new-amp)))
+            new-prog (:program new-amp)]
+        (recur (rest rem-inputs) next-addr new-outputs new-amp new-prog)))))
 
 (defn run-in-loop [program phase-settings]
 (loop [amps   
@@ -81,11 +81,11 @@
        curr-index 0
        prev-output 0]
   (if
-   (and (= 0 curr-index) (= :complete (get (amps 4) :state)))
+   (and (= 0 curr-index) (= :stopped (get (amps 4) :status)))
     (last (get (amps 4) :output))
     (let [amp (amps curr-index)
           updated-amp (process-amp amp prev-output)
           updated-amps (merge-amps updated-amp amps curr-index)
-          outputs (:outputs (updated-amps curr-index))
+          outputs (:output (updated-amps curr-index))
           next-index (rem (inc curr-index) 5)]
       (recur updated-amps next-index (last outputs))))))
