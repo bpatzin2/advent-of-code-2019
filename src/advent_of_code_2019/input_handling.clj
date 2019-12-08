@@ -22,3 +22,6 @@
 
 (defn day5-num-vec []
   (csv-as-int-vec "day5_input.txt"))
+
+(defn day7-num-vec []
+  (csv-as-int-vec "day7_input.txt"))

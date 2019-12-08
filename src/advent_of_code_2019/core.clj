@@ -30,3 +30,6 @@
 
 (defn day5pt2 []
   (intcode/diagnostic-code (input/day5-num-vec) [5]))
+
+(defn day7pt1 []
+  (intcode-harness/find-largest-output (input/day7-num-vec) [0 1 2 3 4]))
