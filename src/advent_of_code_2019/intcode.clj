@@ -103,32 +103,54 @@
      }
     ))
 
-(defn pause-or-stop [opcode]
-  (= opcode 99))
+(defn pause-or-stop [opcode input-consumed]
+  (or (= opcode 99) (and input-consumed (= opcode 3))))
 
-(defn execution-state [program output]
+(defn execution-state [program output addr opcode]
   {:program program
-   :output output})
+   :output output
+   :addr addr
+   :status (if (= opcode 99) :stopped :paused)})
 
-(defn execute-with-output [program inputs]
-   (loop [instruction-address 0
-          output []
-          inputs inputs
-          curr-program program]
+(defn init-state [program]
+  {:program program
+   :output []
+   :addr 0
+   :status :paused})
+
+(defn publish-state [state]
+  (select-keys state [:program :output]))
+
+(defn execute-segment [program addr input output]
+   (loop [instruction-address addr
+          output output
+          curr-program program
+          input-consumed false]
      (let [instruction (get-instruction curr-program instruction-address)
            opcode (get-opcode (first instruction))
            next-addr (next-instruction-address instruction-address opcode)]
        (if
-        (pause-or-stop opcode)
-         (execution-state curr-program output) 
-         (let [exe-result (execute-instruction instruction curr-program (first inputs) output)
-               next-addr-from-instr (get exe-result :next-addr)
-               rem-inputs (if (= opcode 3) (rest inputs) inputs)]
+        (pause-or-stop opcode input-consumed)
+         (execution-state curr-program output instruction-address opcode) 
+         (let [exe-result (execute-instruction instruction curr-program input output)
+               next-addr-from-instr (get exe-result :next-addr)]
            (recur
             (or next-addr-from-instr next-addr)
             (get exe-result :output)
-            rem-inputs
-            (get exe-result :program)))))))
+            (get exe-result :program)
+            (or input-consumed (= opcode 3))))))))
+
+(defn execute-with-output [program inputs]
+  (loop [state (init-state program)
+         inputs inputs]
+    (if 
+     (= :stopped (:status state))
+      (publish-state state)
+      (let [prog (:program state)
+            addr (:addr state)
+            output (:output state)
+            next-state (execute-segment prog addr (first inputs) output)]
+       (recur next-state (rest inputs))))))
 
 (defn execute
   ([program] (execute program [0]))
