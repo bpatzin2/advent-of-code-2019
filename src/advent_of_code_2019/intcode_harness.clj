@@ -28,3 +28,14 @@
        (filter-desired-output desired-output)
        (first)
        (pluck-input)))
+
+(defn run-in-series [program phase-settings]
+  (loop [rem-phase-settings phase-settings
+         input-signal 0]
+    (if (empty? rem-phase-settings)
+        input-signal
+        (recur 
+         (rest rem-phase-settings) 
+         (intcode/diagnostic-code 
+          program 
+          [(first rem-phase-settings) input-signal])))))
