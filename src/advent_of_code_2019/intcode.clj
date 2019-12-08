@@ -63,20 +63,44 @@
   (let [output-val (get-param 1 instruction program)]
    (conj prev-output output-val)))
 
+(defn jump-if-true [instruction program]
+  (let [is-true (not= 0 (get-param 1 instruction program))]
+    (if is-true (get-param 2 instruction program) nil)))
+
+(defn jump-if-false [instruction program]
+  (let [is-true (= 0 (get-param 1 instruction program))]
+    (if is-true (get-param 2 instruction program) nil)))
+
+(defn less-than [instruction program]
+  (let [a (get-param 1 instruction program)
+        b (get-param 2 instruction program)
+        val (if (< a b) 1 0)
+        output-addr (get instruction 3)]
+    (assoc program output-addr val)))
+
+(defn eq-instr [instruction program]
+  (let [a (get-param 1 instruction program)
+        b (get-param 2 instruction program)
+        val (if (= a b) 1 0)
+        output-addr (get instruction 3)]
+    (assoc program output-addr val)))
+
 (defn execute-instruction [instruction program inputter output prev-ins]
   (let [opcode (get-opcode (get instruction 0))
         new-program (case opcode
                       1 (execute-add instruction program)
                       2 (execute-mult instruction program)
                       3 (execute-input instruction program inputter)
-                      4 program
-                      5 program
-                      6 program
-                      7 program
-                      8 program)]
+                      7 (less-than instruction program)
+                      8 (eq-instr instruction program)
+                      program)]
     {:program new-program 
      :output (if (= opcode 4) (execute-output instruction program output) output)
      :ins (conj prev-ins instruction) 
+     :next-addr (case opcode
+                  5 (jump-if-true instruction program)
+                  6 (jump-if-false instruction program)
+                  nil)
      }
     ))
 
