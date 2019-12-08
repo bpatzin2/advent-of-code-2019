@@ -104,11 +104,8 @@
      }
     ))
 
-(defn execute-with-output
-  ([program inputs] (execute-with-output program inputs -1))
-  ([program inputs num-instructs]
+(defn execute-with-output [program inputs]
    (loop [instruction-address 0
-          n num-instructs
           output []
           inputs inputs
           curr-program program]
@@ -116,17 +113,16 @@
            opcode (get-opcode (first instruction))
            next-addr (next-instruction-address instruction-address opcode)]
        (if
-        (or (= opcode 99) (= 0 n))
+        (= opcode 99)
          {:program curr-program
           :output output}
          (let [exe-result (execute-instruction instruction curr-program inputs output)
                next-addr-from-instr (get exe-result :next-addr)]
            (recur
             (or next-addr-from-instr next-addr)
-            (dec n)
             (get exe-result :output)
             (get exe-result :inputs)
-            (get exe-result :program))))))))
+            (get exe-result :program)))))))
 
 (defn execute
   ([program] (execute program [0]))
