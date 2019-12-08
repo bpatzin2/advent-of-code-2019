@@ -103,6 +103,13 @@
      }
     ))
 
+(defn pause-or-stop [opcode]
+  (= opcode 99))
+
+(defn execution-state [program output]
+  {:program program
+   :output output})
+
 (defn execute-with-output [program inputs]
    (loop [instruction-address 0
           output []
@@ -112,15 +119,15 @@
            opcode (get-opcode (first instruction))
            next-addr (next-instruction-address instruction-address opcode)]
        (if
-        (= opcode 99)
-         {:program curr-program
-          :output output}
+        (pause-or-stop opcode)
+         (execution-state curr-program output) 
          (let [exe-result (execute-instruction instruction curr-program (first inputs) output)
-               next-addr-from-instr (get exe-result :next-addr)]
+               next-addr-from-instr (get exe-result :next-addr)
+               rem-inputs (if (= opcode 3) (rest inputs) inputs)]
            (recur
             (or next-addr-from-instr next-addr)
             (get exe-result :output)
-            (if (= opcode 3) (rest inputs) inputs)
+            rem-inputs
             (get exe-result :program)))))))
 
 (defn execute
