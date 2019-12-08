@@ -29,5 +29,42 @@
                               [0 1 2 3 4]))
               ))
 
+(describe "process-amp"
+           (it "works for test input"
+               (should= {:program [3 3 99 42]
+                         :output []
+                         :addr 2
+                         :name "a"
+                         :input []
+                         :status :stopped}
+                        (process-amp {:program [3 3 99 0]
+                                      :name "a"
+                                      :input []}
+                                     42))  
+               
+               (should= {:program [3 11 3 12 1 11 12 12 4 12 99 2 -1]
+                         :output []
+                         :addr 2
+                         :name "a"
+                         :input []
+                         :status :paused}
+                        (process-amp {:program [3 11 3 12 1 11 12 12 4 12 99 1 -1]
+                                      :name "a"
+                                      :input []}
+                                     2))
+
+               (should= {:program [3 11 3 12 1 11 12 12 4 12 99 42 44]
+                         :output [44]
+                         :addr 10
+                         :name "a"
+                         :input [42]
+                         :status :stopped}
+                        (process-amp {:program [3 11 3 12 1 11 12 12 4 12 99 1 -1]
+                                      :name "a"
+                                      :input [42]}
+                                     2))
+               
+               
+               ))
 
 (run-specs)
