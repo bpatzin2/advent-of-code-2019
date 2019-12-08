@@ -26,7 +26,7 @@
     (cw/closet-overlap-dist (first string-pair) (second string-pair))))
 
 (defn day5pt1 []
-  (intcode/diagnostic-code (input/day5-num-vec) #(identity 1)))
+  (intcode/diagnostic-code (input/day5-num-vec) [1]))
 
 (defn day5pt2 []
-  (intcode/diagnostic-code (input/day5-num-vec) #(identity 5)))
+  (intcode/diagnostic-code (input/day5-num-vec) [5]))
