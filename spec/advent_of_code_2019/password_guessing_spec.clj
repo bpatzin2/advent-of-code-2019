@@ -26,6 +26,13 @@
                        (orig-options 100 120))
               ))
 
+(describe "countains-double-digit?"
+          (it "works for test input"
+              (should= true (countains-double-digit? 112))
+              (should= false (countains-double-digit? 121))
+              (should= false (countains-double-digit? 111))
+              (should= true (countains-double-digit? 11122))))
+
 (describe "meets-updated-criteria"
           (it "works for test input"
               (should= true (meets-updated-criteria? 112))
