@@ -39,6 +39,9 @@
 (defn day7pt1 []
   (intcode-harness/find-largest-output (input/day7-num-vec) [0 1 2 3 4]))
 
+(defn day7pt2 []
+  (intcode-harness/find-largest-loop-output (input/day7-num-vec) [5 6 7 8 9]))
+
 (defn day8pt1 []
   (decoding/checksum (input/day8-num-vec) 6 25))
 
