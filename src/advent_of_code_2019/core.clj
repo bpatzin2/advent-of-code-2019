@@ -4,7 +4,8 @@
             [advent-of-code-2019.intcode :as intcode]
             [advent-of-code-2019.intcode-harness :as intcode-harness]
             [advent-of-code-2019.crossed-wires :as cw]
-            [advent-of-code-2019.image-decoding :as decoding]            
+            [advent-of-code-2019.image-decoding :as decoding]  
+            [advent-of-code-2019.password-guessing :as pw]          
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -29,6 +30,12 @@
 (defn day3pt2 []
   (let [string-pair (input/day3-string-pair)]
     (cw/shortest-overlap (first string-pair) (second string-pair))))
+
+(defn day4pt1 []
+  (count (pw/orig-options 137683 596253)))
+
+(defn day4pt2 []
+  (count (pw/updated-options 137683 596253)))
 
 (defn day5pt1 []
   (intcode/diagnostic-code (input/day5-num-vec) [1]))
