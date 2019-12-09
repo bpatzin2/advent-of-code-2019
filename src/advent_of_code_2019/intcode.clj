@@ -101,7 +101,6 @@
                       7 (less-than instruction program relative-base)
                       8 (eq-instr instruction program relative-base)
                       program)]
-    (println opcode relative-base)
     {:program new-program 
      :output (if (= opcode 4) (execute-output instruction program output relative-base) output)
      :next-addr (case opcode
@@ -123,7 +122,7 @@
    :status (if (= opcode 99) :stopped :paused)})
 
 (defn init-state [program]
-  {:program program
+  {:program (vec (concat program (take 1000000 (repeat 0))))
    :output []
    :addr 0
    :relative-base 0
@@ -155,7 +154,7 @@
          inputs inputs]
     (if 
      (= :stopped (:status state))
-      state
+      (assoc state :program (subvec (:program state) 0 (count program)))
       (let [prog (:program state)
             addr (:addr state)
             output (:output state)
