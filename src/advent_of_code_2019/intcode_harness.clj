@@ -58,18 +58,20 @@
   (loop [rem-inputs (concat (get amp :input) [prev-output])
          addr (get amp :addr 0)
          outputs (get amp :output [])
+         relative-base (get amp :relative-base 0)
          updated-amp amp
          program (get amp :program)]
     (if
      (empty? rem-inputs)
       (assoc updated-amp :input [])
       (let [input (first rem-inputs)
-            new-state (intcode/execute-segment program addr input outputs)
+            new-state (intcode/execute-segment program addr input outputs relative-base)
             new-amp (merge updated-amp new-state)
             next-addr (:addr new-amp)
             new-outputs (vec (concat outputs (:output new-amp)))
+            new-relative-base (:relative-base new-amp)
             new-prog (:program new-amp)]
-        (recur (rest rem-inputs) next-addr new-outputs new-amp new-prog)))))
+        (recur (rest rem-inputs) next-addr new-outputs new-relative-base new-amp new-prog)))))
 
 (defn run-in-loop [program phase-settings]
 (loop [amps   

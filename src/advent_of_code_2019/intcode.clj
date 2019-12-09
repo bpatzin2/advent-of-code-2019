@@ -12,7 +12,8 @@
     5 3
     6 3
     7 4
-    8 4))
+    8 4
+    9 2))
 
 (defn get-opcode [first-instr-val]
   (rem first-instr-val 100))
@@ -32,25 +33,27 @@
 (defn get-mode [instruction p-num]
   (rem (quot (instruction 0) (math/expt 10 (+ 1 p-num))) 10))
 
-(defn get-param [p-num instruction program]
+(defn get-param [p-num instruction program relative-base]
   (let [mode (get-mode instruction p-num)
         param-val (get instruction p-num)]
     (if-not (= param-val nil) 
-      (if 
-       (= mode 0) 
-        (program param-val)
-        param-val))))
+        (case mode
+          0 (program param-val)
+          1 param-val
+          2 (program (+ param-val relative-base))
+            
+            ))))
 
-(defn execute-add [instruction program]
-  (let [a (get-param 1 instruction program)
-        b (get-param 2 instruction program)
+(defn execute-add [instruction program relative-base]
+  (let [a (get-param 1 instruction program relative-base)
+        b (get-param 2 instruction program relative-base)
         output-addr (get instruction 3)
         add-result (+ a b)]
     (assoc program output-addr add-result)))
 
-(defn execute-mult [instruction program]
-  (let [a (get-param 1 instruction program)
-        b (get-param 2 instruction program)
+(defn execute-mult [instruction program relative-base]
+  (let [a (get-param 1 instruction program relative-base)
+        b (get-param 2 instruction program relative-base)
         output-addr (get instruction 3)
         add-result (* a b)]
     (assoc program output-addr add-result)))
@@ -59,82 +62,92 @@
   (let [output-addr (get instruction 1)]
    (assoc program output-addr input)))
 
-(defn execute-output [instruction program prev-output]
-  (let [output-val (get-param 1 instruction program)]
+(defn execute-output [instruction program prev-output relative-base]
+  (let [output-val (get-param 1 instruction program relative-base)]
    (conj prev-output output-val)))
 
-(defn jump-if-true [instruction program]
-  (let [is-true (not= 0 (get-param 1 instruction program))]
-    (if is-true (get-param 2 instruction program) nil)))
+(defn jump-if-true [instruction program relative-base]
+  (let [is-true (not= 0 (get-param 1 instruction program relative-base))]
+    (if is-true (get-param 2 instruction program relative-base) nil)))
 
-(defn jump-if-false [instruction program]
-  (let [is-true (= 0 (get-param 1 instruction program))]
-    (if is-true (get-param 2 instruction program) nil)))
+(defn jump-if-false [instruction program relative-base]
+  (let [is-true (= 0 (get-param 1 instruction program relative-base))]
+    (if is-true (get-param 2 instruction program relative-base) nil)))
 
-(defn less-than [instruction program]
-  (let [a (get-param 1 instruction program)
-        b (get-param 2 instruction program)
+(defn less-than [instruction program relative-base]
+  (let [a (get-param 1 instruction program relative-base)
+        b (get-param 2 instruction program relative-base)
         val (if (< a b) 1 0)
         output-addr (get instruction 3)]
     (assoc program output-addr val)))
 
-(defn eq-instr [instruction program]
-  (let [a (get-param 1 instruction program)
-        b (get-param 2 instruction program)
+(defn eq-instr [instruction program relative-base]
+  (let [a (get-param 1 instruction program relative-base)
+        b (get-param 2 instruction program relative-base)
         val (if (= a b) 1 0)
         output-addr (get instruction 3)]
     (assoc program output-addr val)))
 
-(defn execute-instruction [instruction program input output]
+(defn adjust-relative-base [instruction program relative-base]
+  (let [adjustment (get-param 1 instruction program relative-base)]
+    (+ relative-base adjustment)))
+
+(defn execute-instruction [instruction program input output relative-base]
   (let [opcode (get-opcode (get instruction 0))
         new-program (case opcode
-                      1 (execute-add instruction program)
-                      2 (execute-mult instruction program)
+                      1 (execute-add instruction program relative-base)
+                      2 (execute-mult instruction program relative-base)
                       3 (execute-input instruction program input)
-                      7 (less-than instruction program)
-                      8 (eq-instr instruction program)
+                      7 (less-than instruction program relative-base)
+                      8 (eq-instr instruction program relative-base)
                       program)]
+    (println opcode relative-base)
     {:program new-program 
-     :output (if (= opcode 4) (execute-output instruction program output) output)
+     :output (if (= opcode 4) (execute-output instruction program output relative-base) output)
      :next-addr (case opcode
-                  5 (jump-if-true instruction program)
-                  6 (jump-if-false instruction program)
+                  5 (jump-if-true instruction program relative-base)
+                  6 (jump-if-false instruction program relative-base)
                   nil)
+     :relative-base (if (= opcode 9) (adjust-relative-base instruction program relative-base) relative-base)
      }
     ))
 
 (defn pause-or-stop [opcode input-consumed]
   (or (= opcode 99) (and input-consumed (= opcode 3))))
 
-(defn execution-state [program output addr opcode]
+(defn execution-state [program output addr opcode relative-base]
   {:program program
    :output output
    :addr addr
+   :relative-base relative-base
    :status (if (= opcode 99) :stopped :paused)})
 
 (defn init-state [program]
   {:program program
    :output []
    :addr 0
+   :relative-base 0
    :status :paused})
 
-(defn execute-segment [program addr input output]
+(defn execute-segment [program addr input output relative-base]
    (loop [instruction-address addr
           output output
           curr-program program
+          rb relative-base
           input-consumed false]
      (let [instruction (get-instruction curr-program instruction-address)
            opcode (get-opcode (first instruction))
            next-addr (next-instruction-address instruction-address opcode)]
        (if
         (pause-or-stop opcode input-consumed)
-         (execution-state curr-program output instruction-address opcode) 
-         (let [exe-result (execute-instruction instruction curr-program input output)
+         (execution-state curr-program output instruction-address opcode relative-base) 
+         (let [exe-result (execute-instruction instruction curr-program input output rb)
                next-addr-from-instr (get exe-result :next-addr)]
            (recur
             (or next-addr-from-instr next-addr)
             (get exe-result :output)
             (get exe-result :program)
+            (get exe-result :relative-base)
             (or input-consumed (= opcode 3))))))))
 
 (defn execute-with-output [program inputs]
@@ -146,7 +159,8 @@
       (let [prog (:program state)
             addr (:addr state)
             output (:output state)
-            next-state (execute-segment prog addr (first inputs) output)]
+            relative-base (:relative-base state)
+            next-state (execute-segment prog addr (first inputs) output relative-base)]
        (recur next-state (rest inputs))))))
 
 (defn execute

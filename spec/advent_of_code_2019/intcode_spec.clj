@@ -96,11 +96,18 @@
      (should= {:program [3 11 3 12 1 11 12 12 4 12 99 1 -1]
                :output []
                :addr 2
+               :relative-base 0
                :status :paused} 
-              (execute-segment [3 11 3 12 1 11 12 12 4 12 99 -1 -1] 0 1 []))
+              (execute-segment [3 11 3 12 1 11 12 12 4 12 99 -1 -1] 0 1 [] 0))
 
    
      )
+
+ (it "relative mode"
+     (should= [44402,0,0,0,99] (execute [22201,0,0,0,99]))
+     (should= 109 (diagnostic-code [109,2000,109,19,204,-2019,99] []))
+     )
+
  )
 
 (run-specs)
