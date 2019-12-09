@@ -65,4 +65,8 @@
                  [0 1 1 0 0 0 1 1 1 0 0 1 1 0 0 0 1 1 0 0 1 0 0 1 0])
                (day8pt2))))
 
+(describe "day9pt1"
+          (it "works for real input"
+              (should= 3335138414 (day1pt1))))
+
 (run-specs)

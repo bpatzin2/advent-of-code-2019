@@ -54,3 +54,6 @@
 
 (defn day8pt2 []
   (decoding/decode-combined (input/day8-num-vec) 6 25))
+
+(defn day9pt1 []
+  (intcode/diagnostic-code (input/day9-num-vec) [1]))
