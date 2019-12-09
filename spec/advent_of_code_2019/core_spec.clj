@@ -67,6 +67,10 @@
 
 (describe "day9pt1"
           (it "works for real input"
-              (should= 3335138414 (day1pt1))))
+              (should= 3335138414 (day9pt1))))
+
+(describe "day9pt1"
+          (it "works for real input"
+              (should= 49122 (day9pt2))))
 
 (run-specs)

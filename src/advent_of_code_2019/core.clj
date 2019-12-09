@@ -57,3 +57,6 @@
 
 (defn day9pt1 []
   (intcode/diagnostic-code (input/day9-num-vec) [1]))
+
+(defn day9pt2 []
+  (intcode/diagnostic-code (input/day9-num-vec) [2]))
