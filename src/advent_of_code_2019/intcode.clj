@@ -71,7 +71,7 @@
 
 (defn execute-input [instruction program input relative-base]
   (let [output-addr (get-addr-param 1 instruction relative-base)]
-   (assoc program output-addr input)))
+    (assoc program output-addr input)))
 
 (defn execute-output [instruction program prev-output relative-base]
   (let [output-val (get-param 1 instruction program relative-base)]
@@ -140,8 +140,11 @@
    :relative-base relative-base
    :status (if (= opcode 99) :stopped (if (abort? is-diag output) :aborted :paused))})
 
+(defn init-program [program-vec]
+  (apply merge (map-indexed hash-map program-vec)))
+
 (defn init-state [program]
-  {:program (apply merge (map-indexed hash-map program))
+  {:program (init-program program)
    :output []
    :addr 0
    :relative-base 0
@@ -171,6 +174,25 @@
                next-addr (or (get exe-result :next-addr) (next-instruction-address instruction-address opcode))
                is-input-consumed (or input-consumed (= opcode 3))]
            (recur next-addr exe-result is-input-consumed)))))))
+
+(defn execute-segment-new
+ [program addr input output relative-base is-first]
+  (loop [instruction-address addr
+         exe-ctx {:relative-base relative-base
+                  :program (if is-first (init-program program) program)
+                  :output output}
+         input-consumed false]
+    (let [curr-program (get exe-ctx :program)
+          curr-output (get exe-ctx :output)
+          instruction (get-instruction curr-program instruction-address)
+          opcode (get-opcode (first instruction))]
+      (if
+       (pause-or-stop opcode input-consumed false curr-output)
+        (execution-state curr-program instruction-address opcode (get exe-ctx :relative-base) false curr-output)
+        (let [exe-result (execute-instruction instruction input exe-ctx)
+              next-addr (or (get exe-result :next-addr) (next-instruction-address instruction-address opcode))
+              is-input-consumed (or input-consumed (= opcode 3))]
+          (recur next-addr exe-result is-input-consumed))))))
 
 (defn execute-with-output 
   ([program inputs] (execute-with-output program inputs false))
