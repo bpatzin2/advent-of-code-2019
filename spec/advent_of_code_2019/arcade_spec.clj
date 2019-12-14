@@ -16,9 +16,19 @@
                                      4 1
                                      99]))
               )
+          (it "move left wins"
+              (should= 1 (play-game [3 42
+                                     102 -1 42 43
+                                     4 43
+                                     99])))
           (it "move right twice wins"
               (should= 2 (play-game [3 42
+                                     ;output block
+                                     104 0 
+                                     104 0
+                                     104 02
                                      3 43
                                      1 42 43 44 ;add the two inputs
                                      4 44
-                                     99]))))
+                                     99])))
+          )

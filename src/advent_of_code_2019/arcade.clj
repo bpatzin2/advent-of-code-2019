@@ -20,28 +20,52 @@
 (defn run-and-count-blocks [game-num-vec]
   (count-blocks (run-game game-num-vec)))
 
-(defn play-move [game-num-vec move]
-  (intcode/execute-segment game-num-vec 0 1 [] 0 true))
+(defn play-move [exe-state move]
+  (intcode/execute-segment
+   (:program exe-state)
+   (:addr exe-state)
+   move
+   (:output exe-state)
+   (:relative-base exe-state)
+   (:is-first exe-state)))
 
 (defn get-score [exe-state]
   (last (get exe-state :output)))
 
+(defn play-each-move [exe-state]
+  (map #(play-move exe-state %) [-1 0 1]))
+
+(defn stopped-or-no-blocks? [exe-state]
+  (and
+   (not= true (:is-first exe-state)) 
+   (or 
+    (= :stopped (:status exe-state))
+    (= 0 (count-blocks (draw-tiles (:output exe-state)))))))
+
+(defn play-valid-moves [exe-state]
+  (if
+   (stopped-or-no-blocks? exe-state)
+    [exe-state]
+    (map #(play-move exe-state %) [-1 0 1])))
+
+(defn play-all-valid-moves [exe-states]
+  (mapcat play-valid-moves exe-states))
+
+(defn highest-score [exe-states]
+  (apply max (map #(last (:output %)) exe-states)))
+
+(defn init-state [program]
+  {:program program
+   :addr 0
+   :output []
+   :relative-base 0
+   :is-first true
+   })
+
 (defn play-game [game-num-vec] 
-  (loop [progam game-num-vec
-         addr 0
-         input 1
-         output []
-         rb 0
-         is-first true]
-    (let [exe-state (intcode/execute-segment progam addr 1 [] rb is-first)]
-      (if
-       (= :stopped (get exe-state :status))
-        (get-score exe-state)
-        (recur 
-         (get exe-state :program)
-         (get exe-state :addr)
-         1 ;input
-         (get exe-state :output)
-         (get exe-state :relative-base)
-         false)
-        ))))
+ (loop [exe-states [(init-state game-num-vec)]]
+   (let [next-states (play-all-valid-moves exe-states)]
+     (if 
+      (= (count next-states) (count exe-states))
+       (highest-score exe-states)
+       (recur next-states)))))
