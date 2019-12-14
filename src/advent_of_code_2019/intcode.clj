@@ -103,8 +103,10 @@
   (let [adjustment (get-param 1 instruction program relative-base)]
     (+ relative-base adjustment)))
 
-(defn execute-instruction [exe-ctx instruction program input output]
+(defn execute-instruction [instruction input exe-ctx]
   (let [opcode (get-opcode (get instruction 0))
+        output (get exe-ctx :output)
+        program (get exe-ctx :program)
         relative-base (get exe-ctx :relative-base)
         new-program (case opcode
                       1 (execute-add instruction program relative-base)
@@ -131,7 +133,7 @@
       (and input-consumed (= opcode 3))
       (abort? is-diag output)))
 
-(defn execution-state [program output addr opcode relative-base is-diag output]
+(defn execution-state [program addr opcode relative-base is-diag output]
   {:program program
    :output output
    :addr addr
@@ -154,24 +156,21 @@
    (execute-segment program addr input output relative-base false))
   ([program addr input output relative-base is-diag]
    (loop [instruction-address addr
-          output output
-          curr-program program
-          exe-ctx {:relative-base relative-base}
+          exe-ctx {:relative-base relative-base
+                   :program program
+                   :output output}
           input-consumed false]
-     (let [instruction (get-instruction curr-program instruction-address)
-           opcode (get-opcode (first instruction))
-           next-addr (next-instruction-address instruction-address opcode)]
+     (let [curr-program (get exe-ctx :program)
+           curr-output (get exe-ctx :output)
+           instruction (get-instruction curr-program instruction-address)
+           opcode (get-opcode (first instruction))]
        (if
-        (pause-or-stop opcode input-consumed is-diag output)
-         (execution-state curr-program output instruction-address opcode (get exe-ctx :relative-base) is-diag output) 
-         (let [exe-result (execute-instruction exe-ctx instruction curr-program input output)
-               next-addr-from-instr (get exe-result :next-addr)]
-           (recur
-            (or next-addr-from-instr next-addr)
-            (get exe-result :output)
-            (get exe-result :program)
-            exe-result 
-            (or input-consumed (= opcode 3)))))))))
+        (pause-or-stop opcode input-consumed is-diag curr-output)
+         (execution-state curr-program instruction-address opcode (get exe-ctx :relative-base) is-diag curr-output) 
+         (let [exe-result (execute-instruction instruction input exe-ctx)
+               next-addr (or (get exe-result :next-addr) (next-instruction-address instruction-address opcode))
+               is-input-consumed (or input-consumed (= opcode 3))]
+           (recur next-addr exe-result is-input-consumed)))))))
 
 (defn execute-with-output 
   ([program inputs] (execute-with-output program inputs false))
