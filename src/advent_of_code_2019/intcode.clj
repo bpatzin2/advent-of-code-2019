@@ -154,13 +154,15 @@
   (let [program (:program state)] 
     (assoc state :program (prog-to-vec program 0 prog-len))))
 
-(defn execute-segment 
-  ([program addr input output relative-base] 
-   (execute-segment program addr input output relative-base false))
-  ([program addr input output relative-base is-diag]
+(defn execute-segment
+  ([program addr input output relative-base]  
+   (execute-segment program addr input output relative-base false false))
+  ([program addr input output relative-base is-first]  
+   (execute-segment program addr input output relative-base is-first false))
+  ([program addr input output relative-base is-first is-diag]
    (loop [instruction-address addr
           exe-ctx {:relative-base relative-base
-                   :program program
+                   :program (if is-first (init-program program) program)
                    :output output}
           input-consumed false]
      (let [curr-program (get exe-ctx :program)
@@ -169,30 +171,17 @@
            opcode (get-opcode (first instruction))]
        (if
         (pause-or-stop opcode input-consumed is-diag curr-output)
-         (execution-state curr-program instruction-address opcode (get exe-ctx :relative-base) is-diag curr-output) 
+         (execution-state curr-program instruction-address opcode (get exe-ctx :relative-base) is-diag curr-output)
          (let [exe-result (execute-instruction instruction input exe-ctx)
                next-addr (or (get exe-result :next-addr) (next-instruction-address instruction-address opcode))
                is-input-consumed (or input-consumed (= opcode 3))]
            (recur next-addr exe-result is-input-consumed)))))))
 
-(defn execute-segment-new
- [program addr input output relative-base is-first]
-  (loop [instruction-address addr
-         exe-ctx {:relative-base relative-base
-                  :program (if is-first (init-program program) program)
-                  :output output}
-         input-consumed false]
-    (let [curr-program (get exe-ctx :program)
-          curr-output (get exe-ctx :output)
-          instruction (get-instruction curr-program instruction-address)
-          opcode (get-opcode (first instruction))]
-      (if
-       (pause-or-stop opcode input-consumed false curr-output)
-        (execution-state curr-program instruction-address opcode (get exe-ctx :relative-base) false curr-output)
-        (let [exe-result (execute-instruction instruction input exe-ctx)
-              next-addr (or (get exe-result :next-addr) (next-instruction-address instruction-address opcode))
-              is-input-consumed (or input-consumed (= opcode 3))]
-          (recur next-addr exe-result is-input-consumed))))))
+(defn execute-segment-diag
+  ([program addr input output relative-base]
+   (execute-segment program addr input output relative-base false true))
+  ([program addr input output relative-base is-first]
+   (execute-segment program addr input output relative-base is-first true)))
 
 (defn execute-with-output 
   ([program inputs] (execute-with-output program inputs false))

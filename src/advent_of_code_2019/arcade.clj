@@ -21,7 +21,7 @@
   (count-blocks (run-game game-num-vec)))
 
 (defn play-move [game-num-vec move]
-  (intcode/execute-segment-new game-num-vec 0 1 [] 0 true))
+  (intcode/execute-segment game-num-vec 0 1 [] 0 true))
 
 (defn get-score [exe-state]
   (last (get exe-state :output)))
@@ -33,7 +33,7 @@
          output []
          rb 0
          is-first true]
-    (let [exe-state (intcode/execute-segment-new progam addr 1 [] rb is-first)]
+    (let [exe-state (intcode/execute-segment progam addr 1 [] rb is-first)]
       (if
        (= :stopped (get exe-state :status))
         (get-score exe-state)
