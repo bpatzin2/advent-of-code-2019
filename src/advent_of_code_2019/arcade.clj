@@ -35,12 +35,15 @@
 (defn play-each-move [exe-state]
   (map #(play-move exe-state %) [-1 0 1]))
 
+(defn tiles-from-state [exe-state]
+  (draw-tiles (:output exe-state)))
+
 (defn stopped-or-no-blocks? [exe-state]
   (and
    (not= true (:is-first exe-state)) 
    (or 
     (= :stopped (:status exe-state))
-    (= 0 (count-blocks (draw-tiles (:output exe-state)))))))
+    (= 0 (count-blocks (tiles-from-state exe-state))))))
 
 (defn play-valid-moves [exe-state]
   (if
@@ -51,8 +54,17 @@
 (defn play-all-valid-moves [exe-states]
   (mapcat play-valid-moves exe-states))
 
+(defn score-from-tiles [tiles]
+  (get tiles [-1 0]))
+
+(defn score-from-output [output]
+  (score-from-tiles (draw-tiles output)))
+
+(defn score-from-state [exe-state]
+ (score-from-output (:output exe-state)))
+
 (defn highest-score [exe-states]
-  (apply max (map #(last (:output %)) exe-states)))
+  (apply max (map score-from-state exe-states)))
 
 (defn init-state [program]
   {:program program
