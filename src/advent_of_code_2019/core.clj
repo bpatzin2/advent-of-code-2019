@@ -6,7 +6,8 @@
             [advent-of-code-2019.amplification :as amp]
             [advent-of-code-2019.crossed-wires :as cw]
             [advent-of-code-2019.image-decoding :as decoding]  
-            [advent-of-code-2019.password-guessing :as pw]          
+            [advent-of-code-2019.password-guessing :as pw]  
+            [advent-of-code-2019.arcade :as arcade]          
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -61,3 +62,6 @@
 
 (defn day9pt2 []
   (intcode/diagnostic-code (input/day9-num-vec) [2]))
+
+(defn day13pt1 []
+  (arcade/run-and-count-blocks (input/day13-num-vec)))
