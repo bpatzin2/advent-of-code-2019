@@ -96,6 +96,7 @@
      (should= {:program [3 11 3 12 1 11 12 12 4 12 99 1 -1]
                :output []
                :addr 2
+               :is-first false
                :relative-base 0
                :status :paused} 
               (execute-segment [3 11 3 12 1 11 12 12 4 12 99 -1 -1] 0 1 [] 0))

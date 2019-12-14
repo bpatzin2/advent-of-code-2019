@@ -29,6 +29,7 @@
                          :addr 2
                          :name "a"
                          :input []
+                         :is-first false
                          :relative-base 0
                          :status :stopped}
                         (process-amp {:program [3 3 99 0]
@@ -41,6 +42,7 @@
                          :addr 2
                          :name "a"
                          :input []
+                         :is-first false
                          :relative-base 0
                          :status :paused}
                         (process-amp {:program [3 11 3 12 1 11 12 12 4 12 99 1 -1]
@@ -52,6 +54,7 @@
                          :output [44]
                          :addr 10
                          :name "a"
+                         :is-first false
                          :input []
                          :relative-base 0
                          :status :stopped}

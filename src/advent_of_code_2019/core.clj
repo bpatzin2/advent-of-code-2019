@@ -65,3 +65,7 @@
 
 (defn day13pt1 []
   (arcade/run-and-count-blocks (input/day13-num-vec)))
+
+(defn day13pt2 []
+  (arcade/play-game
+   (assoc (input/day13-num-vec) 0 2)))

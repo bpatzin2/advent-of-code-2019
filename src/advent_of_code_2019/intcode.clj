@@ -138,6 +138,7 @@
    :output output
    :addr addr
    :relative-base relative-base
+   :is-first false
    :status (if (= opcode 99) :stopped (if (abort? is-diag output) :aborted :paused))})
 
 (defn init-program [program-vec]
@@ -164,7 +165,7 @@
           exe-ctx {:relative-base relative-base
                    :program (if is-first (init-program program) program)
                    :output output}
-          input-consumed false]
+          input-consumed (= nil input)]
      (let [curr-program (get exe-ctx :program)
            curr-output (get exe-ctx :output)
            instruction (get-instruction curr-program instruction-address)

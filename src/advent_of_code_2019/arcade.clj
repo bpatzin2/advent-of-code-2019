@@ -32,9 +32,6 @@
 (defn get-score [exe-state]
   (last (get exe-state :output)))
 
-(defn play-each-move [exe-state]
-  (map #(play-move exe-state %) [-1 0 1]))
-
 (defn tiles-from-state [exe-state]
   (draw-tiles (:output exe-state)))
 
@@ -45,15 +42,6 @@
     (= :stopped (:status exe-state))
     (= 0 (count-blocks (tiles-from-state exe-state))))))
 
-(defn play-valid-moves [exe-state]
-  (if
-   (stopped-or-no-blocks? exe-state)
-    [exe-state]
-    (map #(play-move exe-state %) [-1 0 1])))
-
-(defn play-all-valid-moves [exe-states]
-  (mapcat play-valid-moves exe-states))
-
 (defn score-from-tiles [tiles]
   (get tiles [-1 0]))
 
@@ -61,10 +49,7 @@
   (score-from-tiles (draw-tiles output)))
 
 (defn score-from-state [exe-state]
- (score-from-output (:output exe-state)))
-
-(defn highest-score [exe-states]
-  (apply max (map score-from-state exe-states)))
+  (score-from-output (:output exe-state)))
 
 (defn init-state [program]
   {:program program
@@ -74,10 +59,35 @@
    :is-first true
    })
 
+(defn pos-of [tile-id, tiles]
+  (->> tiles
+       (filter #(= tile-id (second %)))
+       (map first) ;all positions
+       (first)))
+
+(defn calc-move [exe-state]
+  (let [tiles (tiles-from-state exe-state)
+        ball-x (first (pos-of 4 tiles))
+        paddle-x (first (pos-of 3 tiles))
+        x-diff (- ball-x paddle-x)]
+    (cond
+      (< x-diff 0) -1
+      (> x-diff 0) 1
+      :else 0) ))
+
+(defn pick-move [exe-state]
+  (if 
+   (:is-first exe-state)
+    nil
+    (calc-move exe-state)))
+
+(defn play-next-move [exe-state]
+  (play-move exe-state (pick-move exe-state)))
+
 (defn play-game [game-num-vec] 
- (loop [exe-states [(init-state game-num-vec)]]
-   (let [next-states (play-all-valid-moves exe-states)]
+ (loop [exe-state (init-state game-num-vec)]
+   (let [next-state (play-next-move exe-state)]
      (if 
-      (= (count next-states) (count exe-states))
-       (highest-score exe-states)
-       (recur next-states)))))
+      (stopped-or-no-blocks? next-state)
+       (score-from-state next-state)
+       (recur next-state)))))
