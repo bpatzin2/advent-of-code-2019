@@ -103,8 +103,9 @@
   (let [adjustment (get-param 1 instruction program relative-base)]
     (+ relative-base adjustment)))
 
-(defn execute-instruction [instruction program input output relative-base]
+(defn execute-instruction [exe-ctx instruction program input output]
   (let [opcode (get-opcode (get instruction 0))
+        relative-base (get exe-ctx :relative-base)
         new-program (case opcode
                       1 (execute-add instruction program relative-base)
                       2 (execute-mult instruction program relative-base)
@@ -155,21 +156,21 @@
    (loop [instruction-address addr
           output output
           curr-program program
-          rb relative-base
+          exe-ctx {:relative-base relative-base}
           input-consumed false]
      (let [instruction (get-instruction curr-program instruction-address)
            opcode (get-opcode (first instruction))
            next-addr (next-instruction-address instruction-address opcode)]
        (if
         (pause-or-stop opcode input-consumed is-diag output)
-         (execution-state curr-program output instruction-address opcode rb is-diag output) 
-         (let [exe-result (execute-instruction instruction curr-program input output rb)
+         (execution-state curr-program output instruction-address opcode (get exe-ctx :relative-base) is-diag output) 
+         (let [exe-result (execute-instruction exe-ctx instruction curr-program input output)
                next-addr-from-instr (get exe-result :next-addr)]
            (recur
             (or next-addr-from-instr next-addr)
             (get exe-result :output)
             (get exe-result :program)
-            (get exe-result :relative-base)
+            exe-result 
             (or input-consumed (= opcode 3)))))))))
 
 (defn execute-with-output 
