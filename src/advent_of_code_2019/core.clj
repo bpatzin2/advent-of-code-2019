@@ -3,6 +3,7 @@
   (:require [advent-of-code-2019.rocket-equation :as re]
             [advent-of-code-2019.intcode :as intcode]
             [advent-of-code-2019.intcode-harness :as intcode-harness]
+            [advent-of-code-2019.amplification :as amp]
             [advent-of-code-2019.crossed-wires :as cw]
             [advent-of-code-2019.image-decoding :as decoding]  
             [advent-of-code-2019.password-guessing :as pw]          
@@ -44,10 +45,10 @@
   (intcode/diagnostic-code (input/day5-num-vec) [5]))
 
 (defn day7pt1 []
-  (intcode-harness/find-largest-output (input/day7-num-vec) [0 1 2 3 4]))
+  (amp/find-largest-output (input/day7-num-vec) [0 1 2 3 4]))
 
 (defn day7pt2 []
-  (intcode-harness/find-largest-loop-output (input/day7-num-vec) [5 6 7 8 9]))
+  (amp/find-largest-loop-output (input/day7-num-vec) [5 6 7 8 9]))
 
 (defn day8pt1 []
   (decoding/checksum (input/day8-num-vec) 6 25))
