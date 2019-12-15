@@ -8,7 +8,8 @@
             [advent-of-code-2019.crossed-wires :as cw]
             [advent-of-code-2019.image-decoding :as decoding]  
             [advent-of-code-2019.password-guessing :as pw]  
-            [advent-of-code-2019.arcade :as arcade]          
+            [advent-of-code-2019.arcade :as arcade]  
+            [advent-of-code-2019.oxygen-system :as os]        
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -79,3 +80,6 @@
    (arcade/play-game
     (assoc (input/day13-num-vec) 0 2)
     debug-mode)))
+
+(defn day15pt1 []
+  (os/find-oxygen-system (input/day15-num-vec)))
