@@ -35,12 +35,15 @@
 (defn tiles-from-state [exe-state]
   (draw-tiles (:output exe-state)))
 
-(defn stopped-or-no-blocks? [exe-state]
+(defn stopped-or-no-blocks? [exe-state debug-mode]
   (and
    (not= true (:is-first exe-state)) 
    (or 
     (= :stopped (:status exe-state))
-    (= 0 (count-blocks (tiles-from-state exe-state))))))
+    (= 0 (count-blocks (tiles-from-state exe-state)))
+    (and 
+     debug-mode
+     (= 284 (count-blocks (tiles-from-state exe-state)))))))
 
 (defn score-from-tiles [tiles]
   (get tiles [-1 0]))
@@ -84,10 +87,12 @@
 (defn play-next-move [exe-state]
   (play-move exe-state (pick-move exe-state)))
 
-(defn play-game [game-num-vec] 
- (loop [exe-state (init-state game-num-vec)]
-   (let [next-state (play-next-move exe-state)]
-     (if 
-      (stopped-or-no-blocks? next-state)
-       (score-from-state next-state)
-       (recur next-state)))))
+(defn play-game 
+  ([game-num-vec] (play-game game-num-vec false))
+  ([game-num-vec debug-mode]
+   (loop [exe-state (init-state game-num-vec)]
+     (let [next-state (play-next-move exe-state)]
+       (if
+        (stopped-or-no-blocks? next-state debug-mode)
+         (score-from-state next-state)
+         (recur next-state))))))
