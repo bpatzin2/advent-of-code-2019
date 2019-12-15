@@ -2,7 +2,37 @@
   (:require [speclj.core :refer :all]
             [advent-of-code-2019.orbit-mapping :refer :all]))
 
-(describe "orbit-map"
-          (it "works for test input"
-              (should= 2 (orbit-map "test")))
-          )
+(describe 
+ "orbit-map"
+ (it "works for test input"
+     (should= {"A" ["B" "C"]} (orbit-map [["A" "B"] ["A" "C"]])))
+ )
+
+(describe
+ "orbit-count"
+ (it "works for test input"
+     (should= 4 (orbit-count [["A" "B"]
+                              ["A" "C"]
+                              ["C" "Y"]]
+                             "A"))
+     
+     (should= 7 (orbit-count [["A" "B"]
+                              ["A" "C"]
+                              ["C" "Y"]
+                              ["Y" "Z"]]
+                             "A"))
+     
+     (should= 42 (orbit-count [["COM" "B"]
+                               ["B" "C"]
+                               ["C" "D"]
+                               ["D" "E"]
+                               ["E" "F"]
+                               ["B" "G"]
+                               ["G" "H"]
+                               ["D" "I"]
+                               ["E" "J"]
+                               ["J" "K"]
+                               ["K" "L"]]
+                              "COM"))
+     
+     ))
