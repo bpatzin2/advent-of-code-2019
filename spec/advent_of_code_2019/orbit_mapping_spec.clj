@@ -36,3 +36,31 @@
                               "COM"))
      
      ))
+
+(describe
+ "req-transfer-count"
+ (it "works for test input"
+     (should= 3 (req-transfer-count [["A" "B"]
+                                     ["A" "C"]
+                                     ["C" "Y"]
+                                     ["Y" "YOU"]
+                                     ["B" "SAN"]]
+                                    "A"
+                                    "YOU"
+                                    "SAN")))
+  (it "works for test input"
+     (should= 2 (req-transfer-count [["COM" "B"]
+                                     ["B" "C"]
+                                     ["C" "D"]
+                                     ["D" "E"]
+                                     ["E" "F"]
+                                     ["B" "G"]
+                                     ["G" "H"]
+                                     ["D" "I"]
+                                     ["E" "J"]
+                                     ["J" "K"]
+                                     ["K" "L"]]
+                                    "COM"
+                                    "L"
+                                    "F"))
+      ))

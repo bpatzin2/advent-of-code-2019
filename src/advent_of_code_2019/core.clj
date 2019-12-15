@@ -49,6 +49,9 @@
 (defn day6pt1 []
   (om/orbit-count (input/day6-tuples) "COM"))
 
+(defn day6pt2 []
+  (om/req-transfer-count (input/day6-tuples) "COM" "YOU" "SAN"))
+
 (defn day7pt1 []
   (amp/find-largest-output (input/day7-num-vec) [0 1 2 3 4]))
 
