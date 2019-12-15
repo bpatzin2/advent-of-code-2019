@@ -23,6 +23,9 @@
 (defn day5-num-vec []
   (csv-as-int-vec "day5_input.txt"))
 
+(defn day6-tuples []
+  (map #(str/split % #"\)") (str/split (slurp "day6_input.txt"), #"\n")))
+
 (defn day7-num-vec []
   (csv-as-int-vec "day7_input.txt"))
 

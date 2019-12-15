@@ -4,6 +4,7 @@
             [advent-of-code-2019.intcode :as intcode]
             [advent-of-code-2019.intcode-harness :as intcode-harness]
             [advent-of-code-2019.amplification :as amp]
+            [advent-of-code-2019.orbit-mapping :as om]
             [advent-of-code-2019.crossed-wires :as cw]
             [advent-of-code-2019.image-decoding :as decoding]  
             [advent-of-code-2019.password-guessing :as pw]  
@@ -44,6 +45,9 @@
 
 (defn day5pt2 []
   (intcode/diagnostic-code (input/day5-num-vec) [5]))
+
+(defn day6pt1 []
+  (om/orbit-count (input/day6-tuples) "COM"))
 
 (defn day7pt1 []
   (amp/find-largest-output (input/day7-num-vec) [0 1 2 3 4]))
