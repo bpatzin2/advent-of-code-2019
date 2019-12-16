@@ -27,11 +27,11 @@
          (if (>= i 1) (conj res val) res)
          (inc i))))))
 
-(defn output-digit [pos-in-list num nums]
+(defn output-digit [pos-in-list nums]
   (apply-pattern nums (gen-pattern pos-in-list (count nums))))
 
 (defn apply-phase [nums _]
-  (flatten (map-indexed #(output-digit %1 %2 nums) nums)))
+  (flatten (map-indexed (fn [index, _] (output-digit index nums)) nums)))
 
 (defn run-fft [nums phases]
   (reduce apply-phase nums (range 0 phases)))
