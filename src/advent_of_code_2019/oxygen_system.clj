@@ -73,4 +73,17 @@
                  new-memo)))))
 
 (defn num-steps-to-oxygen [droid-program]
-  (dec (count (find-path-to-oxygen (init-droid-state droid-program)))))
+  (->> droid-program
+       (init-droid-state)
+       (find-path-to-oxygen)
+       (count)
+       (dec)))
+
+(defn min-for-oxygen-filled-room [droid-program]
+  (let [all-room-coords]
+    (->> droid-program
+         (init-droid-state)
+         (find-path-to-oxygen)
+         (last)
+         (paths-from all-room-coords)
+         (max))))
