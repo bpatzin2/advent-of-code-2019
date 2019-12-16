@@ -1,4 +1,4 @@
-(ns advent-of-code-2019.new-code
+(ns advent-of-code-2019.fft
   (:gen-class)
   (:require [clojure.string :as str-lib]))
 

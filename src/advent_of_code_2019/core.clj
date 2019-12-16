@@ -10,7 +10,7 @@
             [advent-of-code-2019.password-guessing :as pw]  
             [advent-of-code-2019.arcade :as arcade]  
             [advent-of-code-2019.oxygen-system :as os]      
-            [advent-of-code-2019.new-code :as fft]  
+            [advent-of-code-2019.fft :as fft]  
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
