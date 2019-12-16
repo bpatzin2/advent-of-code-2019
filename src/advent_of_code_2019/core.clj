@@ -9,7 +9,8 @@
             [advent-of-code-2019.image-decoding :as decoding]  
             [advent-of-code-2019.password-guessing :as pw]  
             [advent-of-code-2019.arcade :as arcade]  
-            [advent-of-code-2019.oxygen-system :as os]        
+            [advent-of-code-2019.oxygen-system :as os]      
+            [advent-of-code-2019.new-code :as fft]  
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -83,3 +84,7 @@
 
 (defn day15pt1 []
   (os/num-steps-to-oxygen (input/day15-num-vec)))
+
+(defn day16pt1
+  ([] (day16pt1 100))
+  ([phases] (fft/run-fft-str (input/day16-str) phases 8)))

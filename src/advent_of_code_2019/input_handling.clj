@@ -46,3 +46,6 @@
 
 (defn day15-num-vec []
   (csv-as-int-vec "day15_input.txt"))
+
+(defn day16-str []
+  (slurp "day16_input.txt"))
