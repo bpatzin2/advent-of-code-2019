@@ -82,4 +82,4 @@
     debug-mode)))
 
 (defn day15pt1 []
-  (os/find-oxygen-system (input/day15-num-vec)))
+  (os/num-steps-to-oxygen (input/day15-num-vec)))

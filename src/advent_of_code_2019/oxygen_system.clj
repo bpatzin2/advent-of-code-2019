@@ -60,17 +60,17 @@
        (map #(move-driod droid-state %))
        (filter #(not (hit-wall? %)))))
 
-(defn breadth-first-search [droid-state]
+(defn find-path-to-oxygen [droid-state]
   (loop [queue (conj clojure.lang.PersistentQueue/EMPTY droid-state)
          memo #{}]
       (let [state (peek queue)
             new-memo (conj memo (last-coord state))]
         (cond
-          (found-oxygen? state) (count (:path state))
+          (found-oxygen? state) (:path state)
           (hit-wall? state) (recur (pop queue) memo)
-          :else (recur 
-                 (into (pop queue) (next-valid-moves state memo)) 
+          :else (recur
+                 (into (pop queue) (next-valid-moves state memo))
                  new-memo)))))
 
-(defn find-oxygen-system [droid-program]
-  (dec (breadth-first-search (init-droid-state droid-program))))
+(defn num-steps-to-oxygen [droid-program]
+  (dec (count (find-path-to-oxygen (init-droid-state droid-program)))))

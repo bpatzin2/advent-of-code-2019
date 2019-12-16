@@ -16,7 +16,7 @@
                                99])))))
           
           (it "the oxygen is one move to the east"
-              (should= 1 (find-oxygen-system [3 99
+              (should= 1 (num-steps-to-oxygen [3 99
                                               101 -4 99 100
                                               104 0
                                               1005 100 0
@@ -25,7 +25,7 @@
                                               ])))
           
           (it "the oxygen is two moves to the east"
-              (should= 2 (find-oxygen-system [3 99
+              (should= 2 (num-steps-to-oxygen [3 99
                                               101 -4 99 100
                                               104 0
                                               1005 100 0
