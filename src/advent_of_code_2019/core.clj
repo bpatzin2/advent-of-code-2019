@@ -11,6 +11,7 @@
             [advent-of-code-2019.arcade :as arcade]  
             [advent-of-code-2019.oxygen-system :as os]      
             [advent-of-code-2019.fft :as fft]  
+            [advent-of-code-2019.pluto-maze :as pluto-maze]              
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -88,3 +89,6 @@
 (defn day16pt1
   ([] (day16pt1 100))
   ([phases] (fft/run-fft-str (input/day16-str) phases 8)))
+
+(defn day20pt1 [] 
+  (pluto-maze/shortest-path-steps (input/day20-str)))

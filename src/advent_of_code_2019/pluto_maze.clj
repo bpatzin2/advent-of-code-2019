@@ -63,32 +63,56 @@
           (find-horz-portals maze))))
 
 (defn valid-move? [coord already-visited maze]
-  (println "valid-move?" coord already-visited)
-  (and (not (contains? already-visited coord)) 
-       (= "." (maze-val coord maze))))
+  (and 
+   (some? coord)
+   (not (contains? already-visited coord)) 
+   (= "." (maze-val coord maze))))
 
-(defn next-coords [cur-coord already-visited maze]
+(defn other-side? [[key value] coord portal-name]
+  (and (= portal-name value) (not= coord key)))
+
+ (defn other-side [coord portals portal-name]
+  (get (get (vec (filter #(other-side? % coord portal-name) portals)) 0) 0))
+
+(defn through-portal [coord portals]
+  (let [portal-name (get portals coord)]
+    (if (some? portal-name)
+      (other-side coord portals portal-name)
+      nil)))
+
+(defn next-coords [cur-coord already-visited portals maze]
   (let [row-num (first cur-coord)
         col-num (second cur-coord)
-        up  [(dec row-num) col-num]
+        up [(dec row-num) col-num]
         down [(inc row-num) col-num]
-        left  [row-num (dec col-num)]
-        right [row-num (inc col-num)]]
-    (filter #(valid-move? % already-visited maze) [up down left right])))
+        left [row-num (dec col-num)]
+        right [row-num (inc col-num)]
+        portal (through-portal [row-num col-num] portals)]
+    (filter #(valid-move? % already-visited maze) [up down left right portal])))
 
-(defn next-paths [cur-coord path already-visited maze]
-  (map #(conj path %) (filter #(not (contains? already-visited %)) (next-coords cur-coord already-visited maze))))
+(defn next-paths [cur-coord path already-visited portals maze]
+  (map #(conj path %) (filter #(not (contains? already-visited %)) (next-coords cur-coord already-visited portals maze))))
 
 (defn shortest-path [maze portals start end]
   (loop [queue (conj clojure.lang.PersistentQueue/EMPTY [start])
          already-visited #{}]
     (let [path (peek queue)
           cur-coord (last path)
-          n-paths (next-paths cur-coord path already-visited maze)
+          n-paths (next-paths cur-coord path already-visited portals maze)
           a-visited (into already-visited (map last n-paths))]
       (if (not= cur-coord end)
         (recur (into (pop queue) n-paths) a-visited)
         path))))
 
-(defn shortest-path-steps [maze portals start end]
-  (dec (count (shortest-path maze portals start end))))
+(defn find-start [maze]
+  (first (first (filter #(= ["A" "A"] (second %)) (find-portals maze)))))
+
+(defn find-end [maze]
+  (first (first (filter #(= ["Z" "Z"] (second %)) (find-portals maze)))))
+
+(defn shortest-path-steps [maze-str]
+  (let [maze (two-d-vec maze-str)
+        portals (find-portals maze)
+        start (find-start maze)
+        end (find-end maze)]
+   (dec (count (shortest-path maze portals start end)))))
