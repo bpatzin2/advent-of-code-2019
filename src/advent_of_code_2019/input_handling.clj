@@ -8,6 +8,11 @@
 (defn csv-as-int-vec [file-name]
   (vec (map #(Integer/parseInt %) (str/split (slurp file-name), #","))))
 
+(defn two-d-vec [file-name]
+  (vec (map #(str/split % #"") (vec (str/split (slurp file-name), #"\n")))))
+
+
+
 (defn day1-num-seq []
   (newline-as-int-seq "day1_input.txt"))
 
@@ -49,3 +54,6 @@
 
 (defn day16-str []
   (slurp "day16_input.txt"))
+
+(defn day20-vec []
+ (two-d-vec "day20_input.txt"))
