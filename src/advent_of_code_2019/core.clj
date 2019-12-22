@@ -13,6 +13,7 @@
             [advent-of-code-2019.fft :as fft]  
             [advent-of-code-2019.pluto-maze :as pluto-maze]   
             [advent-of-code-2019.pluto-maze-recursive :as pluto-maze-recursive]           
+            [advent-of-code-2019.shuffle :as deck-shuffle]    
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -95,4 +96,7 @@
   (pluto-maze/shortest-path-steps (input/day20-str)))
 
 (defn day20pt2 []
-  (pluto-maze-recursive/shortest-path-num-steps (input/day20-str)))
+  (pluto-maze-recursive/shortest-path-steps (input/day20-str)))
+
+(defn day22pt1 []
+  (.indexOf (deck-shuffle/shuffle-deck 10007 (input/day22-list)) 2019))
