@@ -95,4 +95,4 @@
   (pluto-maze/shortest-path-steps (input/day20-str)))
 
 (defn day20pt2 []
-  (pluto-maze-recursive/shortest-path-num-steps (input/day20-str)))
+  (pluto-maze-recursive/shortest-path-steps (input/day20-str)))
