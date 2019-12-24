@@ -12,7 +12,8 @@
             [advent-of-code-2019.oxygen-system :as os]      
             [advent-of-code-2019.fft :as fft]  
             [advent-of-code-2019.pluto-maze :as pluto-maze]   
-            [advent-of-code-2019.pluto-maze-recursive :as pluto-maze-recursive]           
+            [advent-of-code-2019.pluto-maze-recursive :as pluto-maze-recursive] 
+            [advent-of-code-2019.bugs :as bugs]          
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -96,3 +97,7 @@
 
 (defn day20pt2 []
   (pluto-maze-recursive/shortest-path-steps (input/day20-str)))
+
+(defn day24pt1 []
+  (bugs/bio-divesity-rating 
+   (bugs/first-dup-state (input/day24-str))))

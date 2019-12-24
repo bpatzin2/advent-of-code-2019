@@ -52,3 +52,6 @@
 
 (defn day20-str []
  (slurp "day20_input.txt"))
+
+(defn day24-str []
+  (slurp "day24_input.txt"))
