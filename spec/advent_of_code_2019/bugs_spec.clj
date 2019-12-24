@@ -42,12 +42,17 @@
 (describe "next-state"
           (it "works for test input"
               (should= (two-d-vec state1) 
-                       (next-state state0))
+                       (next-state-str state0))
               (should= (two-d-vec state2)
-                       (next-state state1))
+                       (next-state-str state1))
               ))
 
 (describe "first-dup-state"
           (it "works for test input"
               (should= (two-d-vec first-dup)
                        (first-dup-state state0))))
+
+(describe "bio-diversity-rating"
+          (it "works for test input"
+              (should= 2129920
+                       (bio-divesity-rating-str first-dup))))
