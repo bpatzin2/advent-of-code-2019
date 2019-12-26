@@ -10,22 +10,20 @@
 (defn val-at [row-num col-num layer state]
   (get (get (get state layer) row-num) col-num))
 
-(defn bug-at? [row-num col-num layer state]
-  (= "#" (val-at row-num col-num layer state)))
-
-(defn bugs-at
-  ([offset row-num col-num layer state]
-   (bugs-at (+ row-num (first offset))
-            (+ col-num (second offset))
-            layer
-            state))
+(defn bug-at?
+  ([[row-num col-num layer] state]
+   (bug-at? row-num col-num layer state))
   ([row-num col-num layer state]
-   (if (bug-at? row-num col-num layer state) 1 0)))
+   (= "#" (val-at row-num col-num layer state))))
+
+(defn adjacencies [row-num col-num layer]
+  (map #(identity [(+ row-num (first %)) 
+                   (+ col-num (second %)) 
+                   layer]) 
+       [[0 1] [0 -1] [1 0] [-1 0]]))
 
 (defn adj-bug-count [row-num col-num layer state]
-  (reduce + 
-          (map #(bugs-at % row-num col-num layer state) 
-               [[0 1] [0 -1] [1 0] [-1 0]])))
+  (count (filter #(bug-at? % state) (adjacencies row-num col-num layer))))
 
 (defn next-state-for-bug [row-num col-num layer state]
   (if (= 1 (adj-bug-count row-num col-num layer state)) "#" "."))
