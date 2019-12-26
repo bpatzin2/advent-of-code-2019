@@ -41,9 +41,15 @@
 
 (describe "next-state"
           (it "works for test input"
+              (should= [[1 2 -1] [1 0 0] [2 1 -1] [0 1 0]]
+                       (adjacencies 0 0 0))
+              (should= [[4 0 1] [4 1 1] [4 2 1] [4 3 1] [4 4 1] 
+                        [4 2 0] [3 1 0] [3 3 0]]
+                       (adjacencies 3 2 0))
+              
+              (should= 4 (count (adjacencies 3 3 0)))
+              (should= 8 (count (adjacencies 1 2 0)))
+              
               (should= (two-d-vec s1l0)
                        (get (next-state-str state0) 0))
-              ; (should= (two-d-vec s1l1)
-              ;          (get (next-state-str state0) 1))
-
               ))

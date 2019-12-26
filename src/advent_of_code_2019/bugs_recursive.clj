@@ -16,15 +16,53 @@
   ([row-num col-num layer state]
    (= "#" (val-at row-num col-num layer state))))
 
-(defn adjacencies-through-layers [row-num col-num layer]
-  [[row-num col-num layer]])
+(defn up-adjs [row-num col-num layer]
+  (cond  
+    (= 0 row-num) [[1 2 (- layer 1)]]
+    (= [3 2] [row-num col-num]) [[4 0 (+ layer 1)]
+                                 [4 1 (+ layer 1)]
+                                 [4 2 (+ layer 1)]
+                                 [4 3 (+ layer 1)]
+                                 [4 4 (+ layer 1)]]
+    
+    :else [[(dec row-num) col-num layer]]))
+
+(defn down-adjs [row-num col-num layer]
+    (cond  
+      (= 4 row-num) [[3 2 (- layer 1)]]
+      (= [1 2] [row-num col-num]) [[0 0 (+ layer 1)]
+                                   [0 1 (+ layer 1)]
+                                   [0 2 (+ layer 1)]
+                                   [0 3 (+ layer 1)]
+                                   [0 4 (+ layer 1)]]
+      
+      :else [[(inc row-num) col-num layer]]))
+
+(defn left-adjs [row-num col-num layer]
+  (cond  
+    (= 0 col-num) [[2 1 (- layer 1)]]
+    (= [2 3] [row-num col-num]) [[0 4 (+ layer 1)]
+                                 [1 4 (+ layer 1)]
+                                 [2 4 (+ layer 1)]
+                                 [3 4 (+ layer 1)]
+                                 [4 4 (+ layer 1)]]
+    
+    :else [[row-num (dec col-num) layer]]))
+  
+
+(defn right-adjs [row-num col-num layer]
+    (cond  
+      (= 4 col-num) [[2 3 (- layer 1)]]
+      (= [2 1] [row-num col-num]) [[0 0 (+ layer 1)]
+                                   [1 0 (+ layer 1)]
+                                   [2 0 (+ layer 1)]
+                                   [3 0 (+ layer 1)]
+                                   [4 0 (+ layer 1)]]
+      
+      :else [[row-num (inc col-num) layer]]))
 
 (defn adjacencies [row-num col-num layer]
-  (mapcat #(adjacencies-through-layers
-         (+ row-num (first %))
-         (+ col-num (second %))
-         layer) 
-       [[0 1] [0 -1] [1 0] [-1 0]]))
+  (mapcat #(% row-num col-num layer) [up-adjs down-adjs left-adjs right-adjs]))
 
 (defn adj-bug-count [row-num col-num layer state]
   (count (filter #(bug-at? % state) (adjacencies row-num col-num layer))))
