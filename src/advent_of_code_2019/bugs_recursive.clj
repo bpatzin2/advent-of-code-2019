@@ -16,10 +16,14 @@
   ([row-num col-num layer state]
    (= "#" (val-at row-num col-num layer state))))
 
+(defn adjacencies-through-layers [row-num col-num layer]
+  [[row-num col-num layer]])
+
 (defn adjacencies [row-num col-num layer]
-  (map #(identity [(+ row-num (first %)) 
-                   (+ col-num (second %)) 
-                   layer]) 
+  (mapcat #(adjacencies-through-layers
+         (+ row-num (first %))
+         (+ col-num (second %))
+         layer) 
        [[0 1] [0 -1] [1 0] [-1 0]]))
 
 (defn adj-bug-count [row-num col-num layer state]
