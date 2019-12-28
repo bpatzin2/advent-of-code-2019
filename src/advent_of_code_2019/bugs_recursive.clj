@@ -14,7 +14,9 @@
   ([[row-num col-num layer] state]
    (bug-at? row-num col-num layer state))
   ([row-num col-num layer state]
-   (= "#" (val-at row-num col-num layer state))))
+   (and 
+    (not= [2 2] [row-num col-num])
+    (= "#" (val-at row-num col-num layer state)))))
 
 (defn up-adjs [row-num col-num layer]
   (cond  
@@ -99,5 +101,19 @@
           (map #(identity {% (next-layer-state % state)}) 
                (next-layer-range state))))
 
-(defn next-state-str [state-str]
-  (next-state {0 (two-d-vec state-str)}))
+(defn next-state-str 
+  ([state-str]
+   (next-state-str state-str 1))
+  ([state-str times]
+   (nth (iterate next-state {0 (two-d-vec state-str)}) times)))
+
+(defn num-bugs [state]
+  (count (filter #(bug-at? % state) 
+              (combo/cartesian-product
+               (range (count (state 0)))
+               (range (count ((state 0) 0)))
+               (keys state))) ))
+
+(defn num-bugs-after [state-str times]
+  (num-bugs (next-state-str state-str times)))
+
