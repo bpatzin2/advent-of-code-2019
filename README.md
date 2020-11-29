@@ -5,6 +5,7 @@ This year I'm using Clojure, which is a new language to me.
 
 ## Run it
 Run tests: ``lein spec``
+
 Run particular challenge: 
 ````
 lein repl
