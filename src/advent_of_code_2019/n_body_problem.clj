@@ -22,27 +22,21 @@
    (velocity-change (first moon-pair) (second moon-pair)))
   ([m1 m2]
     (let [p1 (:pos m1)
-         p2 (:pos m2)
+          p2 (:pos m2)
           changes (map velocity-change-ps p1 p2)]
       {m1 (map first changes)
        m2 (map second changes)})))
 
-(defn all-changes-for-moon [moon all-changes]
-  [moon (map #(get % moon '(0 0 0)) all-changes)])
-
 (defn vel-changes-per-moon [moons]
   (let[all-changes (map velocity-change (pairs moons))]
-    (into {} (map #(all-changes-for-moon % all-changes) moons))))
+    (apply merge-with list all-changes)))
 
-(defn sum-velocities [velocities]
-  (reduce #(map + %1 %2) velocities))
-
-(defn moon-change [moon-changes]
+(defn assoc-dv-in-moon [moon-changes]
   (let[moon (first moon-changes)
-       changes (second moon-changes)]
-    (assoc moon :dv (sum-velocities changes))))
+       vel-changes (second moon-changes)]
+    (assoc moon :dv (reduce #(map + %1 %2) vel-changes))))
 
 (defn velocity-changes [moons]
   (let[changes-per-moon (vel-changes-per-moon moons)]
-    (map moon-change changes-per-moon)))
+    (map assoc-dv-in-moon changes-per-moon)))
 
