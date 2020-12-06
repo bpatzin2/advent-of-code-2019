@@ -35,3 +35,12 @@
        (should= '(2 -10 -7) (:pos (nth actual-moons 1)))
        (should= '(4 -8 8) (:pos (nth actual-moons 2)))
        (should= '(30 50 -10) (:pos (nth actual-moons 3))))))
+
+(describe
+ "update-moon"
+ (it "works for test input"
+     (let [moon (create-moon 0 '(1 2 3) '(1 1 1))
+           moon-w-dv (assoc moon :dv '(0 -1 2)) ]
+       (should= '(1 0 3)  (new-velocity moon-w-dv))
+       (should= '(1 0 3)  (:vel (apply-vel-update moon-w-dv)))
+       (should= '(2 2 6)  (:pos (apply-vel-update moon-w-dv))))))

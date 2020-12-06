@@ -41,14 +41,41 @@
        vel-changes (second moon-changes)]
     (assoc moon :dv (reduce #(map + %1 %2) vel-changes))))
 
+(defn moon-pos-from-string [str]
+  (map #(Integer/parseInt %) (re-seq #"-?\d+" str)))
+
+(defn new-pos [curr-pos vel]
+  (map + curr-pos vel))
+
+(defn new-velocity
+  ([moon]
+   (new-velocity (:vel moon) (:dv moon)))
+  ([curr-vel dv]
+   (map + curr-vel dv)))
+
 (defn velocity-changes [moons]
   (let[changes-per-moon (vel-changes-per-moon moons)]
     (map assoc-dv-in-moon changes-per-moon)))
 
-(defn moon-pos-from-string [str]
-  (map #(Integer/parseInt %) (re-seq #"-?\d+" str)))
+;/////////////////////////////
 
-(defn create-moon [moon-id moon-str]
-  {:id moon-id
-   :pos (moon-pos-from-string moon-str)
-   :vel '(0 0 0)})
+(defn create-moon
+  ([moon-id moon-str]
+    {:id moon-id
+     :pos (moon-pos-from-string moon-str)
+     :vel '(0 0 0)})
+  ([moon-id pos vel]
+   (println "create-moon" moon-id pos vel)
+   {:id moon-id
+    :pos pos
+    :vel vel}))
+
+(defn apply-vel-update [moon]
+  (let[new-vel (new-velocity moon)]
+    (println "update-moon" (:id moon) new-vel)
+    (create-moon
+     (:id moon)
+     (new-pos (:pos moon) new-vel)
+     new-vel)))
+
+(defn apply-time [moons])
