@@ -30,7 +30,7 @@
 (describe
  "create-moons"
  (it "works for test input"
-     (let [actual-moons (map-indexed create-moon test-lines)]
+     (let [actual-moons (create-moons test-lines)]
        (should= '(-1 0 2) (:pos (nth actual-moons 0)))
        (should= '(2 -10 -7) (:pos (nth actual-moons 1)))
        (should= '(4 -8 8) (:pos (nth actual-moons 2)))
@@ -113,7 +113,7 @@
 (describe
  "test input"
  (it "works for test input"
-     (let [actual-moons (map-indexed create-moon test-lines2)
+     (let [actual-moons (create-moons test-lines2)
            moons100 (apply-time actual-moons 100)
            total-energy (total-energy actual-moons 100)]
        (assert-moon '(8 -12 -9) '(-7 3 0) (nth moons100 0))

@@ -8,6 +8,8 @@
    {:id "m2" :vel [1 2 3] :pos [4 5 6]},
    {:id "m3" :vel [1 2 3] :pos [4 5 6]}])
 
+;https://stackoverflow.com/questions/15858365/how-to-use-merge-with-to-create-a-list-for-duplicate-keys-in-clojure
+;Needed this to group a map by keys and collect grouped values in a list
 (defn my-merge [f & mlist]
   (into {}
         (map (fn [[k v]] [k (apply f (map val v))])
@@ -68,6 +70,9 @@
    {:id moon-id
     :pos pos
     :vel vel}))
+
+(defn create-moons [str-list]
+  (map-indexed create-moon str-list))
 
 (defn apply-vel-update [moon]
   (let[new-vel (new-velocity moon)]

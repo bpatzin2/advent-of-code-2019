@@ -79,7 +79,7 @@
   (intcode/diagnostic-code (input/day9-num-vec) [2]))
 
 (defn day12pt1 []
-  (let [moons (map-indexed n-body-problem/create-moon (input/day12-list))]
+  (let [moons (n-body-problem/create-moons (input/day12-list))]
     (n-body-problem/total-energy moons 1000)))
 
 (defn day13pt1 []
