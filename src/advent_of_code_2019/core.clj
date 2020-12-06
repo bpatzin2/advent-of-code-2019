@@ -16,6 +16,7 @@
             [advent-of-code-2019.shuffle :as deck-shuffle]
             [advent-of-code-2019.bugs :as bugs]
             [advent-of-code-2019.bugs-recursive :as bugs-recursive]
+            [advent-of-code-2019.n-body-problem :as n-body-problem]
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -76,6 +77,10 @@
 
 (defn day9pt2 []
   (intcode/diagnostic-code (input/day9-num-vec) [2]))
+
+(defn day12pt1 []
+  (let [moons (map-indexed n-body-problem/create-moon (input/day12-list))]
+    (n-body-problem/total-energy moons 1000)))
 
 (defn day13pt1 []
   (arcade/run-and-count-blocks (input/day13-num-vec)))

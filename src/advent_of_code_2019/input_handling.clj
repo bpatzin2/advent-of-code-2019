@@ -41,6 +41,9 @@
 (defn day9-num-vec []
   (csv-as-int-vec "day9_input.txt"))
 
+(defn day12-list []
+  (str/split (slurp "day12_input.txt"), #"\n"))
+
 (defn day13-num-vec []
   (csv-as-int-vec "day13_input.txt"))
 

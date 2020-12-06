@@ -81,6 +81,10 @@
           (it "works for real input"
               (should= 49122 (day9pt2))))
 
+(describe "day12pt1"
+          (it "works for real input"
+              (should= 9876 (day12pt1))))
+
 (describe "day13pt1"
           (it "works for real input"
               (should= 286 (day13pt1))))
