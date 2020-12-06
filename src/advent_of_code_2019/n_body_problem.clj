@@ -4,9 +4,9 @@
             [clojure.math.combinatorics :as combo]))
 
 (def moons
-  [{:name "m1" :v [1 7 0] :pos [4 7 0]},
-   {:name "m2" :v [1 2 3] :pos [4 5 6]},
-   {:name "m3" :v [1 2 3] :pos [4 5 6]}])
+  [{:id "m1" :vel [1 7 0] :pos [4 7 0]},
+   {:id "m2" :vel [1 2 3] :pos [4 5 6]},
+   {:id "m3" :vel [1 2 3] :pos [4 5 6]}])
 
 (defn my-merge [f & mlist]
   (into {}
@@ -82,3 +82,18 @@
   ([moons]
     (let[moons-with-dv (moons-w-velocity-changes moons)]
       (map apply-vel-update moons-with-dv))))
+
+(defn energy [coords]
+  (reduce #(+ (Math/abs %1) (Math/abs %2)) coords))
+
+(defn potential-energy [moon]
+  (energy (:pos moon)))
+
+(defn kenetic-energy [moon]
+  (energy (:vel moon)))
+
+(defn moon-energy [moon]
+  (* (potential-energy moon) (kenetic-energy moon)))
+
+(defn total-energy [moons steps]
+  (reduce + (map moon-energy (apply-time moons steps))))

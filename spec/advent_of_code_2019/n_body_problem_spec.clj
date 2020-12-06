@@ -90,3 +90,13 @@
        (assert-moon '(5 -3 -1) '(3 -2 -2) (nth moons2 0))
        (assert-moon '(5 -6 -1) '(0 -3 0) (nth moons3 0)))))
 
+(describe
+ "energy"
+ (it "works for test input"
+     (let [moons10 (apply-time moons-for-updating 10)
+           total-energy (total-energy moons-for-updating 10)
+           ]
+       (assert-moon '(2 1 -3) '(-3 -2 1) (nth moons10 0))
+       (should= 179 total-energy)
+       )))
+
