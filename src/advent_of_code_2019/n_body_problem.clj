@@ -76,6 +76,9 @@
      (new-pos (:pos moon) new-vel)
      new-vel)))
 
-(defn apply-time [moons]
-  (let[moons-with-dv (moons-w-velocity-changes moons)]
-    (map apply-vel-update moons-with-dv)))
+(defn apply-time
+  ([moons steps]
+   (nth (iterate apply-time moons) steps))
+  ([moons]
+    (let[moons-with-dv (moons-w-velocity-changes moons)]
+      (map apply-vel-update moons-with-dv))))

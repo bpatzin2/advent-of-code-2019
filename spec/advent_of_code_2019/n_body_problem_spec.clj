@@ -72,3 +72,21 @@
        (assert-moon '(1 -7 5) '(-3 1 -3) (nth moons 2))
        (assert-moon '(2 2 0) '(-1 -3 1) (nth moons 3)))))
 
+;After 0 steps:
+;pos=<x=-1, y=  0, z= 2>, vel=<x= 0, y= 0, z= 0>
+;After 1 step:
+;pos=<x= 2, y=-1, z= 1>, vel=<x= 3, y=-1, z=-1>
+;After 2 steps:
+;pos=<x= 5, y=-3, z=-1>, vel=<x= 3, y=-2, z=-2>
+;After 3 steps:
+;pos=<x= 5, y=-6, z=-1>, vel=<x= 0, y=-3, z= 0>
+(describe
+ "apply-time with steps"
+ (it "works for test input"
+     (let [moons1 (apply-time moons-for-updating 1)
+           moons2 (apply-time moons-for-updating 2)
+           moons3 (apply-time moons-for-updating 3)]
+       (assert-moon '(2 -1 1) '(3 -1 -1) (nth moons1 0))
+       (assert-moon '(5 -3 -1) '(3 -2 -2) (nth moons2 0))
+       (assert-moon '(5 -6 -1) '(0 -3 0) (nth moons3 0)))))
+
