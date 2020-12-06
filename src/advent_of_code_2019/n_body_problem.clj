@@ -55,7 +55,7 @@
   ([curr-vel dv]
    (map + curr-vel dv)))
 
-(defn moons-w-velocity-changes [moons]
+(defn apply-gravity [moons]
   (let[changes-per-moon (vel-changes-per-moon moons)]
     (map assoc-dv-in-moon changes-per-moon)))
 
@@ -74,7 +74,7 @@
 (defn create-moons [str-list]
   (map-indexed create-moon str-list))
 
-(defn apply-vel-update [moon]
+(defn apply-velocity [moon]
   (let[new-vel (new-velocity moon)]
     (create-moon
      (:id moon)
@@ -85,8 +85,8 @@
   ([moons steps]
    (nth (iterate apply-time moons) steps))
   ([moons]
-    (let[moons-with-dv (moons-w-velocity-changes moons)]
-      (map apply-vel-update moons-with-dv))))
+    (let[moons-with-dv (apply-gravity moons)]
+      (map apply-velocity moons-with-dv))))
 
 (defn energy [coords]
   (reduce #(+ (Math/abs %1) (Math/abs %2)) coords))

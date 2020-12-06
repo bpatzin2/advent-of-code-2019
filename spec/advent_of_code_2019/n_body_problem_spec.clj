@@ -11,7 +11,7 @@
 (describe
  "velocity-changes"
  (it "works for test input"
-     (let [updated-moons (moons-w-velocity-changes test-moons)]
+     (let [updated-moons (apply-gravity test-moons)]
        (should= '(0 -2 2)  (:dv (first updated-moons)))
        (should= '(0 2 0)  (:dv (second updated-moons)))
        (should= '(0 0 -2)  (:dv (nth updated-moons 2)))))
@@ -37,13 +37,13 @@
        (should= '(30 50 -10) (:pos (nth actual-moons 3))))))
 
 (describe
- "apply-vel-update"
+ "apply-velocity"
  (it "works for test input"
      (let [moon (create-moon 0 '(1 2 3) '(1 1 1))
            moon-w-dv (assoc moon :dv '(0 -1 2)) ]
        (should= '(1 0 3)  (new-velocity moon-w-dv))
-       (should= '(1 0 3)  (:vel (apply-vel-update moon-w-dv)))
-       (should= '(2 2 6)  (:pos (apply-vel-update moon-w-dv))))))
+       (should= '(1 0 3)  (:vel (apply-velocity moon-w-dv)))
+       (should= '(2 2 6)  (:pos (apply-velocity moon-w-dv))))))
 
 (defn assert-moon [expected-pos expected-vel actual-moon]
   (should= expected-pos (:pos actual-moon))
