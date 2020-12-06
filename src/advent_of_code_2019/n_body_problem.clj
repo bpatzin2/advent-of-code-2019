@@ -8,6 +8,11 @@
    {:name "m2" :v [1 2 3] :pos [4 5 6]},
    {:name "m3" :v [1 2 3] :pos [4 5 6]}])
 
+(defn my-merge [f & mlist]
+  (into {}
+        (map (fn [[k v]] [k (apply f (map val v))])
+             (group-by key (apply concat mlist)))))
+
 (defn pairs [items]
   (combo/combinations items 2))
 
@@ -29,7 +34,7 @@
 
 (defn vel-changes-per-moon [moons]
   (let[all-changes (map velocity-change (pairs moons))]
-    (apply merge-with list all-changes)))
+    (apply my-merge list all-changes)))
 
 (defn assoc-dv-in-moon [moon-changes]
   (let[moon (first moon-changes)
@@ -40,3 +45,10 @@
   (let[changes-per-moon (vel-changes-per-moon moons)]
     (map assoc-dv-in-moon changes-per-moon)))
 
+(defn moon-pos-from-string [str]
+  (map #(Integer/parseInt %) (re-seq #"-?\d+" str)))
+
+(defn create-moon [moon-id moon-str]
+  {:id moon-id
+   :pos (moon-pos-from-string moon-str)
+   :vel '(0 0 0)})
