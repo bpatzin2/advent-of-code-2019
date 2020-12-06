@@ -53,7 +53,7 @@
   ([curr-vel dv]
    (map + curr-vel dv)))
 
-(defn velocity-changes [moons]
+(defn moons-w-velocity-changes [moons]
   (let[changes-per-moon (vel-changes-per-moon moons)]
     (map assoc-dv-in-moon changes-per-moon)))
 
@@ -65,17 +65,17 @@
      :pos (moon-pos-from-string moon-str)
      :vel '(0 0 0)})
   ([moon-id pos vel]
-   (println "create-moon" moon-id pos vel)
    {:id moon-id
     :pos pos
     :vel vel}))
 
 (defn apply-vel-update [moon]
   (let[new-vel (new-velocity moon)]
-    (println "update-moon" (:id moon) new-vel)
     (create-moon
      (:id moon)
      (new-pos (:pos moon) new-vel)
      new-vel)))
 
-(defn apply-time [moons])
+(defn apply-time [moons]
+  (let[moons-with-dv (moons-w-velocity-changes moons)]
+    (map apply-vel-update moons-with-dv)))
