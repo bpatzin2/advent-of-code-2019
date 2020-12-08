@@ -119,3 +119,13 @@
        (assert-moon '(8 -12 -9) '(-7 3 0) (nth moons100 0))
        (should= 1940 total-energy))))
 
+(def static-moons
+  [(create-moon "m1" [1 2 3] [4 5 6]),
+   (create-moon "m2" [1 2 3] [4 5 6])])
+
+;Need the start index and the period of the cycle
+(describe
+ "cycle-length"
+ (it "1 step for static moons"
+       (should= 2 (cycle-length static-moons))
+       ))

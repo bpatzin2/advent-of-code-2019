@@ -49,11 +49,8 @@
 (defn new-pos [curr-pos vel]
   (map + curr-pos vel))
 
-(defn new-velocity
-  ([moon]
-   (new-velocity (:vel moon) (:dv moon)))
-  ([curr-vel dv]
-   (map + curr-vel dv)))
+(defn new-velocity [moon]
+  (map + (:vel moon) (:dv moon)))
 
 (defn apply-gravity [moons]
   (let[changes-per-moon (vel-changes-per-moon moons)]
@@ -102,3 +99,19 @@
 
 (defn total-energy [moons steps]
   (reduce + (map moon-energy (apply-time moons steps))))
+
+;//////////////////////////
+
+(defn cycle-length
+  ([moons]
+   (loop [moons moons
+          pos-vels #{}]
+     (let [next-state (apply-time moons)
+           all-pos (map first (map :pos moons))
+           all-vels (map first (map :vel moons))
+           pos-vel {:pos all-pos :vel all-vels}]
+       (if
+         (contains? pos-vels pos-vel)
+         (inc (count pos-vels))
+         (recur next-state (conj pos-vels pos-vel)))))))
+
