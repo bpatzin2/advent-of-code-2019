@@ -120,8 +120,8 @@
        (should= 1940 total-energy))))
 
 (def static-moons
-  [(create-moon "m1" [1 2 3] [4 5 6]),
-   (create-moon "m2" [1 2 3] [4 5 6])])
+  [(create-moon "m1" [1 2 3] [0 0 0]),
+   (create-moon "m2" [1 2 3] [0 0 0])])
 
 ;Need the start index and the period of the cycle
 (describe
