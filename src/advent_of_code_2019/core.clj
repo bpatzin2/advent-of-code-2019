@@ -82,6 +82,10 @@
   (let [moons (n-body-problem/create-moons (input/day12-list))]
     (n-body-problem/total-energy moons 1000)))
 
+(defn day12pt2 []
+  (let [moons (n-body-problem/create-moons (input/day12-list))]
+    (n-body-problem/cycle-length moons)))
+
 (defn day13pt1 []
   (arcade/run-and-count-blocks (input/day13-num-vec)))
 

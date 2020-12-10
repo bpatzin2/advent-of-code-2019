@@ -26,6 +26,7 @@
   "))
 
 (def test-lines (str/split test-data #"\n"))
+(def test1-moons (create-moons test-lines))
 
 (describe
  "create-moons"
@@ -100,6 +101,16 @@
        (should= 179 total-energy)
        )))
 
+(def test-data1
+  (str/trim "
+  <x=-1, y=0, z=2>
+  <x=2, y=-10, z=-7
+  <x=4, y=-8, z=8
+  <x=3, y=5, z=-1>"))
+
+(def test-lines1 (str/split test-data1 #"\n"))
+(def test-moons1 (create-moons test-lines1))
+
 (def test-data2
   (str/trim "
     <x=-8, y=-10, z=0>
@@ -109,13 +120,13 @@
   "))
 
 (def test-lines2 (str/split test-data2 #"\n"))
+(def test-moons2 (create-moons test-lines2))
 
 (describe
  "test input"
  (it "works for test input"
-     (let [actual-moons (create-moons test-lines2)
-           moons100 (apply-time actual-moons 100)
-           total-energy (total-energy actual-moons 100)]
+     (let [moons100 (apply-time test-moons2 100)
+           total-energy (total-energy test-moons2 100)]
        (assert-moon '(8 -12 -9) '(-7 3 0) (nth moons100 0))
        (should= 1940 total-energy))))
 
@@ -123,9 +134,31 @@
   [(create-moon "m1" [1 2 3] [0 0 0]),
    (create-moon "m2" [1 2 3] [0 0 0])])
 
+;each step: update velocity, apply velocity
+;
+;pos A no vel (initial state)
+;pos B with velocity
+;pos B no vel
+;pos A with vel
+;pos A no vel (initial state)
+(def oscillating-moons
+  [(create-moon "m1" [0 0 0] [0 0 0]),
+   (create-moon "m2" [0 0 1] [0 0 0])])
+
 ;Need the start index and the period of the cycle
 (describe
  "cycle-length"
  (it "1 step for static moons"
-       (should= 2 (cycle-length static-moons))
-       ))
+       (should= 1 (:steps (cycle-length static-moons :x)))
+       (should= 1 (:steps (cycle-length static-moons :y)))
+       (should= 1 (:steps (cycle-length static-moons :z)))
+     )
+ (it "2 step for oscillating moons"
+     (should= 4 (:steps (cycle-length oscillating-moons :z)))
+     (should= 0 (:matched_index (cycle-length oscillating-moons :z)))
+     )
+ (it "works per-axis"
+     (should= 2772 (cycle-length test-moons1))
+     ;(should= 4686774924 (cycle-length test-moons2)) ;SLOW
+     )
+ )

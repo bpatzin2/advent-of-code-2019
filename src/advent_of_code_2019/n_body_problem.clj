@@ -1,12 +1,7 @@
 (ns advent-of-code-2019.n-body-problem
   (:gen-class)
-  (:require [clojure.string :as str]
-            [clojure.math.combinatorics :as combo]))
-
-(def moons
-  [{:id "m1" :vel [1 7 0] :pos [4 7 0]},
-   {:id "m2" :vel [1 2 3] :pos [4 5 6]},
-   {:id "m3" :vel [1 2 3] :pos [4 5 6]}])
+  (:require [clojure.math.combinatorics :as combo]
+            [clojure.math.numeric-tower :as math]))
 
 ;https://stackoverflow.com/questions/15858365/how-to-use-merge-with-to-create-a-list-for-duplicate-keys-in-clojure
 ;Needed this to group a map by keys and collect grouped values in a list
@@ -102,16 +97,37 @@
 
 ;//////////////////////////
 
-(defn cycle-length
-  ([moons]
-   (loop [moons moons
-          pos-vels #{}]
-     (let [next-state (apply-time moons)
-           all-pos (map first (map :pos moons))
-           all-vels (map first (map :vel moons))
-           pos-vel {:pos all-pos :vel all-vels}]
-       (if
-         (contains? pos-vels pos-vel)
-         (inc (count pos-vels))
-         (recur next-state (conj pos-vels pos-vel)))))))
+(defn x-val [coords]
+  (nth coords 0))
 
+(defn y-val [coords]
+  (nth coords 1))
+
+(defn z-val [coords]
+  (nth coords 2))
+
+(def axis-selector {:x x-val :y y-val :z z-val})
+
+(defn lcm [ns]
+  (reduce math/lcm ns))
+
+(defn cycle-length
+  ([moons, axis]
+   (loop [moons moons
+          step-num 0
+          pos-vels {}]
+     (let [next-state (apply-time moons)
+           all-pos (map (axis axis-selector) (map :pos moons))
+           all-vels (map (axis axis-selector) (map :vel moons))
+           pos-vel {:pos all-pos :vel all-vels}
+           matching-state-idx (get pos-vels pos-vel)]
+       (if
+         (some? matching-state-idx)
+         {:steps step-num
+          :matched_index matching-state-idx}
+         (recur next-state (inc step-num) (assoc pos-vels pos-vel step-num))))))
+  ([moons]
+   (let [cycle-x (cycle-length moons :x)
+         cycle-y (cycle-length moons :y)
+         cycle-z (cycle-length moons :z)]
+     (lcm (map :steps [cycle-x cycle-y cycle-z])))))
