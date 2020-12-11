@@ -1,17 +1,6 @@
 (ns advent-of-code-2019.n-body-problem
   (:gen-class)
-  (:require [clojure.math.combinatorics :as combo]
-            [clojure.math.numeric-tower :as math]))
-
-;https://stackoverflow.com/questions/15858365/how-to-use-merge-with-to-create-a-list-for-duplicate-keys-in-clojure
-;Needed this to group a map by keys and collect grouped values in a list
-(defn my-merge [f & mlist]
-  (into {}
-        (map (fn [[k v]] [k (apply f (map val v))])
-             (group-by key (apply concat mlist)))))
-
-(defn pairs [items]
-  (combo/combinations items 2))
+  (:require [clojure.math.numeric-tower :as math]))
 
 (defn velocity-change-other [this-pos other-pos]
   (cond
@@ -28,21 +17,8 @@
     (< p1 p2) '(1 -1)
     :else '(0 0)))
 
-(defn velocity-change
-  ([moon-pair]
-   (velocity-change (first moon-pair) (second moon-pair)))
-  ([m1 m2]
-    (let [p1 (:pos m1)
-          p2 (:pos m2)
-          changes (map velocity-change-ps p1 p2)]
-      {m1 (map first changes)
-       m2 (map second changes)})))
-
 (defn total-velocity-change [moon all-moons]
   (reduce #(map + %1 %2) (map #(velocity-change-other-moon moon %) (remove #(= % moon) all-moons))))
-
-(defn vel-changes-per-moon [moons]
-  (map #(assoc % :dv (total-velocity-change % moons)) moons))
 
 (defn moon-pos-from-string [str]
   (map #(Integer/parseInt %) (re-seq #"-?\d+" str)))
@@ -54,8 +30,7 @@
   (map + (:vel moon) (:dv moon)))
 
 (defn apply-gravity [moons]
-  (let[changes-per-moon (vel-changes-per-moon moons)]
-    changes-per-moon))
+  (map #(assoc % :dv (total-velocity-change % moons)) moons))
 
 ;/////////////////////////////
 
