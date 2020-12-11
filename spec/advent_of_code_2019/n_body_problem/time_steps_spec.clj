@@ -1,6 +1,6 @@
-(ns advent-of-code-2019.n-body-problem
+(ns advent-of-code-2019.n-body-problem.time-steps-spec
   (:require [speclj.core :refer :all]
-            [advent-of-code-2019.n-body-problem :refer :all]
+            [advent-of-code-2019.n-body-problem.time-steps :refer :all]
             [clojure.string :as str]))
 
 (def test-moons
@@ -27,7 +27,6 @@
   "))
 
 (def test-lines (str/split test-data #"\n"))
-(def test1-moons (create-moons test-lines))
 
 (describe
  "create-moons"
@@ -95,22 +94,10 @@
 (describe
  "energy"
  (it "works for test input"
-     (let [moons10 (apply-time moons-for-updating 10)
-           total-energy (total-energy moons-for-updating 10)
-           ]
+     (let [moons10 (apply-time moons-for-updating 10)]
        (assert-moon '(2 1 -3) '(-3 -2 1) (nth moons10 0))
-       (should= 179 total-energy)
        )))
 
-(def test-data1
-  (str/trim "
-  <x=-1, y=0, z=2>
-  <x=2, y=-10, z=-7
-  <x=4, y=-8, z=8
-  <x=3, y=5, z=-1>"))
-
-(def test-lines1 (str/split test-data1 #"\n"))
-(def test-moons1 (create-moons test-lines1))
 
 (def test-data2
   (str/trim "
@@ -126,37 +113,5 @@
 (describe
  "test input"
  (it "works for test input"
-     (let [moons100 (apply-time test-moons2 100)
-           total-energy (total-energy test-moons2 100)]
-       (assert-moon '(8 -12 -9) '(-7 3 0) (nth moons100 0))
-       (should= 1940 total-energy))))
-
-(def static-moons
-  [(create-moon "m1" [1 2 3] [0 0 0]),
-   (create-moon "m2" [1 2 3] [0 0 0])])
-
-;each step: update velocity, apply velocity
-;
-;pos A no vel (initial state)
-;pos B with velocity
-;pos B no vel
-;pos A with vel
-;pos A no vel (initial state)
-(def oscillating-moons
-  [(create-moon "m1" [0 0 0] [0 0 0]),
-   (create-moon "m2" [0 0 1] [0 0 0])])
-
-;Need the start index and the period of the cycle
-(describe
- "cycle-length"
- (it "1 step for static moons"
-     (should= 1 (axis-cycle-length static-moons :x))
-     (should= 1 (axis-cycle-length static-moons :y))
-     (should= 1 (axis-cycle-length static-moons :z)))
- (it "2 step for oscillating moons"
-     (should= 4 (axis-cycle-length oscillating-moons :z)))
- (it "works per-axis"
-     (should= 2772 (cycle-length test-moons1))
-     ;(should= 4686774924 (cycle-length test-moons2)) ;SLOW
-     )
- )
+     (let [moons100 (apply-time test-moons2 100)]
+       (assert-moon '(8 -12 -9) '(-7 3 0) (nth moons100 0)))))
