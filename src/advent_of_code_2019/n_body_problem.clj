@@ -120,14 +120,14 @@
 (defn axis-cycle-length [moons, axis]
   (loop [moons moons
          step-num 0
-         prev-states {}]
-    (let [pos-vel (get-axis-state moons axis)]
+         prev-axis-states #{}]
+    (let [axis-state (get-axis-state moons axis)]
       (if
-        (some? (get prev-states pos-vel))
+        (contains? prev-axis-states axis-state)
         step-num
-        (let [next-moons (apply-time moons)
-              updated-states (assoc prev-states pos-vel step-num)]
-          (recur next-moons (inc step-num) updated-states))))))
+        (let [updated-prev-states (conj prev-axis-states axis-state)
+              next-moons (apply-time moons)]
+          (recur next-moons (inc step-num) updated-prev-states))))))
 
 (defn cycle-length [moons]
   (let [cycle-x (axis-cycle-length moons :x)
