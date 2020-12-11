@@ -149,14 +149,11 @@
 (describe
  "cycle-length"
  (it "1 step for static moons"
-       (should= 1 (:steps (cycle-length static-moons :x)))
-       (should= 1 (:steps (cycle-length static-moons :y)))
-       (should= 1 (:steps (cycle-length static-moons :z)))
-     )
+     (should= 1 (axis-cycle-length static-moons :x))
+     (should= 1 (axis-cycle-length static-moons :y))
+     (should= 1 (axis-cycle-length static-moons :z)))
  (it "2 step for oscillating moons"
-     (should= 4 (:steps (cycle-length oscillating-moons :z)))
-     (should= 0 (:matched_index (cycle-length oscillating-moons :z)))
-     )
+     (should= 4 (axis-cycle-length oscillating-moons :z)))
  (it "works per-axis"
      (should= 2772 (cycle-length test-moons1))
      ;(should= 4686774924 (cycle-length test-moons2)) ;SLOW
