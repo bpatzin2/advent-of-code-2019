@@ -111,19 +111,23 @@
 (defn lcm [ns]
   (reduce math/lcm ns))
 
+(defn get-axis-state [moons, axis]
+  (let [axis-selector (axis axis-selector)
+        all-pos (map axis-selector (map :pos moons))
+        all-vels (map axis-selector (map :vel moons))]
+    {:pos all-pos :vel all-vels}))
+
 (defn axis-cycle-length [moons, axis]
   (loop [moons moons
          step-num 0
-         pos-vels {}]
-    (let [next-state (apply-time moons)
-          axis-selector (axis axis-selector)
-          all-pos (map axis-selector (map :pos moons))
-          all-vels (map axis-selector (map :vel moons))
-          pos-vel {:pos all-pos :vel all-vels}]
+         prev-states {}]
+    (let [pos-vel (get-axis-state moons axis)]
       (if
-        (some? (get pos-vels pos-vel))
+        (some? (get prev-states pos-vel))
         step-num
-        (recur next-state (inc step-num) (assoc pos-vels pos-vel step-num))))))
+        (let [next-moons (apply-time moons)
+              updated-states (assoc prev-states pos-vel step-num)]
+          (recur next-moons (inc step-num) updated-states))))))
 
 (defn cycle-length [moons]
   (let [cycle-x (axis-cycle-length moons :x)
