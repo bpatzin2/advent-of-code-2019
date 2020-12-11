@@ -64,12 +64,12 @@
 
 (describe "day8pt2"
           (it "works for real input"
-              (should= 
-               '([1 0 0 1 0 0 1 1 0 0 0 1 1 0 0 1 0 0 1 0 1 0 0 1 0] 
-                 [1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0] 
-                 [1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 1 0 0 1 0 1 1 1 1 0] 
-                 [1 0 0 1 0 1 0 1 1 0 1 0 0 0 0 1 0 0 1 0 1 0 0 1 0] 
-                 [1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0] 
+              (should=
+               '([1 0 0 1 0 0 1 1 0 0 0 1 1 0 0 1 0 0 1 0 1 0 0 1 0]
+                 [1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0]
+                 [1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 1 0 0 1 0 1 1 1 1 0]
+                 [1 0 0 1 0 1 0 1 1 0 1 0 0 0 0 1 0 0 1 0 1 0 0 1 0]
+                 [1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 0]
                  [0 1 1 0 0 0 1 1 1 0 0 1 1 0 0 0 1 1 0 0 1 0 0 1 0])
                (day8pt2))))
 
@@ -84,6 +84,10 @@
 (describe "day12pt1"
           (it "works for real input"
               (should= 9876 (day12pt1))))
+
+(describe "day12pt2"
+          (it "works for real input"
+              (should= 307043147758488 (day12pt2))))
 
 (describe "day13pt1"
           (it "works for real input"
@@ -100,5 +104,3 @@
 (describe "day16pt1"
           (it "works for real input"
               (should= "33717412" (day16pt1 3))))
-
-(run-specs)

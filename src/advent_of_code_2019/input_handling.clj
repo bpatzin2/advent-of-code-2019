@@ -9,7 +9,7 @@
   (vec (map #(Integer/parseInt %) (str/split (slurp file-name), #","))))
 
 (defn day1-num-seq []
-  (newline-as-int-seq "day1_input.txt"))
+  (newline-as-int-seq "input/day1.txt"))
 
 (defn day2-num-vec []
   (csv-as-int-vec "day2_input_modified.txt"))
@@ -42,7 +42,7 @@
   (csv-as-int-vec "day9_input.txt"))
 
 (defn day12-list []
-  (str/split (slurp "day12_input.txt"), #"\n"))
+  (str/split (slurp "input/day12.txt"), #"\n"))
 
 (defn day13-num-vec []
   (csv-as-int-vec "day13_input.txt"))

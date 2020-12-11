@@ -53,7 +53,5 @@
    (nth (iterate apply-time moons) steps))
   ([moons]
     (let[moons-with-dv (apply-gravity moons)]
-      (map apply-velocity moons-with-dv))))
-
-;//////////////////////////
+      (doall (map apply-velocity moons-with-dv)))))
 

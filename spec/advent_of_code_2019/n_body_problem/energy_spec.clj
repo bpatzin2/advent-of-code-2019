@@ -2,7 +2,8 @@
   (:require [speclj.core :refer :all]
             [advent-of-code-2019.n-body-problem.time-steps :refer :all]
             [advent-of-code-2019.n-body-problem.energy :refer :all]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [advent-of-code-2019.input-handling :as input]))
 
 ;<x=-1, y=0, z=2>
 ;<x=2, y=-10, z=-7>
@@ -37,3 +38,9 @@
  (it "works for test input"
      (let [total-energy (total-energy test-moons2 100)]
        (should= 1940 total-energy))))
+
+(describe "real input"
+  (it "works for real input"
+      (let [moons (create-moons (input/day12-list))
+            total-energy (total-energy moons 1000)]
+        (should= 9876 total-energy))))

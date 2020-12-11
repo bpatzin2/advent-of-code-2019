@@ -16,7 +16,9 @@
             [advent-of-code-2019.shuffle :as deck-shuffle]
             [advent-of-code-2019.bugs :as bugs]
             [advent-of-code-2019.bugs-recursive :as bugs-recursive]
-            [advent-of-code-2019.n-body-problem :as n-body-problem]
+            [advent-of-code-2019.n-body-problem.time-steps :as time-steps]
+            [advent-of-code-2019.n-body-problem.energy :as energy]
+            [advent-of-code-2019.n-body-problem.cycle-length :as cycle-length]
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -79,12 +81,12 @@
   (intcode/diagnostic-code (input/day9-num-vec) [2]))
 
 (defn day12pt1 []
-  (let [moons (n-body-problem/create-moons (input/day12-list))]
-    (n-body-problem/total-energy moons 1000)))
+  (let [moons (time-steps/create-moons (input/day12-list))]
+    (energy/total-energy moons 1000)))
 
 (defn day12pt2 []
-  (let [moons (n-body-problem/create-moons (input/day12-list))]
-    (n-body-problem/cycle-length moons)))
+  (let [moons (time-steps/create-moons (input/day12-list))]
+    (cycle-length/cycle-length moons)))
 
 (defn day13pt1 []
   (arcade/run-and-count-blocks (input/day13-num-vec)))
