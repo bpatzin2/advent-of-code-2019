@@ -1,6 +1,6 @@
-(ns advent-of-code-2019.n-body-problem
+(ns advent-of-code-2019.n-body-problem.time-steps-spec
   (:require [speclj.core :refer :all]
-            [advent-of-code-2019.n-body-problem :refer :all]
+            [advent-of-code-2019.n-body-problem.time-steps :refer :all]
             [clojure.string :as str]))
 
 (def test-moons
@@ -14,7 +14,8 @@
      (let [updated-moons (apply-gravity test-moons)]
        (should= '(0 -2 2)  (:dv (first updated-moons)))
        (should= '(0 2 0)  (:dv (second updated-moons)))
-       (should= '(0 0 -2)  (:dv (nth updated-moons 2)))))
+       (should= '(0 0 -2)  (:dv (nth updated-moons 2)))
+       ))
  )
 
 (def test-data
@@ -93,12 +94,10 @@
 (describe
  "energy"
  (it "works for test input"
-     (let [moons10 (apply-time moons-for-updating 10)
-           total-energy (total-energy moons-for-updating 10)
-           ]
+     (let [moons10 (apply-time moons-for-updating 10)]
        (assert-moon '(2 1 -3) '(-3 -2 1) (nth moons10 0))
-       (should= 179 total-energy)
        )))
+
 
 (def test-data2
   (str/trim "
@@ -109,13 +108,10 @@
   "))
 
 (def test-lines2 (str/split test-data2 #"\n"))
+(def test-moons2 (create-moons test-lines2))
 
 (describe
  "test input"
  (it "works for test input"
-     (let [actual-moons (create-moons test-lines2)
-           moons100 (apply-time actual-moons 100)
-           total-energy (total-energy actual-moons 100)]
-       (assert-moon '(8 -12 -9) '(-7 3 0) (nth moons100 0))
-       (should= 1940 total-energy))))
-
+     (let [moons100 (apply-time test-moons2 100)]
+       (assert-moon '(8 -12 -9) '(-7 3 0) (nth moons100 0)))))
