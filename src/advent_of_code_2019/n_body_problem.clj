@@ -13,6 +13,15 @@
 (defn pairs [items]
   (combo/combinations items 2))
 
+(defn velocity-change-other [this-pos other-pos]
+  (cond
+    (> this-pos other-pos) -1
+    (< this-pos other-pos) 1
+    :else 0))
+
+(defn velocity-change-other-moon [this other]
+  (map #(velocity-change-other %1 %2) (:pos this) (:pos other)))
+
 (defn velocity-change-ps [p1 p2]
   (cond
     (> p1 p2) '(-1 1)
@@ -29,14 +38,11 @@
       {m1 (map first changes)
        m2 (map second changes)})))
 
-(defn vel-changes-per-moon [moons]
-  (let[all-changes (map velocity-change (pairs moons))]
-    (apply my-merge list all-changes)))
+(defn total-velocity-change [moon all-moons]
+  (reduce #(map + %1 %2) (map #(velocity-change-other-moon moon %) (remove #(= % moon) all-moons))))
 
-(defn assoc-dv-in-moon [moon-changes]
-  (let[moon (first moon-changes)
-       vel-changes (second moon-changes)]
-    (assoc moon :dv (reduce #(map + %1 %2) vel-changes))))
+(defn vel-changes-per-moon [moons]
+  (map #(assoc % :dv (total-velocity-change % moons)) moons))
 
 (defn moon-pos-from-string [str]
   (map #(Integer/parseInt %) (re-seq #"-?\d+" str)))
@@ -49,7 +55,7 @@
 
 (defn apply-gravity [moons]
   (let[changes-per-moon (vel-changes-per-moon moons)]
-    (map assoc-dv-in-moon changes-per-moon)))
+    changes-per-moon))
 
 ;/////////////////////////////
 

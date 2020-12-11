@@ -14,7 +14,8 @@
      (let [updated-moons (apply-gravity test-moons)]
        (should= '(0 -2 2)  (:dv (first updated-moons)))
        (should= '(0 2 0)  (:dv (second updated-moons)))
-       (should= '(0 0 -2)  (:dv (nth updated-moons 2)))))
+       (should= '(0 0 -2)  (:dv (nth updated-moons 2)))
+       ))
  )
 
 (def test-data
