@@ -41,6 +41,12 @@
 (defn day9-num-vec []
   (csv-as-int-vec "day9_input.txt"))
 
+(defn day10-grid
+  ([]
+   (day10-grid "input/day10.txt"))
+  ([pathname]
+   (map seq (str/split (slurp pathname), #"\n"))))
+
 (defn day12-list []
   (str/split (slurp "input/day12.txt"), #"\n"))
 

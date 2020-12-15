@@ -9,7 +9,7 @@
   {:x x :y y})
 
 (defn get-grid [coord grid]
-  (get (get grid (:y coord)) (:x coord)))
+  (nth (nth grid (:y coord)) (:x coord)))
 
 (defn step [from-coord x-step y-step]
   (create-coord
@@ -69,5 +69,4 @@
   (let [all-coords (all-coords grid)
         all-asteroids (filter #(= asteroid (get-grid % grid)) all-coords)
         visible-froms (map #(visible-asteroid-count % grid) all-asteroids)]
-    (println visible-froms)
     (apply max-key :count visible-froms)))

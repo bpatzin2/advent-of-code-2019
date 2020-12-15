@@ -34,3 +34,9 @@
   (it "works for simple input"
       (should= {:coord {:x 1 :y 1} :count 2}
                (get-best-location grid-with-clear-best))))
+
+(describe
+  "get-best-location"
+  (it "works for test file input"
+      (should= {:coord {:x 1 :y 1} :count 2}
+               (get-best-location (input/day10-grid "input/day10TestLarge.txt")))))
