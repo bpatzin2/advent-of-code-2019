@@ -24,3 +24,13 @@
       (let [visible-asteroids (get-visible-asteroid-coords
                                 (create-coord 3 2) complex-grid)]
         (should= #{{:x 2, :y 2} {:x 1, :y 1} {:x 2, :y 0} {:x 3, :y 0}}  (set visible-asteroids)))))
+
+(def grid-with-clear-best
+  [[\.\.\.]
+   [\#\#\#]])
+
+(describe
+  "get-best-location"
+  (it "works for simple input"
+      (should= {:coord {:x 1 :y 1} :count 2}
+               (get-best-location grid-with-clear-best))))

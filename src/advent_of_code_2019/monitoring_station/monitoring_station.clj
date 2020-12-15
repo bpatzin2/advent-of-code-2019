@@ -61,3 +61,13 @@
         other-asteroids (filter #(= asteroid (get-grid % grid)) other-coords)
         visible-asteroids (filter #(is-visible coord % grid) other-asteroids)]
     visible-asteroids))
+
+(defn visible-asteroid-count [coord grid]
+  {:coord coord :count (count (get-visible-asteroid-coords coord grid))})
+
+(defn get-best-location [grid]
+  (let [all-coords (all-coords grid)
+        all-asteroids (filter #(= asteroid (get-grid % grid)) all-coords)
+        visible-froms (map #(visible-asteroid-count % grid) all-asteroids)]
+    (println visible-froms)
+    (apply max-key :count visible-froms)))
