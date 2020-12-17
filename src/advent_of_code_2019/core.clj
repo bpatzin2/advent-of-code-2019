@@ -82,7 +82,7 @@
   (intcode/diagnostic-code (input/day9-num-vec) [2]))
 
 (defn day10pt1 []
-  (monitoring-station/get-best-location (input/day10-grid)))
+  (monitoring-station/best-location (input/day10-grid)))
 
 (defn day12pt1 []
   (let [moons (time-steps/create-moons (input/day12-list))]
