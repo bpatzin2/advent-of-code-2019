@@ -85,6 +85,12 @@
 (defn day10pt1 []
   (monitoring-station/best-location (input/day10-grid)))
 
+(defn day10pt2 []
+  (let [last-vaped (monitoring-station/vaporize-asteroids (input/day10-grid) 4)]
+    (+
+      (* 100 (:x last-vaped))
+      (:y last-vaped))))
+
 (defn day12pt1 []
   (let [moons (time-steps/create-moons (input/day12-list))]
     (energy/total-energy moons 1000)))
