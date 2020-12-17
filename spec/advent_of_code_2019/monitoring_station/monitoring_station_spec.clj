@@ -38,5 +38,5 @@
 (describe
   "get-best-location"
   (it "works for test file input"
-      (should= {:coord {:x 1 :y 1} :count 2}
+      (should= {:coord {:x 11, :y 13}, :count 210}
                (get-best-location (input/day10-grid "input/day10TestLarge.txt")))))
