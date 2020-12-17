@@ -19,6 +19,7 @@
             [advent-of-code-2019.n-body-problem.time-steps :as time-steps]
             [advent-of-code-2019.n-body-problem.energy :as energy]
             [advent-of-code-2019.n-body-problem.cycle-length :as cycle-length]
+            [advent-of-code-2019.monitoring-station.monitoring-station :as monitoring-station]
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -79,6 +80,9 @@
 
 (defn day9pt2 []
   (intcode/diagnostic-code (input/day9-num-vec) [2]))
+
+(defn day10pt1 []
+  (monitoring-station/get-best-location (input/day10-grid)))
 
 (defn day12pt1 []
   (let [moons (time-steps/create-moons (input/day12-list))]
