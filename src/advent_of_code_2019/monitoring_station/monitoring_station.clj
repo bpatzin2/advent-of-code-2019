@@ -68,8 +68,16 @@
 (defn visible-asteroid-count [coord grid]
   {:coord coord :count (count (visible-asteroid-coords coord grid))})
 
-(defn best-location [grid]
+(defn best-location-w-count [grid]
   (let [all-coords (all-coords grid)
         all-asteroids (filter #(= asteroid (loc % grid)) all-coords)
         visible-froms (map #(visible-asteroid-count % grid) all-asteroids)]
     (apply max-key :count visible-froms)))
+
+(defn count-visible-from-best-loc [grid]
+  (let [best-loc (best-location-w-count grid)]
+    (:count best-loc)))
+
+(defn best-location [grid]
+  (let [best-loc (best-location-w-count grid)]
+    (:coord best-loc)))

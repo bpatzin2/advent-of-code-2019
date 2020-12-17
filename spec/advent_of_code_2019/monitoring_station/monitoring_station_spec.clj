@@ -30,13 +30,19 @@
    [\#\#\#]])
 
 (describe
-  "get-best-location"
+  "best-location-w-count"
   (it "works for simple input"
       (should= {:coord {:x 1 :y 1} :count 2}
-               (best-location grid-with-clear-best))))
+               (best-location-w-count grid-with-clear-best))))
 
 (describe
-  "get-best-location"
+  "best-location-w-count"
   (it "works for test file input"
       (should= {:coord {:x 11, :y 13}, :count 210}
+               (best-location-w-count (input/day10-grid "input/day10TestLarge.txt")))))
+
+(describe
+  "count-visible-from-best-loc"
+  (it "works for test file input"
+      (should= {:coord {:x 11, :y 13}}
                (best-location (input/day10-grid "input/day10TestLarge.txt")))))
