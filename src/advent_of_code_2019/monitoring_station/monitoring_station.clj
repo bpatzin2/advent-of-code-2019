@@ -8,21 +8,19 @@
 (defn create-coord [x y]
   {:x x :y y})
 
-(defn get-grid [coord grid]
+(defn loc [coord grid]
   (nth (nth grid (:y coord)) (:x coord)))
+
+(defn row-coords [row-idx, row]
+  (map-indexed (fn [idx, _] {:x idx :y row-idx}) row))
+
+(defn all-coords [grid]
+  (reduce concat (map-indexed (fn [row-idx row] (row-coords row-idx row)) grid)))
 
 (defn step [from-coord x-step y-step]
   (create-coord
     (+ x-step (:x from-coord))
     (+ y-step (:y from-coord))))
-
-(defn any-asteroids-between? [from-coord to-coord x-step y-step, grid]
-  (loop [next-coord (step from-coord x-step y-step)]
-    (assert (get-grid next-coord grid))
-    (cond
-      (= next-coord to-coord) false
-      (= asteroid (get-grid next-coord grid)) true
-      :else (recur (step next-coord x-step y-step)))))
 
 (defn x-step [from-coord to-coord]
   (let [x-diff (- (:x to-coord) (:x from-coord))
@@ -44,29 +42,42 @@
                   denominator-abs (math/abs (if (instance? Long angle) angle (numerator angle)))]
               (if (pos? y-diff) denominator-abs (* -1 denominator-abs))))))
 
-(defn is-visible [from-coord coord-in-q grid]
+(defn first-asteroid-between [from-coord to-coord x-step y-step grid]
+  (loop [next-coord (step from-coord x-step y-step)]
+    (assert (loc next-coord grid))
+    (cond
+      (= next-coord to-coord) nil
+      (= asteroid (loc next-coord grid)) next-coord
+      :else (recur (step next-coord x-step y-step)))))
+
+(defn asteroids-between? [from-coord to-coord x-step y-step grid]
+  (some? (first-asteroid-between from-coord to-coord x-step y-step grid)))
+
+(defn visible? [from-coord coord-in-q grid]
   (let [x-step (x-step from-coord coord-in-q)
         y-step (y-step from-coord coord-in-q)]
-    (not (any-asteroids-between? from-coord coord-in-q x-step y-step grid))))
+    (not (asteroids-between? from-coord coord-in-q x-step y-step grid))))
 
-(defn row-coords [row-idx, row]
-  (map-indexed (fn [idx, _] {:x idx :y row-idx}) row))
-
-(defn all-coords [grid]
-  (reduce concat (map-indexed (fn [row-idx row] (row-coords row-idx row)) grid)))
-
-(defn get-visible-asteroid-coords [coord grid]
+(defn visible-asteroid-coords [coord grid]
   (let [all-coords (all-coords grid)
         other-coords (filter #(not= coord %) all-coords)
-        other-asteroids (filter #(= asteroid (get-grid % grid)) other-coords)
-        visible-asteroids (filter #(is-visible coord % grid) other-asteroids)]
+        other-asteroids (filter #(= asteroid (loc % grid)) other-coords)
+        visible-asteroids (filter #(visible? coord % grid) other-asteroids)]
     visible-asteroids))
 
 (defn visible-asteroid-count [coord grid]
-  {:coord coord :count (count (get-visible-asteroid-coords coord grid))})
+  {:coord coord :count (count (visible-asteroid-coords coord grid))})
 
-(defn get-best-location [grid]
+(defn best-location-w-count [grid]
   (let [all-coords (all-coords grid)
-        all-asteroids (filter #(= asteroid (get-grid % grid)) all-coords)
+        all-asteroids (filter #(= asteroid (loc % grid)) all-coords)
         visible-froms (map #(visible-asteroid-count % grid) all-asteroids)]
     (apply max-key :count visible-froms)))
+
+(defn count-visible-from-best-loc [grid]
+  (let [best-loc (best-location-w-count grid)]
+    (:count best-loc)))
+
+(defn best-location [grid]
+  (let [best-loc (best-location-w-count grid)]
+    (:coord best-loc)))
