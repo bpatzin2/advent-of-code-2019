@@ -9,7 +9,10 @@
 
 (defn parse-reaction [reaction-str]
   (let [inAndOut (str/split reaction-str #" => ")
-        in-strs (str/split (get inAndOut 0) #" , ")
+        in-strs (str/split (get inAndOut 0) #", ")
         out (get inAndOut 1)]
     {:in (into {} (map parse-chem-quantity in-strs))
      :out (parse-chem-quantity out)}))
+
+(defn parse-reactions [reaction-str]
+  (mapv parse-reaction (str/split reaction-str #"\n")))
