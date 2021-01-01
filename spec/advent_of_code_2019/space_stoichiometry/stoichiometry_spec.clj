@@ -65,15 +65,24 @@
       (should= true (contains-fuel? [{"D" 1} {"FUEL" 2}]))))
 
 (describe "decompose"
-  (let [ingredients {"C" 2}
+  (let [ingredients ["C" 2]
         reaction {:in {"ORE" 5 "A" 1} :out {"C" 1}}
         expected {:result {"ORE" 10 "A" 2}
                   :left-over {"C" 0}}]
     (it "decompose"
         (should= expected (decompose ingredients reaction))))
-  (let [ingredients {"C" 1}
+  (let [ingredients ["C" 1]
         reaction {:in {"ORE" 5 "A" 1} :out {"C" 2}}
         expected {:result {"ORE" 5 "A" 1}
                   :left-over {"C" 1}}]
     (it "decompose"
         (should= expected (decompose ingredients reaction)))))
+
+(describe "decompose-all"
+  (let [ingredients {"C" 2 "D" 3}
+        reactions [{:in {"ORE" 5 "A" 1} :out {"C" 1}}
+                   {:in {"ORE" 1 "B" 1} :out {"D" 5}}]
+        expected {:result {"ORE" 11 "A" 2 "B" 1}
+                  :left-over {"C" 0 "D" 2}}]
+    (it "decompose-all"
+        (should= expected (decompose-all ingredients reactions)))))
