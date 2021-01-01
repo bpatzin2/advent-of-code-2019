@@ -34,7 +34,6 @@
        ingredient-amount (get ingredients required-chem 0)]
    (>= ingredient-amount required-amount)))
 
-
 (defn requirements-satisfied? [ingredients reaction]
   (every? #(requirement-satisfied? ingredients %) (:in reaction)))
 
