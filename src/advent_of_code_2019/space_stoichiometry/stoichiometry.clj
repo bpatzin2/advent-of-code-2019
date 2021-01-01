@@ -41,36 +41,7 @@
 (defn apply-reaction [ingredients reaction]
   (merge-with + (consume-all ingredients reaction) (:out reaction)))
 
-(defn possible-next-states [ingredients, reactions]
-  (let [applicable-reactions (filter #(requirements-satisfied? ingredients %) reactions)]
-    (mapv #(apply-reaction ingredients %) applicable-reactions)))
-
-(defn all-possible-next-states [ingredients-sets, reactions]
-  (apply concat (mapv #(possible-next-states % reactions) ingredients-sets)))
-
 (defn contains-fuel? [ingredients-sets]
   (let [ks (flatten (map keys ingredients-sets))]
     (not (empty? (filter #(= "FUEL" %) ks)))))
 
-(defn reaches-fuel? [ingredients-sets, reactions]
-  (loop [ingredients-sets ingredients-sets
-         already-tried #{}]
-    (let [to-try (set-lib/difference ingredients-sets already-tried)]
-      (cond
-        (empty? to-try) false
-        (contains-fuel? ingredients-sets) true
-        :else (recur
-                (set (all-possible-next-states to-try reactions))
-                (into already-tried to-try))))))
-
-(defn min-ore-to-reach-fuel [reactions]
-  (println "Starting")
-  (loop [i 1]
-    (println i)
-    (let [ore #{{"ORE" i}}
-          done (reaches-fuel? ore reactions)]
-      (if done i (recur (inc i))))))
-
-(defn parse-and-min-ore-to-reach-fuel [reactions-str]
-  (let [reactions (parse-reactions reactions-str)]
-    (min-ore-to-reach-fuel reactions)))
