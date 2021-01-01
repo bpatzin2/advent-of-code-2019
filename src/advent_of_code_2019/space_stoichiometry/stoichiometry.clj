@@ -58,7 +58,6 @@
         reaction-chem (first (keys (:out reaction)))
         reaction-quantity (first (vals (:out reaction)))
         quantity-required (second ingredient)
-        _ (println "bp: " reaction-chem reaction-quantity quantity-required)
         reaction-count (reaction-count quantity-required reaction-quantity)
         amount-produced (* reaction-count reaction-quantity)]
     {:result (into {} (required-inputs in reaction-count))
@@ -66,12 +65,9 @@
 
 (defn find-and-decompose [ingredient reactions]
   (let [reaction (first (filter #(= (first ingredient) (first (keys (:out %)))) reactions))]
-    (println ingredient reactions)
-    (println "reaction: " reaction)
     (decompose ingredient reaction)))
 
 (defn decompose-all [ingredients reactions]
   (let [decomposed (map #(find-and-decompose % reactions) ingredients)]
-    (println decomposed)
     {:result (apply #(merge-with + %1 %2) (map :result decomposed))
      :left-over (apply #(merge-with + %1 %2) (map :left-over decomposed))}))
