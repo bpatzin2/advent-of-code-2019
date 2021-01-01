@@ -56,7 +56,4 @@
   (let [applicable-reactions (filter #(requirements-satisfied? ingredients %) reactions)]
     (mapv #(apply-reaction ingredients %) applicable-reactions)))
 
-;(map #(apply-reaction ingredients %) applicable-reactions)
-
-
 
