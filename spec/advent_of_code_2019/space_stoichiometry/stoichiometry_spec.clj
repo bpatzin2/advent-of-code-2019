@@ -63,3 +63,17 @@
   (it "contains-fuel?"
       (should= false (contains-fuel? [{"D" 1}]))
       (should= true (contains-fuel? [{"D" 1} {"FUEL" 2}]))))
+
+(describe "decompose"
+  (let [ingredients {"C" 2}
+        reaction {:in {"ORE" 5 "A" 1} :out {"C" 1}}
+        expected {:result {"ORE" 10 "A" 2}
+                  :left-over {"C" 0}}]
+    (it "decompose"
+        (should= expected (decompose ingredients reaction))))
+  (let [ingredients {"C" 1}
+        reaction {:in {"ORE" 5 "A" 1} :out {"C" 2}}
+        expected {:result {"ORE" 5 "A" 1}
+                  :left-over {"C" 1}}]
+    (it "decompose"
+        (should= expected (decompose ingredients reaction)))))

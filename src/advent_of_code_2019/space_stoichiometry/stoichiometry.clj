@@ -45,3 +45,21 @@
   (let [ks (flatten (map keys ingredients-sets))]
     (not (empty? (filter #(= "FUEL" %) ks)))))
 
+(defn reaction-count [ingredient-quantity reaction-quantity]
+  (let [r (rem ingredient-quantity reaction-quantity)
+        q (quot ingredient-quantity reaction-quantity)]
+    (if (= 0 r) q (inc q))))
+
+(defn required-inputs [input reaction-count]
+  (map (fn [[k v]] {k (* v reaction-count)}) input))
+
+(defn decompose [ingredient reaction]
+  (let [in (:in reaction)
+        reaction-chem (first (keys (:out reaction)))
+        reaction-quantity (first (vals (:out reaction)))
+        quantity-required (first (vals ingredient))
+        reaction-count (reaction-count quantity-required reaction-quantity)
+        amount-produced (* reaction-count reaction-quantity)]
+    {:result (into {} (required-inputs in reaction-count))
+     :left-over {reaction-chem (- amount-produced quantity-required)}}))
+
