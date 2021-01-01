@@ -53,9 +53,9 @@
           (consume-all ingredients {:in {"ORE" 5 "A" 1}})))))
 
 (describe "apply-reaction"
-  (let [ingredients {"ORE" 5 "A" 2 "B" 1}
+  (let [ingredients {"ORE" 5 "A" 2 "B" 1 "C" 1}
         reaction {:in {"ORE" 5 "A" 1} :out {"C" 1}}
-        expected {"ORE" 0 "A" 1 "B" 1 "C" 1}]
+        expected {"ORE" 0 "A" 1 "B" 1 "C" 2}]
     (it "apply-reaction"
         (should= expected (apply-reaction ingredients reaction)))))
 
@@ -90,4 +90,13 @@
                    {:in {"D" 2} :out {"FUEL" 1}}]]
     (it "reaches-fuel?"
         (should= false (reaches-fuel?  #{{"D" 1}} reactions))
-        (should= true (reaches-fuel? #{{"D" 2}} reactions)))))
+        (should= true (reaches-fuel? #{{"D" 2}} reactions))
+        (should= true (reaches-fuel? #{{"ORE" 1, "C" 1, "D" 1}} reactions))
+        (should= true (reaches-fuel? #{{"ORE" 2 "C" 2}} reactions)))))
+
+(describe "min-ore-to-reach-fuel"
+  (let [reactions [{:in {"ORE" 2} :out {"C" 1}}
+                   {:in {"ORE" 1 "C" 1} :out {"D" 1}}
+                   {:in {"D" 2} :out {"FUEL" 1}}]]
+    (it "min-ore-to-reach-fuel"
+        (should= 6 (min-ore-to-reach-fuel reactions)))))

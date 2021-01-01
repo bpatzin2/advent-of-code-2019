@@ -39,7 +39,7 @@
     (into ingredients new-ingredient-amounts)))
 
 (defn apply-reaction [ingredients reaction]
-  (into (consume-all ingredients reaction) (:out reaction)))
+  (merge-with + (consume-all ingredients reaction) (:out reaction)))
 
 ;TODO memoize
 (defn possible-next-states [ingredients, reactions]
@@ -63,6 +63,12 @@
         :else (recur
                 (set (all-possible-next-states to-try reactions))
                 (into already-tried to-try))))))
+
+(defn min-ore-to-reach-fuel [reactions]
+  (loop [i 1]
+    (let [ore #{{"ORE" i}}
+          done (reaches-fuel? ore reactions)]
+      (if done i (recur (inc i))))))
 
 
 
