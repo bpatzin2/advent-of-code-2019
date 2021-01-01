@@ -9,14 +9,14 @@
     {chem quant}))
 
 (defn parse-reaction [reaction-str]
-  (let [inAndOut (str/split reaction-str #" => ")
+  (let [inAndOut (str/split (str/trim reaction-str) #" => ")
         in-strs (str/split (get inAndOut 0) #", ")
         out (get inAndOut 1)]
     {:in (into {} (map parse-chem-quantity in-strs))
      :out (parse-chem-quantity out)}))
 
 (defn parse-reactions [reaction-str]
-  (mapv parse-reaction (str/split reaction-str #"\n")))
+  (mapv parse-reaction (str/split (str/trim reaction-str) #"\n")))
 
 (defn requirement-satisfied? [ingredients reaction-requirement]
  (let [required-chem (key reaction-requirement)
@@ -41,7 +41,6 @@
 (defn apply-reaction [ingredients reaction]
   (merge-with + (consume-all ingredients reaction) (:out reaction)))
 
-;TODO memoize
 (defn possible-next-states [ingredients, reactions]
   (let [applicable-reactions (filter #(requirements-satisfied? ingredients %) reactions)]
     (mapv #(apply-reaction ingredients %) applicable-reactions)))
@@ -65,10 +64,13 @@
                 (into already-tried to-try))))))
 
 (defn min-ore-to-reach-fuel [reactions]
+  (println "Starting")
   (loop [i 1]
+    (println i)
     (let [ore #{{"ORE" i}}
           done (reaches-fuel? ore reactions)]
       (if done i (recur (inc i))))))
 
-
-
+(defn parse-and-min-ore-to-reach-fuel [reactions-str]
+  (let [reactions (parse-reactions reactions-str)]
+    (min-ore-to-reach-fuel reactions)))
