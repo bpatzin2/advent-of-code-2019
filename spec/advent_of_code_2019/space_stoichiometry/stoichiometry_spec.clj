@@ -79,3 +79,15 @@
     (it "all-possible-next-states"
         (should= expected (all-possible-next-states ingredients-sets reactions)))))
 
+(describe "contains-fuel?"
+  (it "contains-fuel?"
+      (should= false (contains-fuel? [{"D" 1}]))
+      (should= true (contains-fuel? [{"D" 1} {"FUEL" 2}]))))
+
+(describe "reaches-fuel?"
+  (let [reactions [{:in {"ORE" 2} :out {"C" 1}}
+                   {:in {"ORE" 1 "C" 1} :out {"D" 1}}
+                   {:in {"D" 2} :out {"FUEL" 1}}]]
+    (it "reaches-fuel?"
+        (should= false (reaches-fuel?  #{{"D" 1}} reactions))
+        (should= true (reaches-fuel? #{{"D" 2}} reactions)))))

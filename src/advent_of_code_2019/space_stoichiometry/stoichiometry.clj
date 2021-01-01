@@ -1,5 +1,6 @@
 (ns advent-of-code-2019.space-stoichiometry.stoichiometry
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.set :as set-lib]))
 
 (defn parse-chem-quantity [quantity-chem-str]
   (let [qaunt-chem (str/split quantity-chem-str #" ")
@@ -47,5 +48,21 @@
 
 (defn all-possible-next-states [ingredients-sets, reactions]
   (apply concat (mapv #(possible-next-states % reactions) ingredients-sets)))
+
+(defn contains-fuel? [ingredients-sets]
+  (let [ks (flatten (map keys ingredients-sets))]
+    (not (empty? (filter #(= "FUEL" %) ks)))))
+
+(defn reaches-fuel? [ingredients-sets, reactions]
+  (loop [ingredients-sets ingredients-sets
+         already-tried #{}]
+    (let [to-try (set-lib/difference ingredients-sets already-tried)]
+      (cond
+        (empty? to-try) false
+        (contains-fuel? ingredients-sets) true
+        :else (recur
+                (set (all-possible-next-states to-try reactions))
+                (into already-tried to-try))))))
+
 
 
