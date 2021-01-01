@@ -17,17 +17,6 @@
 (defn parse-reactions [reaction-str]
   (mapv parse-reaction (str/split reaction-str #"\n")))
 
-; Can you produce a fuel given this much ORE?
-; What's the cheapest way to produce this SET of CHEMs?
-; What are all the different assemblies of CHEMs that could
-; produce that set?
-; Can you DP b/c there'll be a lot of overlapping pieces
-;
-; What's the cheapest way to produce set X?
-; What are all of the different next-level components that go
-; into producing X? And what's the cheapest way to produce those?
-; End on ORE
-
 (defn requirement-satisfied? [ingredients reaction-requirement]
  (let [required-chem (key reaction-requirement)
        required-amount (val reaction-requirement)
@@ -51,8 +40,12 @@
 (defn apply-reaction [ingredients reaction]
   (into (consume-all ingredients reaction) (:out reaction)))
 
+;TODO memoize
 (defn possible-next-states [ingredients, reactions]
   (let [applicable-reactions (filter #(requirements-satisfied? ingredients %) reactions)]
     (mapv #(apply-reaction ingredients %) applicable-reactions)))
+
+(defn all-possible-next-states [ingredients-sets, reactions]
+  (apply concat (mapv #(possible-next-states % reactions) ingredients-sets)))
 
 

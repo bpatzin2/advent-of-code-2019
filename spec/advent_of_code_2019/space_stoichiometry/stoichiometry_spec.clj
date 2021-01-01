@@ -69,4 +69,13 @@
     (it "apply-reaction"
         (should= expected (possible-next-states ingredients reactions)))))
 
+(describe "all-possible-next-states"
+  (let [ingredients-sets [{"ORE" 2} {"A" 1 "B" 2}]
+        reactions [{:in {"ORE" 1 "A" 1} :out {"C" 1}}
+                   {:in {"ORE" 1} :out {"D" 2}}
+                   {:in {"B" 1 "A" 1} :out {"E" 1}}]
+        expected [{"ORE" 1 "D" 2}
+                  {"A" 0 "B" 1 "E" 1}]]
+    (it "all-possible-next-states"
+        (should= expected (all-possible-next-states ingredients-sets reactions)))))
 
