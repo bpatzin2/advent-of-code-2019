@@ -93,6 +93,12 @@
           (it "works for real input"
               (should= 286 (day13pt1))))
 
+(describe "day14pt1"
+          (it "works for test input"
+              (should= 2210736 (day14pt1 "input/day14-test.txt")))
+          (it "works for real input"
+              (should= 362713 (day14pt1))))
+
 (describe "day13pt2"
           (it "works for real input"
               (should= 146 (day13pt2 true))))

@@ -10,7 +10,8 @@
             [advent-of-code-2019.password-guessing :as pw]  
             [advent-of-code-2019.arcade :as arcade]  
             [advent-of-code-2019.oxygen-system :as os]      
-            [advent-of-code-2019.fft :as fft]  
+            [advent-of-code-2019.fft :as fft]
+            [advent-of-code-2019.space-stoichiometry.stoichiometry :as space-stoichiometry]
             [advent-of-code-2019.pluto-maze :as pluto-maze]   
             [advent-of-code-2019.pluto-maze-recursive :as pluto-maze-recursive]
             [advent-of-code-2019.shuffle :as deck-shuffle]
@@ -101,6 +102,12 @@
    (arcade/play-game
     (assoc (input/day13-num-vec) 0 2)
     debug-mode)))
+
+(defn day14pt1
+  ([] (day14pt1 "input/day14.txt"))
+  ([input-file]
+   (space-stoichiometry/parse-and-min-ore-to-reach-fuel
+     (slurp input-file))))
 
 (defn day15pt1 []
   (os/num-steps-to-oxygen (input/day15-num-vec)))
