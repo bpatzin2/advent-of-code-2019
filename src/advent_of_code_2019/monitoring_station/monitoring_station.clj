@@ -118,22 +118,76 @@
         end-top (map #(create-coord % 0) (range 0 x))]
     (distinct (concat start-top right-edge bottom left-edge end-top))))
 
+(defn representative? [vector-coord fixed-point all-coords]
+  (let [x-step (x-step fixed-point vector-coord)
+        y-step (y-step fixed-point vector-coord)
+        hypothetical-x (+ (:x vector-coord) x-step)
+        hypothetical-y (+ (:y vector-coord) y-step)
+        better-rep (create-coord hypothetical-x hypothetical-y)]
+    (not (contains? all-coords better-rep))))
+
+(defn remove-duplicate-vectors [coord all-coords]
+  (loop [rest all-coords
+         result []]
+    (if (empty? rest)
+      result
+      (let [this-coord (first rest)
+            is-rep (representative? this-coord coord all-coords)
+            new-result (if is-rep (conj result this-coord) result)]
+        (recur (drop 1 rest) new-result)))))
+
+(defn quadrant [x-step y-step]
+  (cond
+    (and (>= x-step 0) (< y-step 0)) 1
+    (and (>= x-step 0) (>= y-step 0)) 2
+    (and (<= x-step 0) (> y-step 0)) 3
+    :else 4))
+
+(defn v-is-clockwise-of [ax ay bx by quad]
+  (let [a-slope (if (= 0 ax) (/ ay 0.0) (/ ay ax))
+        b-slope (if (= 0 bx) (/ by 0.0) (/ by bx))]
+    (condp = quad
+      1 (> a-slope b-slope)
+      2 (> a-slope b-slope)
+      3 (> a-slope b-slope)
+      4 (> a-slope b-slope))))
+
+(defn is-clockwise-of [a b fixed]
+  (let [a-x-step (x-step fixed a)
+        a-y-step (y-step fixed a)
+        a-quad (quadrant a-x-step a-y-step)
+        b-x-step (x-step fixed b)
+        b-y-step (y-step fixed b)
+        b-quad (quadrant b-x-step b-y-step)]
+    (if (not= a-quad b-quad)
+      (> a-quad b-quad)
+      (v-is-clockwise-of a-x-step a-y-step b-x-step b-y-step a-quad))))
+
+
+(defn sort-clockwise [coords fixed]
+  (sort #(is-clockwise-of %1 %2 fixed) coords))
+
+(defn clockwise-vectors [coord grid]
+  (let [all-coords (all-coords grid)
+        all-coords (set (remove #(= coord %) all-coords))
+        vectors (remove-duplicate-vectors coord all-coords)]
+    (sort-clockwise vectors coord)))
+
 (defn fire-laser [laser edge-coord grid]
   (first-asteroid-on-path laser edge-coord grid))
 
 (defn vaporize-asteroids
   ([grid n] (vaporize-asteroids grid n (best-location grid)))
   ([grid n laser-coord]
-    (let [b-cycle (cycle (border grid (:x laser-coord)))]
+   (let [b-cycle (cycle (border grid (:x laser-coord)))]
       (loop [curr-grid grid
              laser-steps 0
              vaped []]
-      (if
-        (= n (count vaped))
-        (last vaped)
-        (let [laser-edge (nth b-cycle laser-steps)
-              asteroid-hit-coord (fire-laser laser-coord laser-edge curr-grid)
-              next-vaped (if (some? asteroid-hit-coord) (conj vaped asteroid-hit-coord) vaped)
-              next-grid (maybe-remove-asteroid asteroid-hit-coord curr-grid)]
-          (recur next-grid (inc laser-steps) next-vaped)))))))
+        (if (= n (count vaped))
+          (last vaped)
+          (let [laser-edge (nth b-cycle laser-steps)
+                asteroid-hit-coord (fire-laser laser-coord laser-edge curr-grid)
+                next-vaped (if (some? asteroid-hit-coord) (conj vaped asteroid-hit-coord) vaped)
+                next-grid (maybe-remove-asteroid asteroid-hit-coord curr-grid)]
+            (recur next-grid (inc laser-steps) next-vaped)))))))
 

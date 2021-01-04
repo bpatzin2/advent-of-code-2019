@@ -56,7 +56,7 @@
           {:x 0 :y 2}
           (vaporize-asteroids grid-with-laser 4 (create-coord 1 1))))))
 
-  ;TODO: This is the failing test case to work on
+  ; TODO: This is the failing test case to work on
   ;(it "works for grid input with asteroid not aligned with edge"
   ;  (let [laser (create-coord 0 2)
   ;        grid [[\.\.\.\.]
@@ -66,6 +66,54 @@
   ;      {:x 2 :y 1}
   ;      (vaporize-asteroids grid 1 laser)))))
 
+(describe "is-clockwise-of"
+  (it "works for 3x3"
+    (let [fixed {:x 1 :y 1}]
+      (should= true (is-clockwise-of {:x 2 :y 0} {:x 1 :y 0} fixed))
+      (should= true (is-clockwise-of {:x 2 :y 1} {:x 2 :y 0} fixed))
+      (should= true (is-clockwise-of {:x 2 :y 2} {:x 2 :y 1} fixed))
+      (should= true (is-clockwise-of {:x 1 :y 2} {:x 2 :y 2} fixed))
+      (should= true (is-clockwise-of {:x 0 :y 2} {:x 1 :y 2} fixed))
+      (should= true (is-clockwise-of {:x 0 :y 1} {:x 0 :y 2} fixed))
+      (should= true (is-clockwise-of {:x 0 :y 0} {:x 0 :y 1} fixed))
+      (should= true (is-clockwise-of {:x 0 :y 0} {:x 1 :y 0} fixed))))
+  (it "works for 5x5"
+    (let [fixed {:x 2 :y 2}]
+      (should= true (is-clockwise-of {:x 3 :y 0} {:x 2 :y 0} fixed))
+      (should= true (is-clockwise-of {:x 1 :y 0} {:x 2 :y 0} fixed))
+      (should= true (is-clockwise-of {:x 4 :y 0} {:x 3 :y 0} fixed))
+      (should= true (is-clockwise-of {:x 4 :y 0} {:x 3 :y 0} fixed))
+      (should= true (is-clockwise-of {:x 4 :y 1} {:x 3 :y 0} fixed))
+      (should= true (is-clockwise-of {:x 4 :y 4} {:x 4 :y 3} fixed))
+      (should= true (is-clockwise-of {:x 1 :y 3} {:x 1 :y 4} fixed))
+      (should= true (is-clockwise-of {:x 1 :y 0} {:x 0 :y 0} fixed)))))
+
+
+;(describe "clockwise-vectors"
+;  (it "works for grid with no duplicates"
+;    (let [laser (create-coord 1 1)
+;          grid [[\#\#\#]
+;                [\#\X\#]
+;                [\#\#\#]]]
+;      (should=
+;        [{:x 1 :y 0} {:x 2 :y 0} {:x 2 :y 1}
+;         {:x 2 :y 2} {:x 1 :y 2}{:x 0 :y 2}
+;         {:x 0 :y 1} {:x 0 :y 0}]
+;        (clockwise-vectors laser grid)))))
+       ;(it "works for grid with duplicates"
+       ;    (let [laser (create-coord 2 2)
+       ;          grid [[\#\#\#\#\#]
+       ;                [\#\#\#\#\#]
+       ;                [\#\#\X\#\#]
+       ;                [\#\#\#\#\#]
+       ;                [\#\#\#\#\#]]])))
+ ;      (should=
+ ;        #{{:x 0 :y 0} {:x 1 :y 0} {:x 2 :y 0} {:x 3 :y 0} {:x 4 :y 0}
+ ;          {:x 0 :y 1} {:x 4 :y 1}
+ ;          {:x 0 :y 2} {:x 4 :y 2}
+ ;          {:x 0 :y 3} {:x 4 :y 3}
+ ;          {:x 0 :y 4} {:x 1 :y 4} {:x 2 :y 4} {:x 3 :y 4} {:x 4 :y 4}}
+ ;        (set (clockwise-vectors laser grid))))))
 
 ;TODO: Example test case
 ;.#....###24...#..
