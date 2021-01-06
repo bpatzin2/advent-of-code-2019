@@ -165,7 +165,7 @@
 
 
 (defn sort-clockwise [coords fixed]
-  (sort #(is-clockwise-of %1 %2 fixed) coords))
+  (sort #(is-clockwise-of %2 %1 fixed) coords))
 
 (defn clockwise-vectors [coord grid]
   (let [all-coords (all-coords grid)
@@ -179,7 +179,7 @@
 (defn vaporize-asteroids
   ([grid n] (vaporize-asteroids grid n (best-location grid)))
   ([grid n laser-coord]
-   (let [b-cycle (cycle (border grid (:x laser-coord)))]
+   (let [b-cycle (cycle (clockwise-vectors laser-coord grid))]
       (loop [curr-grid grid
              laser-steps 0
              vaped []]
