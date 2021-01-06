@@ -83,13 +83,12 @@
   (intcode/diagnostic-code (input/day9-num-vec) [2]))
 
 (defn day10pt1 []
-  (monitoring-station/best-location (input/day10-grid)))
+  (monitoring-station/count-visible-from-best-loc (input/day10-grid)))
 
 (defn day10pt2 []
-  (let [last-vaped (monitoring-station/vaporize-asteroids (input/day10-grid) 4)]
-    (+
-      (* 100 (:x last-vaped))
-      (:y last-vaped))))
+  (let [last-vaped (monitoring-station/vaporize-asteroids (input/day10-grid) 200)]
+    (+ (* 100 (:x last-vaped))
+       (:y last-vaped))))
 
 (defn day12pt1 []
   (let [moons (time-steps/create-moons (input/day12-list))]
