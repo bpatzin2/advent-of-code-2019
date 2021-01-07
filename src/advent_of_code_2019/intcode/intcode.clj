@@ -55,9 +55,11 @@
     (assoc state :program (prog-to-vec program 0 prog-len))))
 
 (defn execute-segment
+  ([state input diag-mode]
+   (execute-segment (:program state) (:addr state) input (:output state) (:relative-base state) diag-mode false))
   ([program addr input output relative-base]  
    (execute-segment program addr input output relative-base false false))
-  ([program addr input output relative-base is-first]  
+  ([program addr input output relative-base is-first]
    (execute-segment program addr input output relative-base is-first false))
   ([program addr input output relative-base is-first is-diag]
    (loop [instruction-address addr
@@ -87,13 +89,9 @@
    (loop [state (init-state program)
           inputs inputs]
      (if 
-      (or (= :stopped (:status state)) (= :aborted (:status state)))
+      (contains? #{:stopped :aborted} (:status state))
       (publish-state state (count program))
-      (let [prog (:program state)
-            addr (:addr state)
-            output (:output state)
-            relative-base (:relative-base state)
-            next-state (execute-segment prog addr (first inputs) output relative-base diag-mode)]
+      (let [next-state (execute-segment state (first inputs) diag-mode)]
         (recur next-state (rest inputs)))))))
 
 (defn execute
