@@ -35,7 +35,7 @@
   (let [candidates (filter #(not-still-input % remaining reactions) remaining)]
     (first candidates)))
 
-(defn topo-sort [reactions]
+(defn topological-sort [reactions]
   (loop [result []
          remaining (reaction/all-output-chems reactions)]
     (if (empty? remaining)
@@ -46,10 +46,14 @@
 (defn find-ingredient [ingredients ingredient]
   (first (filter #(= ingredient (reaction/ingredient-chem %)) ingredients)))
 
-(defn decompose-all2 [reactions]
-  (let [ingredient-order (topo-sort reactions)]
+; Sort the reactions so that each ingredient type is only
+; ever decomposed once. i.e. All reactions that decompose
+; into a particular ingredient are decomposed before
+; decomposing that ingredient.
+(defn decompose-all [reactions initial-ingredients]
+  (let [ingredient-order (topological-sort reactions)]
     (loop [rest ingredient-order
-           result {"FUEL" 1}]
+           result initial-ingredients]
       (if (empty? rest)
         result
         (let [next (find-ingredient result (first rest))
@@ -59,7 +63,7 @@
           (recur (drop 1 rest) new-result))))))
 
 (defn min-ore-to-reach-fuel [reactions]
-  (get (decompose-all2 reactions) "ORE"))
+  (get (decompose-all reactions {"FUEL" 1}) "ORE"))
 
 (defn parse-and-min-ore-to-reach-fuel [reactions-str]
   (let [reactions (reaction/parse-reactions reactions-str)]

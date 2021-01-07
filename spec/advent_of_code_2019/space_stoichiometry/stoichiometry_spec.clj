@@ -25,7 +25,7 @@
     (it "next-ingredient"
         (should= "C" (next-ingredient (keys decomposes-to) reactions)))
     (it "topo-sort"
-        (should= expected (topo-sort reactions))))
+        (should= expected (topological-sort reactions))))
   (let [reactions [{:in {"ORE" 2} :out {"A" 3}}
                    {:in {"ORE" 2 "A" 1} :out {"B" 2}}
                    {:in {"ORE" 1 "B" 1} :out {"FUEL" 2}}]
@@ -33,16 +33,15 @@
     (it "next-ingredient"
         (should= "FUEL" (next-ingredient (reaction/all-output-chems reactions) reactions)))
     (it "topo-sort"
-        (should= expected (topo-sort reactions)))))
+        (should= expected (topological-sort reactions)))))
 
 (describe "decompose-all2"
-  (let [reactions [{:in {"ORE" 2} :out {"A" 3}}
-                   {:in {"ORE" 2 "A" 1} :out {"B" 2}}
-                   {:in {"ORE" 1 "B" 1} :out {"FUEL" 2}}]
-        expected {"ORE" 5}]
-    (it "decompose-all2"
-        (should= expected (decompose-all2 reactions)))))
-
+          (let [reactions [{:in {"ORE" 2} :out {"A" 3}}
+                           {:in {"ORE" 2 "A" 1} :out {"B" 2}}
+                           {:in {"ORE" 1 "B" 1} :out {"FUEL" 2}}]
+                expected {"ORE" 5}]
+            (it "decompose-all2"
+                (should= expected (decompose-all reactions {"FUEL" 1})))))
 
 (describe "min-ore-to-reach-fuel"
           (let [reactions [{:in {"ORE" 2} :out {"C" 1}}
