@@ -15,13 +15,13 @@
 (defn init-program [program-vec]
   (apply merge (map-indexed hash-map program-vec)))
 
-(defn execution-state [program addr opcode relative-base is-diag output]
+(defn execution-state [program addr status relative-base output]
   {:program program
    :output output
    :addr addr
    :relative-base relative-base
    :is-first false
-   :status (if (= opcode 99) :stopped (if (abort? is-diag output) :aborted :paused))})
+   :status status})
 
 (defn init-state [program]
   {:program (init-program program)
@@ -36,14 +36,14 @@
    :output output})
 
 (defn instruction-length [program instruction-address]
-  (inst/instruction-length (inst/opcode-from-val (mem-access program instruction-address))))
+  (inst/instruction-length-by-val (mem-access program instruction-address)))
 
 (defn get-instruction [program instruction-address]
-  (let [inst-len (instruction-length program instruction-address)] 
+  (let [inst-len (instruction-length program instruction-address)]
     (prog-to-vec program instruction-address inst-len)))
 
-(defn next-instruction-address [instruction-address opcode]
-  (+ instruction-address (inst/instruction-length opcode)))
+(defn next-instruction-address [instruction instruction-address]
+  (+ instruction-address (inst/instruction-length instruction)))
 
 (defn pause-or-stop [instruction input-consumed is-diag output]
   (or (inst/stop? instruction)
@@ -66,14 +66,14 @@
      (let [curr-program (get exe-ctx :program)
            curr-output (get exe-ctx :output)
            instruction (get-instruction curr-program instruction-address)
-           opcode (inst/get-opcode instruction)]
+           status (if (inst/stop? instruction) :stopped (if (abort? is-diag output) :aborted :paused))]
        (if
         (pause-or-stop instruction input-consumed is-diag curr-output)
-        (execution-state curr-program instruction-address opcode (get exe-ctx :relative-base) is-diag curr-output)
+        (execution-state curr-program instruction-address status (get exe-ctx :relative-base) curr-output)
         (let [exe-result (inst/execute-instruction instruction input exe-ctx)
-              next-addr (or (get exe-result :next-addr) (next-instruction-address instruction-address opcode))
-              is-input-consumed (or input-consumed (= opcode 3))]
-          (recur next-addr exe-result is-input-consumed)))))))
+              next-addr (or (get exe-result :next-addr) (next-instruction-address instruction instruction-address))
+              is-input-consumed (or input-consumed (inst/input? instruction))]
+          (recur next-addr exe-result (boolean is-input-consumed))))))))
 
 (defn execute-segment-diag
   ([program addr input output relative-base]

@@ -5,7 +5,7 @@
 (defn mem-access [prog addr]
   (get prog addr 0))
 
-(defn instruction-length [opcode]
+(defn instruction-length-by-opcode [opcode]
   (case opcode
     99 1
     1 4
@@ -21,8 +21,14 @@
 (defn opcode-from-val [first-instr-val]
   (rem first-instr-val 100))
 
+(defn instruction-length-by-val [first-instr-val]
+  (instruction-length-by-opcode (opcode-from-val first-instr-val)))
+
 (defn get-opcode [instruction]
   (opcode-from-val (first instruction)))
+
+(defn instruction-length [instruction]
+  (instruction-length-by-opcode (get-opcode instruction)))
 
 (defn stop? [instruction]
   (= 99 (get-opcode instruction)))
