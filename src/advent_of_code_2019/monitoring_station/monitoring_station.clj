@@ -4,16 +4,11 @@
     [advent-of-code-2019.grid.grid :as g]
     [advent-of-code-2019.monitoring-station.asteroid-field :as af]))
 
-(defn visible? [from-coord coord-in-q grid]
-  (let [x-step (af/x-step from-coord coord-in-q)
-        y-step (af/y-step from-coord coord-in-q)]
-    (not (af/asteroids-between? from-coord coord-in-q x-step y-step grid))))
-
 (defn visible-asteroid-coords [coord grid]
   (let [all-coords (g/all-coords grid)
         other-coords (filter #(not= coord %) all-coords)
         other-asteroids (filter #(af/asteroid? % grid) other-coords)
-        visible-asteroids (filter #(visible? coord % grid) other-asteroids)]
+        visible-asteroids (filter #(af/asteroids-between? coord % grid) other-asteroids)]
     visible-asteroids))
 
 (defn visible-asteroid-count [coord grid]

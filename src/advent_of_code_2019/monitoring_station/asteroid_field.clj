@@ -1,8 +1,7 @@
 (ns advent-of-code-2019.monitoring-station.asteroid-field
   (:gen-class)
   (:require
-    [advent-of-code-2019.grid.grid :as g]
-    [clojure.math.numeric-tower :as math]))
+    [advent-of-code-2019.grid.grid :as g]))
 
 (def asteroid \#)
 
@@ -17,38 +16,28 @@
     grid
     (assoc (vec grid) (:y coord) (remove-asteroid-row coord grid))))
 
-(defn step [from-coord x-step y-step]
-  (g/create-coord
-    (+ x-step (:x from-coord))
-    (+ y-step (:y from-coord))))
-
-(defn x-step [from-coord to-coord]
-  (let [x-diff (- (:x to-coord) (:x from-coord))
-        y-diff (- (:y to-coord) (:y from-coord))]
-    (cond
-      (zero? y-diff) (if (pos? x-diff) 1 -1)
-      (zero? x-diff) 0
-      :else (let [angle (/ y-diff x-diff)
-                  numerator-abs (math/abs (if (instance? Long angle) 1 (denominator angle)))]
-              (if (pos? x-diff) numerator-abs (* -1 numerator-abs))))))
-
-(defn y-step [from-coord to-coord]
-  (let [x-diff (- (:x to-coord) (:x from-coord))
-        y-diff (- (:y to-coord) (:y from-coord))]
-    (cond
-      (zero? x-diff) (if (pos? y-diff) 1 -1)
-      (zero? y-diff) 0
-      :else (let [angle (/ y-diff x-diff)
-                  denominator-abs (math/abs (if (instance? Long angle) angle (numerator angle)))]
-              (if (pos? y-diff) denominator-abs (* -1 denominator-abs))))))
-
 (defn first-asteroid-between [from-coord to-coord x-step y-step grid]
-  (loop [next-coord (step from-coord x-step y-step)]
+  (loop [next-coord (g/step from-coord x-step y-step)]
     (assert (g/loc next-coord grid))
     (cond
       (= next-coord to-coord) nil
       (asteroid? next-coord grid) next-coord
-      :else (recur (step next-coord x-step y-step)))))
+      :else (recur (g/step next-coord x-step y-step)))))
 
-(defn asteroids-between? [from-coord to-coord x-step y-step grid]
-  (some? (first-asteroid-between from-coord to-coord x-step y-step grid)))
+(defn first-asteroid-on-path [from-coord to-coord grid]
+  (let [x-step (g/x-step from-coord to-coord)
+        y-step (g/y-step from-coord to-coord)
+        first-a (first-asteroid-between from-coord to-coord x-step y-step grid)
+        to-coord-a (asteroid? to-coord grid)]
+    (cond
+      (some? first-a) first-a
+      to-coord-a to-coord
+      :else nil)))
+
+(defn asteroids-between?
+  ([from-coord coord-in-q grid]
+   (let [x-step (g/x-step from-coord coord-in-q)
+         y-step (g/y-step from-coord coord-in-q)]
+     (not (asteroids-between? from-coord coord-in-q x-step y-step grid))))
+  ([from-coord to-coord x-step y-step grid]
+   (some? (first-asteroid-between from-coord to-coord x-step y-step grid))))

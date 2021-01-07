@@ -21,6 +21,7 @@
             [advent-of-code-2019.n-body-problem.energy :as energy]
             [advent-of-code-2019.n-body-problem.cycle-length :as cycle-length]
             [advent-of-code-2019.monitoring-station.monitoring-station :as monitoring-station]
+            [advent-of-code-2019.monitoring-station.laser :as laser]
             [advent-of-code-2019.input-handling :as input]))
 
 (defn day1pt1 []
@@ -86,7 +87,7 @@
   (monitoring-station/count-visible-from-best-loc (input/day10-grid)))
 
 (defn day10pt2 []
-  (let [last-vaped (monitoring-station/vaporize-asteroids (input/day10-grid) 200)]
+  (let [last-vaped (laser/vaporize-asteroids (input/day10-grid) 200)]
     (+ (* 100 (:x last-vaped))
        (:y last-vaped))))
 
