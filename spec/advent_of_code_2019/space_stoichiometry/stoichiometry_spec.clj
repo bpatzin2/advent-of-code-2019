@@ -17,32 +17,13 @@
     (it "decompose"
         (should= expected (decompose ingredients reaction)))))
 
-(describe "topo-sort"
-  (let [reactions [{:in {"ORE" 5 "A" 1} :out {"C" 1}}
-                   {:in {"ORE" 1} :out {"A" 2}}]
-        decomposes-to {"C" '("ORE" "A"), "A" '("ORE")}
-        expected ["C" "A"]]
-    (it "next-ingredient"
-        (should= "C" (next-ingredient (keys decomposes-to) reactions)))
-    (it "topo-sort"
-        (should= expected (topo-sort reactions))))
-  (let [reactions [{:in {"ORE" 2} :out {"A" 3}}
-                   {:in {"ORE" 2 "A" 1} :out {"B" 2}}
-                   {:in {"ORE" 1 "B" 1} :out {"FUEL" 2}}]
-        expected ["FUEL" "B" "A"]]
-    (it "next-ingredient"
-        (should= "FUEL" (next-ingredient (reaction/all-output-chems reactions) reactions)))
-    (it "topo-sort"
-        (should= expected (topo-sort reactions)))))
-
-(describe "decompose-all2"
-  (let [reactions [{:in {"ORE" 2} :out {"A" 3}}
-                   {:in {"ORE" 2 "A" 1} :out {"B" 2}}
-                   {:in {"ORE" 1 "B" 1} :out {"FUEL" 2}}]
-        expected {"ORE" 5}]
-    (it "decompose-all2"
-        (should= expected (decompose-all2 reactions)))))
-
+(describe "decompose-all"
+          (let [reactions [{:in {"ORE" 2} :out {"A" 3}}
+                           {:in {"ORE" 2 "A" 1} :out {"B" 2}}
+                           {:in {"ORE" 1 "B" 1} :out {"FUEL" 2}}]
+                expected {"ORE" 5}]
+            (it "decompose-all2"
+                (should= expected (decompose-all reactions {"FUEL" 1})))))
 
 (describe "min-ore-to-reach-fuel"
           (let [reactions [{:in {"ORE" 2} :out {"C" 1}}

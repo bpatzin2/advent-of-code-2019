@@ -1,5 +1,7 @@
 (ns advent-of-code-2019.space-stoichiometry.stoichiometry
-  (:require [advent-of-code-2019.space-stoichiometry.reactions :as reaction]))
+  (:require
+    [advent-of-code-2019.space-stoichiometry.reactions :as reaction]
+    [advent-of-code-2019.space-stoichiometry.topological-sort :as ts]))
 
 (defn reaction-count [ingredient-quantity reaction-quantity]
   (let [r (rem ingredient-quantity reaction-quantity)
@@ -23,33 +25,17 @@
   (let [reaction (first (filter #(= (reaction/ingredient-chem ingredient) (reaction/output-chem %)) reactions))]
     (decompose ingredient reaction)))
 
-(defn remaining? [remaining-ingredients reaction]
-  (contains? (set remaining-ingredients) (reaction/output-chem reaction)))
-
-(defn not-still-input [ingredient remaining reactions]
-  (let [remaining-reactions (filter #(remaining? remaining %) reactions)
-        remaining-inputs (set (flatten (map keys (map :in remaining-reactions))))]
-    (not (contains? remaining-inputs ingredient))))
-
-(defn next-ingredient [remaining reactions]
-  (let [candidates (filter #(not-still-input % remaining reactions) remaining)]
-    (first candidates)))
-
-(defn topo-sort [reactions]
-  (loop [result []
-         remaining (reaction/all-output-chems reactions)]
-    (if (empty? remaining)
-      result
-      (let [next (next-ingredient remaining reactions)]
-        (recur (conj result next) (remove #(= next %) remaining))))))
-
 (defn find-ingredient [ingredients ingredient]
   (first (filter #(= ingredient (reaction/ingredient-chem %)) ingredients)))
 
-(defn decompose-all2 [reactions]
-  (let [ingredient-order (topo-sort reactions)]
+; Sort the reactions so that each ingredient type is only
+; ever decomposed once. i.e. All reactions that decompose
+; into a particular ingredient are decomposed before
+; decomposing that ingredient.
+(defn decompose-all [reactions initial-ingredients]
+  (let [ingredient-order (ts/topological-sort reactions)]
     (loop [rest ingredient-order
-           result {"FUEL" 1}]
+           result initial-ingredients]
       (if (empty? rest)
         result
         (let [next (find-ingredient result (first rest))
@@ -59,7 +45,7 @@
           (recur (drop 1 rest) new-result))))))
 
 (defn min-ore-to-reach-fuel [reactions]
-  (get (decompose-all2 reactions) "ORE"))
+  (get (decompose-all reactions {"FUEL" 1}) "ORE"))
 
 (defn parse-and-min-ore-to-reach-fuel [reactions-str]
   (let [reactions (reaction/parse-reactions reactions-str)]
