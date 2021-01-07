@@ -8,6 +8,32 @@
 (defn prog-to-vec [prog start len]
   (reduce #(conj %1 (mem-access prog %2)) [] (range start (+ start len))))
 
+(defn abort? [is-diag output]
+  (and is-diag (and (not (empty? output)) (not= 0 (last output)))))
+
+(defn init-program [program-vec]
+  (apply merge (map-indexed hash-map program-vec)))
+
+(defn execution-state [program addr opcode relative-base is-diag output]
+  {:program program
+   :output output
+   :addr addr
+   :relative-base relative-base
+   :is-first false
+   :status (if (= opcode 99) :stopped (if (abort? is-diag output) :aborted :paused))})
+
+(defn init-state [program]
+  {:program (init-program program)
+   :output []
+   :addr 0
+   :relative-base 0
+   :status :paused})
+
+(defn create-ctx [program output relative-base]
+  {:relative-base relative-base
+   :program program
+   :output output})
+
 (defn opcode-ins-lengh [opcode]
   (case opcode
     99 1
@@ -121,35 +147,12 @@
                   5 (jump-if-true instruction program relative-base)
                   6 (jump-if-false instruction program relative-base)
                   nil)
-     :relative-base (if (= opcode 9) (adjust-relative-base instruction program relative-base) relative-base)
-     }
-    ))
-
-(defn abort? [is-diag output]
- (and is-diag (and (not (empty? output)) (not= 0 (last output)))))
+     :relative-base (if (= opcode 9) (adjust-relative-base instruction program relative-base) relative-base)}))
 
 (defn pause-or-stop [opcode input-consumed is-diag output]
   (or (= opcode 99) 
       (and input-consumed (= opcode 3))
       (abort? is-diag output)))
-
-(defn execution-state [program addr opcode relative-base is-diag output]
-  {:program program
-   :output output
-   :addr addr
-   :relative-base relative-base
-   :is-first false
-   :status (if (= opcode 99) :stopped (if (abort? is-diag output) :aborted :paused))})
-
-(defn init-program [program-vec]
-  (apply merge (map-indexed hash-map program-vec)))
-
-(defn init-state [program]
-  {:program (init-program program)
-   :output []
-   :addr 0
-   :relative-base 0
-   :status :paused})
 
 (defn publish-state [state prog-len]
   (let [program (:program state)] 
@@ -162,9 +165,7 @@
    (execute-segment program addr input output relative-base is-first false))
   ([program addr input output relative-base is-first is-diag]
    (loop [instruction-address addr
-          exe-ctx {:relative-base relative-base
-                   :program (if is-first (init-program program) program)
-                   :output output}
+          exe-ctx (create-ctx (if is-first (init-program program) program) output relative-base)
           input-consumed (= nil input)]
      (let [curr-program (get exe-ctx :program)
            curr-output (get exe-ctx :output)
@@ -172,11 +173,11 @@
            opcode (get-opcode (first instruction))]
        (if
         (pause-or-stop opcode input-consumed is-diag curr-output)
-         (execution-state curr-program instruction-address opcode (get exe-ctx :relative-base) is-diag curr-output)
-         (let [exe-result (execute-instruction instruction input exe-ctx)
-               next-addr (or (get exe-result :next-addr) (next-instruction-address instruction-address opcode))
-               is-input-consumed (or input-consumed (= opcode 3))]
-           (recur next-addr exe-result is-input-consumed)))))))
+        (execution-state curr-program instruction-address opcode (get exe-ctx :relative-base) is-diag curr-output)
+        (let [exe-result (execute-instruction instruction input exe-ctx)
+              next-addr (or (get exe-result :next-addr) (next-instruction-address instruction-address opcode))
+              is-input-consumed (or input-consumed (= opcode 3))]
+          (recur next-addr exe-result is-input-consumed)))))))
 
 (defn execute-segment-diag
   ([program addr input output relative-base]
@@ -191,13 +192,13 @@
           inputs inputs]
      (if 
       (or (= :stopped (:status state)) (= :aborted (:status state)))
-       (publish-state state (count program))
-       (let [prog (:program state)
-             addr (:addr state)
-             output (:output state)
-             relative-base (:relative-base state)
-             next-state (execute-segment prog addr (first inputs) output relative-base diag-mode)]
-         (recur next-state (rest inputs)))))))
+      (publish-state state (count program))
+      (let [prog (:program state)
+            addr (:addr state)
+            output (:output state)
+            relative-base (:relative-base state)
+            next-state (execute-segment prog addr (first inputs) output relative-base diag-mode)]
+        (recur next-state (rest inputs)))))))
 
 (defn execute
   ([program] (execute program [0]))
