@@ -1,6 +1,8 @@
 (ns advent-of-code-2019.intcode.intcode
   (:gen-class)
-  (:require [clojure.math.numeric-tower :as math]))
+  (:require
+    [advent-of-code-2019.intcode.instruction :as inst]
+    [clojure.math.numeric-tower :as math]))
 
 (defn mem-access [prog addr]
   (get prog addr 0))
@@ -47,11 +49,8 @@
     8 4
     9 2))
 
-(defn get-opcode [first-instr-val]
-  (rem first-instr-val 100))
-
 (defn instruction-length [program instruction-address]
-  (opcode-ins-lengh (get-opcode (mem-access program instruction-address))))
+  (opcode-ins-lengh (inst/opcode-from-val (mem-access program instruction-address))))
 
 (defn get-instruction [program instruction-address]
   (let [inst-len (instruction-length program instruction-address)] 
@@ -130,7 +129,7 @@
     (+ relative-base adjustment)))
 
 (defn execute-instruction [instruction input exe-ctx]
-  (let [opcode (get-opcode (get instruction 0))
+  (let [opcode (inst/get-opcode instruction)
         output (get exe-ctx :output)
         program (get exe-ctx :program)
         relative-base (get exe-ctx :relative-base)
@@ -170,7 +169,7 @@
      (let [curr-program (get exe-ctx :program)
            curr-output (get exe-ctx :output)
            instruction (get-instruction curr-program instruction-address)
-           opcode (get-opcode (first instruction))]
+           opcode (inst/get-opcode instruction)]
        (if
         (pause-or-stop opcode input-consumed is-diag curr-output)
         (execution-state curr-program instruction-address opcode (get exe-ctx :relative-base) is-diag curr-output)
