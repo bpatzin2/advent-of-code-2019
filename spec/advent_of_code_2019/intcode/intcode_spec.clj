@@ -1,7 +1,7 @@
-(ns advent-of-code-2019.intcode-spec
+(ns advent-of-code-2019.intcode.intcode-spec
   (:require [speclj.core :refer :all]
             [advent-of-code-2019.input-handling :refer :all]
-            [advent-of-code-2019.intcode :refer :all]))
+            [advent-of-code-2019.intcode.intcode :refer :all]))
 
 (describe 
  "intcode"

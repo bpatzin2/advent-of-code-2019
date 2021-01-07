@@ -1,8 +1,8 @@
 (ns advent-of-code-2019.core
   (:gen-class)
   (:require [advent-of-code-2019.rocket-equation :as re]
-            [advent-of-code-2019.intcode :as intcode]
-            [advent-of-code-2019.intcode-harness :as intcode-harness]
+            [advent-of-code-2019.intcode.intcode :as intcode]
+            [advent-of-code-2019.intcode.intcode-harness :as intcode-harness]
             [advent-of-code-2019.amplification :as amp]
             [advent-of-code-2019.orbit-mapping :as om]
             [advent-of-code-2019.crossed-wires :as cw]

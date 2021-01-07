@@ -1,4 +1,4 @@
-(ns advent-of-code-2019.intcode
+(ns advent-of-code-2019.intcode.intcode
   (:gen-class)
   (:require [clojure.math.numeric-tower :as math]))
 
