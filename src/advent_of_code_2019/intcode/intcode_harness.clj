@@ -1,6 +1,6 @@
-(ns advent-of-code-2019.intcode-harness
+(ns advent-of-code-2019.intcode.intcode-harness
   (:gen-class)
-  (:require [advent-of-code-2019.intcode :as intcode]
+  (:require [advent-of-code-2019.intcode.intcode :as intcode]
             [clojure.math.combinatorics :as combo]))
 
 (defn all-test-inputs []
