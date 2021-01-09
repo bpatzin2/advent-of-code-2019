@@ -40,7 +40,7 @@
   (if (contains? (:painted-panels state) (:pos state))
     1 0))
 
-(defn run-robot [input i]
+(defn run-test-robot [input i]
   {:output (nth example-outputs i)
    :status (if (= (inc i) (count example-outputs)) :stopped :paused)})
 
@@ -88,11 +88,11 @@
         inputs (conj (:inputs state) next-input)]
     (assoc state :painted-panels painted-panels :pos pos :dir dir :inputs inputs)))
 
-(defn paint-hull []
+(defn paint-hull [robot-runner]
   (loop [state (init-painting-state)
          i 0]
     (let [next-input (current-panel-color state)
-          robot-state (run-robot next-input i)
+          robot-state (robot-runner next-input i)
           painting-state (update-state state robot-state next-input)]
       (if (stopped? robot-state)
         painting-state
@@ -113,4 +113,4 @@
                {:x 1, :y 0}
                :right,
                expected-inputs)
-             (paint-hull))))
+             (paint-hull run-test-robot))))
