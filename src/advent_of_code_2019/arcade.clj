@@ -1,6 +1,6 @@
 (ns advent-of-code-2019.arcade
   (:gen-class)
-  (:require [advent-of-code-2019.intcode :as intcode]))
+  (:require [advent-of-code-2019.intcode.intcode :as intcode]))
 
 (defn execute-program [program]
   (get (intcode/execute-with-output program []) :output))
