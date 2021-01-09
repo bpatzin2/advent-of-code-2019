@@ -1,6 +1,6 @@
 (ns advent-of-code-2019.oxygen-system
   (:gen-class)
-  (:require [advent-of-code-2019.intcode :as intcode]))
+  (:require [advent-of-code-2019.intcode.intcode :as intcode]))
 
 (defn execute-segment [exe-state dir]
   (intcode/execute-segment

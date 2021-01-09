@@ -1,6 +1,6 @@
 (ns advent-of-code-2019.amplification
   (:gen-class)
-  (:require [advent-of-code-2019.intcode :as intcode]
+  (:require [advent-of-code-2019.intcode.intcode :as intcode]
             [clojure.math.combinatorics :as combo]))
 
 (defn all-test-inputs []
@@ -37,7 +37,7 @@
         (recur 
          (rest rem-phase-settings) 
          (intcode/diagnostic-code 
-          program 
+          program
           [(first rem-phase-settings) input-signal])))))
 
 (defn find-largest-output [program phase-settings]
