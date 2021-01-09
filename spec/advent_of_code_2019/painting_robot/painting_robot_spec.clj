@@ -10,7 +10,8 @@
   [[1,0] ;paint white, turn left
    [0,0] ;paint black, turn left
    [1,0] ;paint white, turn left
-   [1,0]]) ;paint white, turn left
+   [1,0] ;paint white, turn left
+   [0,1]]) ;paint black, turn right
 
 (def expected-inputs
   [0 ; (0,0) starts black
@@ -26,31 +27,30 @@
 ; 4. update the current state of the hull
 ; 5. turn and move the robot
 
-(defn create-painting-state [white-panels pos dir]
-  {:white-panels white-panels
-   :pos pos
-   :dir dir})
+(defn create-painting-state [painted-panels pos dir inputs]
+  {:painted-panels painted-panels
+   :pos            pos
+   :dir            dir
+   :inputs         inputs})
 
 (defn init-painting-state []
-  (create-painting-state #{} {:x 0 :y 0} :up))
+  (create-painting-state {} {:x 0 :y 0} :up []))
 
 (defn current-panel-color [state]
-  (if (contains? (:white-panels state) (:pos state))
+  (if (contains? (:painted-panels state) (:pos state))
     1 0))
 
 (defn run-robot [input i]
-  (println "run-robot" input i)
   {:output (nth example-outputs i)
    :status (if (= (inc i) (count example-outputs)) :stopped :paused)})
 
 (defn stopped? [robot-state]
   (= :stopped (:status robot-state)))
 
-(defn update-white-panels [state robot-output]
-  (let [curr-white-panels (:white-panels state)]
-    (if (= 1 (first robot-output))
-      (conj curr-white-panels (:pos state))
-      curr-white-panels)))
+(defn update-painted-panels [state robot-output]
+  (let [curr-painted-panels (:painted-panels state)
+        color (if (= 1 (first robot-output)) :white :black)]
+      (assoc curr-painted-panels (:pos state) color)))
 
 (defn update-pos [state dir]
   (let [curr-pos (:pos state)
@@ -80,29 +80,37 @@
   (let [curr-dir (:dir state)]
     (if (= 0 (second robot-output)) (turn-left curr-dir) (turn-right curr-dir))))
 
-(defn update-state [state robot-state]
+(defn update-state [state robot-state next-input]
   (let [robot-output (:output robot-state)
-        white-panels (update-white-panels state robot-output)
+        painted-panels (update-painted-panels state robot-output)
         dir (update-dir state robot-output)
-        pos (update-pos state dir)]
-    (assoc state :white-panels white-panels :pos pos :dir dir)))
+        pos (update-pos state dir)
+        inputs (conj (:inputs state) next-input)]
+    (assoc state :painted-panels painted-panels :pos pos :dir dir :inputs inputs)))
 
 (defn paint-hull []
   (loop [state (init-painting-state)
          i 0]
     (let [next-input (current-panel-color state)
           robot-state (run-robot next-input i)
-          painting-state (update-state state robot-state)]
+          painting-state (update-state state robot-state next-input)]
       (if (stopped? robot-state)
         painting-state
         (recur painting-state (inc i))))))
 
 (describe "update-state"
   (it "updates the current state based on the robot's output"
-    (should= (create-painting-state #{{:x 0, :y 0}} {:x -1, :y 0} :left)
-             (update-state (init-painting-state) {:output [1,0] :status :paused})))) ;white, left
+    (should= (create-painting-state {{:x 0, :y 0} :white} {:x -1, :y 0} :left [0])
+             (update-state (init-painting-state) {:output [1,0] :status :paused} 0)))) ;white, left
 
 (describe "paint-hull"
-  (it "works"
-    (should= (create-painting-state  #{{:x 0, :y 0} {:x -1, :y -1} {:x 0, :y -1}} {:x 0, :y 0} :up)
+  (it "works for provided example"
+    (should= (create-painting-state
+               {{:x 0, :y 0} :black
+                {:x -1, :y 0} :black
+                {:x -1, :y -1} :white
+                {:x 0, :y -1} :white}
+               {:x 1, :y 0}
+               :right,
+               expected-inputs)
              (paint-hull))))
