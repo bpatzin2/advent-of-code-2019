@@ -11,14 +11,18 @@
    [0,0] ;paint black, turn left
    [1,0] ;paint white, turn left
    [1,0] ;paint white, turn left
-   [0,1]]) ;paint black, turn right
+   [0,1] ;paint black, turn right
+   [1,0]
+   [1,0]])
 
 (def expected-inputs
   [0 ; (0,0) starts black
    0 ; (-1,0) starts black
    0 ; (-1,-1) starts black
    0 ; (0,-1) starts black
-   1]) ; (0,0) was prev painted white
+   1
+   0
+   0]) ; (0,0) was prev painted white
 
 (defn init-state [program]
   {:program (intcode/init-program program)
@@ -55,10 +59,13 @@
 (defn stopped? [robot-state]
   (= :stopped (:status robot-state)))
 
+(defn paint-color [robot-output]
+  (if (= 1 (first robot-output)) :white :black))
+
 (defn update-painted-panels [state robot-output]
   (let [curr-painted-panels (:painted-panels state)
-        color (if (= 1 (first robot-output)) :white :black)]
-      (assoc curr-painted-panels (:pos state) color)))
+        color (paint-color robot-output)]
+      (conj curr-painted-panels [(:pos state) color])))
 
 (defn update-pos [state dir]
   (let [curr-pos (:pos state)
@@ -84,17 +91,27 @@
     :left :up
     :right :down))
 
+(defn parse-turn [robot-output]
+  (if (= 0 (second robot-output)) :turn-left :turn-right))
+
 (defn update-dir [state robot-output]
-  (let [curr-dir (:dir state)]
-    (if (= 0 (second robot-output)) (turn-left curr-dir) (turn-right curr-dir))))
+  (let [curr-dir (:dir state)
+        turn-dir (parse-turn robot-output)]
+    (if (= :turn-left turn-dir) (turn-left curr-dir) (turn-right curr-dir))))
 
 (defn update-state [state robot-state next-input]
   (let [robot-output (:output robot-state)
+        robot-exe-state (:robot-exe-state robot-state)
         painted-panels (update-painted-panels state robot-output)
         dir (update-dir state robot-output)
         pos (update-pos state dir)
         inputs (conj (:inputs state) next-input)]
-    (assoc state :painted-panels painted-panels :pos pos :dir dir :inputs inputs)))
+    (assoc state
+      :painted-panels painted-panels
+      :pos pos
+      :dir dir
+      :inputs inputs
+      :robot-exe-state robot-exe-state)))
 
 (defn paint-hull [robot-runner robot-initializer]
   (loop [state (init-painting-state robot-initializer)
@@ -106,11 +123,12 @@
         painting-state
         (recur painting-state (inc i))))))
 
-(defn dummy-robot-initializer [] {})
+(defn test-robot-initializer [] {})
 
 (describe "update-state"
   (it "updates the current state based on the robot's output"
-    (let [result-state (update-state (init-painting-state dummy-robot-initializer) {:output [1,0] :status :paused} 0)] ;white, left
+    (let [initial-state (init-painting-state test-robot-initializer)
+          result-state (update-state initial-state {:output [1,0] :status :paused} 0)] ;white, left
       (should= {{:x 0, :y 0} :white} (:painted-panels result-state))
       (should= {:x -1, :y 0} (:pos result-state))
       (should= :left (:dir result-state))
@@ -118,26 +136,35 @@
 
 (describe "paint-hull"
   (it "works for provided example"
-      (let [result-state (paint-hull run-test-robot dummy-robot-initializer)]
+      (let [result-state (paint-hull run-test-robot test-robot-initializer)]
         (should= {{:x 0, :y 0} :black
                   {:x -1, :y 0} :black
                   {:x -1, :y -1} :white
-                  {:x 0, :y -1} :white}
+                  {:x 0, :y -1} :white
+                  {:x 1, :y 0} :white
+                  {:x 1, :y 1} :white}
                  (:painted-panels result-state))
-
-        (should= {:x 1, :y 0} (:pos result-state))
-        (should= :right (:dir result-state))
+        (should= 6 (count (:painted-panels result-state)))
+        (should= {:x 0, :y 1} (:pos result-state))
+        (should= :left (:dir result-state))
         (should= expected-inputs (:inputs result-state)))))
 
-(def program (csv-as-int-vec "input/day11.txt"))
-;(println program)
-;(def state (init-state program))
-;(def result1 (intcode/execute-segment state [0] false))
-;(def result2 (intcode/execute-segment result1 [0] false))
-;(println result2)
+(defn robot-initializer []
+  (init-state (csv-as-int-vec "input/day11.txt")))
 
-(defn actual-robot [state input program _]
-  (let [computer-input (get state :prev-execution-state (init-state program))]))
-  ;{:output (nth example-outputs i)
-  ; :status (if (= (inc i) (count example-outputs)) :stopped :paused)
-  ; :prev-execution-state {}})
+(defn parse-output [output]
+  [(paint-color output) (parse-turn output)])
+
+(defn actual-robot [state input i]
+  ;(println (:dir state) (:pos state) input)
+  ;(if (= 10 i) (throw (Exception. "my exception message")) nil)
+  (let [robot-exe-state (:robot-exe-state state)
+        next-exe-state (intcode/execute-segment robot-exe-state [input] false)
+        status (:status next-exe-state)
+        output (:output next-exe-state)
+        robot-state (assoc next-exe-state :output [])]
+    ;(println (parse-output output))
+    {:output output :status status :robot-exe-state robot-state}))
+
+(def result (paint-hull actual-robot robot-initializer))
+(println (count (:painted-panels result)))
