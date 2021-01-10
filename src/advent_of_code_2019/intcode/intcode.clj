@@ -89,7 +89,7 @@
   ([program inputs diag-mode]
    (loop [state (init-state program)
           inputs inputs]
-     (if 
+     (if
       (contains? #{:stopped :aborted} (:status state))
       (publish-state state (count program))
       (let [next-state (execute-segment state (first inputs) diag-mode)]

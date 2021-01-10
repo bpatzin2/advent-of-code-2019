@@ -1,7 +1,7 @@
 (ns advent-of-code-2019.painting-robot.painting-robot-spec
   (:require [speclj.core :refer :all]
             [advent-of-code-2019.input-handling :refer :all]
-            [advent-of-code-2019.intcode.intcode :refer :all]))
+            [advent-of-code-2019.intcode.intcode :as intcode]))
 
 (defn create-robot-output [paint turn]
   {:paint paint :turn turn})
@@ -20,6 +20,13 @@
    0 ; (0,-1) starts black
    1]) ; (0,0) was prev painted white
 
+(defn init-state [program]
+  {:program (intcode/init-program program)
+   :addr 0
+   :output []
+   :relative-base 0
+   :is-first true})
+
 ; Program:
 ; 1. determine current panel color
 ; 2. provide it as input to the robot
@@ -27,20 +34,21 @@
 ; 4. update the current state of the hull
 ; 5. turn and move the robot
 
-(defn create-painting-state [painted-panels pos dir inputs]
-  {:painted-panels painted-panels
-   :pos            pos
-   :dir            dir
-   :inputs         inputs})
+(defn create-painting-state [painted-panels pos dir inputs robot-exe-state]
+  {:painted-panels  painted-panels
+   :pos             pos
+   :dir             dir
+   :inputs          inputs
+   :robot-exe-state robot-exe-state})
 
-(defn init-painting-state []
-  (create-painting-state {} {:x 0 :y 0} :up []))
+(defn init-painting-state [robot-initializer]
+  (create-painting-state {} {:x 0 :y 0} :up [] (robot-initializer)))
 
 (defn current-panel-color [state]
   (if (contains? (:painted-panels state) (:pos state))
     1 0))
 
-(defn run-test-robot [input i]
+(defn run-test-robot [state input i]
   {:output (nth example-outputs i)
    :status (if (= (inc i) (count example-outputs)) :stopped :paused)})
 
@@ -88,29 +96,48 @@
         inputs (conj (:inputs state) next-input)]
     (assoc state :painted-panels painted-panels :pos pos :dir dir :inputs inputs)))
 
-(defn paint-hull [robot-runner]
-  (loop [state (init-painting-state)
+(defn paint-hull [robot-runner robot-initializer]
+  (loop [state (init-painting-state robot-initializer)
          i 0]
     (let [next-input (current-panel-color state)
-          robot-state (robot-runner next-input i)
+          robot-state (robot-runner state next-input i)
           painting-state (update-state state robot-state next-input)]
       (if (stopped? robot-state)
         painting-state
         (recur painting-state (inc i))))))
 
+(defn dummy-robot-initializer [] {})
+
 (describe "update-state"
   (it "updates the current state based on the robot's output"
-    (should= (create-painting-state {{:x 0, :y 0} :white} {:x -1, :y 0} :left [0])
-             (update-state (init-painting-state) {:output [1,0] :status :paused} 0)))) ;white, left
+    (let [result-state (update-state (init-painting-state dummy-robot-initializer) {:output [1,0] :status :paused} 0)] ;white, left
+      (should= {{:x 0, :y 0} :white} (:painted-panels result-state))
+      (should= {:x -1, :y 0} (:pos result-state))
+      (should= :left (:dir result-state))
+      (should= [0] (:inputs result-state)))))
 
 (describe "paint-hull"
   (it "works for provided example"
-    (should= (create-painting-state
-               {{:x 0, :y 0} :black
-                {:x -1, :y 0} :black
-                {:x -1, :y -1} :white
-                {:x 0, :y -1} :white}
-               {:x 1, :y 0}
-               :right,
-               expected-inputs)
-             (paint-hull run-test-robot))))
+      (let [result-state (paint-hull run-test-robot dummy-robot-initializer)]
+        (should= {{:x 0, :y 0} :black
+                  {:x -1, :y 0} :black
+                  {:x -1, :y -1} :white
+                  {:x 0, :y -1} :white}
+                 (:painted-panels result-state))
+
+        (should= {:x 1, :y 0} (:pos result-state))
+        (should= :right (:dir result-state))
+        (should= expected-inputs (:inputs result-state)))))
+
+(def program (csv-as-int-vec "input/day11.txt"))
+;(println program)
+;(def state (init-state program))
+;(def result1 (intcode/execute-segment state [0] false))
+;(def result2 (intcode/execute-segment result1 [0] false))
+;(println result2)
+
+(defn actual-robot [state input program _]
+  (let [computer-input (get state :prev-execution-state (init-state program))]))
+  ;{:output (nth example-outputs i)
+  ; :status (if (= (inc i) (count example-outputs)) :stopped :paused)
+  ; :prev-execution-state {}})
