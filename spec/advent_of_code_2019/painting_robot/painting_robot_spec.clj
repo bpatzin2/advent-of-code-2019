@@ -159,7 +159,7 @@
   ;(println (:dir state) (:pos state) input)
   ;(if (= 10 i) (throw (Exception. "my exception message")) nil)
   (let [robot-exe-state (:robot-exe-state state)
-        next-exe-state (intcode/execute-segment robot-exe-state [input] false)
+        next-exe-state (intcode/execute-segment robot-exe-state input false)
         status (:status next-exe-state)
         output (:output next-exe-state)
         robot-state (assoc next-exe-state :output [])]
