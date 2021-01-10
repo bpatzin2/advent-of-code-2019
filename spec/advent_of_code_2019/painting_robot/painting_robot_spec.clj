@@ -1,7 +1,8 @@
 (ns advent-of-code-2019.painting-robot.painting-robot-spec
   (:require [speclj.core :refer :all]
             [advent-of-code-2019.input-handling :refer :all]
-            [advent-of-code-2019.intcode.intcode :as intcode]))
+            [advent-of-code-2019.intcode.intcode :as intcode]
+            [clojure.string :as str]))
 
 (def example-outputs
   [[1,0] ;paint white, turn left
@@ -49,6 +50,9 @@
 
 (defn init-painting-state [robot-initializer]
   (create-painting-state {} {:x 0 :y 0} :up [] (robot-initializer)))
+
+(defn init-painting-state-pt2 [robot-initializer]
+  (create-painting-state {{:x 0 :y 0} :white} {:x 0 :y 0} :up [] (robot-initializer)))
 
 (defn current-panel-color [state]
   (get (:painted-panels state) (:pos state) :black))
@@ -117,7 +121,7 @@
       :robot-exe-state robot-exe-state)))
 
 (defn paint-hull [robot-runner robot-initializer]
-  (loop [state (init-painting-state robot-initializer)
+  (loop [state (init-painting-state-pt2 robot-initializer)
          i 0]
     (let [color (current-panel-color state)
           next-input (color-code color)
@@ -168,3 +172,31 @@
   (it "works for provided input"
       (let [painting-result (paint-hull actual-robot robot-initializer)]
         (should= 1876 (count (:painted-panels painting-result))))))
+
+
+(defn get-row [x-range y coord-colors]
+  (let [row-colors (map #(get coord-colors {:x % :y y} :black) x-range)
+        row-color-codes (apply str (map #(if (= % :white) "#" "_") row-colors))]
+    row-color-codes))
+
+(defn paint [coord-colors]
+  (let [xs (map :x (keys coord-colors))
+        ys (map :y (keys coord-colors))
+        min-x (apply min xs)
+        max-x (apply max xs)
+        x-range (range min-x (inc max-x))
+        min-y (apply min ys)
+        max-y (apply max ys)
+        y-range (range max-y (dec min-y) -1)
+        rows (map #(get-row x-range % coord-colors) y-range)]
+    (str/join "\n" rows)))
+
+(def sample-paint {{:x 1 :y 1} :white
+                   {:x 0 :y 0} :white
+                   {:x -1 :y -1} :black})
+
+(println (paint sample-paint))
+
+(println (paint (:painted-panels (paint-hull actual-robot robot-initializer))))
+
+(println "done")
