@@ -63,14 +63,6 @@
         white-panel-coords (keys white-panels)]
     (ascii/draw white-panel-coords)))
 
-(def expected-sample-paint
-  [" #"
-   "# "])
-(describe "draw"
-  (it "works"
-      (should= (str/join "\n" expected-sample-paint)
-               (ascii/draw [{:x 1 :y 1} {:x 0 :y 0}]))))
-
 (def expected-painted-text-strs
   [
    " ##   ##  ###    ##  ##   ##   ##  #   "
