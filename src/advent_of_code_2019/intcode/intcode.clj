@@ -15,6 +15,7 @@
 (defn init-program [program-vec]
   (apply merge (map-indexed hash-map program-vec)))
 
+;TODO Consider separating the initial program and the current memory
 (defn execution-state [program addr status relative-base output]
   {:program program
    :output output
@@ -47,7 +48,7 @@
 
 (defn pause-or-stop [instruction input-consumed is-diag output]
   (or (inst/stop? instruction)
-      (and input-consumed (inst/input? instruction) )
+      (and input-consumed (inst/input? instruction))
       (abort? is-diag output)))
 
 (defn publish-state [state prog-len]
@@ -88,7 +89,7 @@
   ([program inputs diag-mode]
    (loop [state (init-state program)
           inputs inputs]
-     (if 
+     (if
       (contains? #{:stopped :aborted} (:status state))
       (publish-state state (count program))
       (let [next-state (execute-segment state (first inputs) diag-mode)]

@@ -6,7 +6,7 @@
   (map #(Integer/parseInt %) (str/split (slurp file-name), #"\n")))
 
 (defn csv-as-int-vec [file-name]
-  (vec (map #(Integer/parseInt %) (str/split (slurp file-name), #","))))
+  (vec (map #(Long/parseLong %) (str/split (str/trim (slurp file-name)), #","))))
 
 (defn day1-num-seq []
   (newline-as-int-seq "input/day1.txt"))
