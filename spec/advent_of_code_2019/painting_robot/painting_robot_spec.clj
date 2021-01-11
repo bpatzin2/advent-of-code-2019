@@ -22,15 +22,13 @@
    0
    0])
 
-(defn test-robot-initializer [] {})
-
 (defn run-test-robot [_ _ i]
   {:output (nth example-outputs i)
    :status (if (= (inc i) (count example-outputs)) :stopped :paused)})
 
 (describe "update-state"
   (it "updates the current state based on the robot's output"
-    (let [initial-state (init-painting-state test-robot-initializer)
+    (let [initial-state (init-painting-state {})
           result-state (update-state initial-state {:output [1,0] :status :paused} 0)] ;white, left
       (should= {{:x 0, :y 0} :white} (:painted-panels result-state))
       (should= {:x -1, :y 0} (:pos result-state))
@@ -39,7 +37,7 @@
 
 (describe "paint-hull"
   (it "works for provided example"
-      (let [result-state (paint-hull run-test-robot test-robot-initializer false)]
+      (let [result-state (paint-hull {:initial-state {} :move run-test-robot} false)]
         (should= {{:x 0, :y 0} :black
                   {:x -1, :y 0} :black
                   {:x -1, :y -1} :white
@@ -54,7 +52,7 @@
 
 (describe "part1 solution"
   (it "works for provided input"
-      (let [painting-result (paint-hull robot/actual-robot robot/robot-initializer false)]
+      (let [painting-result (paint-hull robot/robot false)]
         (should= 1876 (count (:painted-panels painting-result))))))
 
 (def expected-painted-text-strs
@@ -68,5 +66,5 @@
 
 (describe "part2 solution"
   (it "works for provided input"
-      (let [painted-text (paint (:painted-panels (paint-hull robot/actual-robot robot/robot-initializer true)))]
+      (let [painted-text (paint (:painted-panels (paint-hull robot/robot true)))]
         (should= (str/join "\n" expected-painted-text-strs) painted-text))))

@@ -10,7 +10,7 @@
    :relative-base 0
    :is-first true})
 
-(defn robot-initializer []
+(defn get-initial-state []
   (init-state (input/csv-as-int-vec "input/day11.txt")))
 
 (defn actual-robot [state input _]
@@ -20,3 +20,6 @@
         output (:output next-exe-state)
         robot-state (assoc next-exe-state :output [])]
     {:output output :status status :robot-exe-state robot-state}))
+
+(def robot {:initial-state (get-initial-state)
+            :move actual-robot})
