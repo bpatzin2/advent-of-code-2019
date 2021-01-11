@@ -57,21 +57,24 @@
       (let [painting-result (paint-hull robot/actual-robot robot/robot-initializer false)]
         (should= 1876 (count (:painted-panels painting-result))))))
 
-(defn get-row [x-range y coord-colors]
-  (let [row-colors (map #(get coord-colors {:x % :y y} :black) x-range)
-        row-color-codes (apply str (map #(if (= % :white) "#" " ") row-colors))]
-    row-color-codes))
+(defn get-row [x-range y filled-coords]
+  (let [row-colors (map #(contains? filled-coords {:x % :y y}) x-range)
+        chars (map #(if % "#" " ") row-colors)
+        row-str (apply str chars)]
+    row-str))
 
-(defn paint [coord-colors]
-  (let [xs (map :x (keys coord-colors))
-        ys (map :y (keys coord-colors))
+(defn paint [panel-colors]
+  (let [white-panels (into {} (filter (fn [[_ v]] (= :white v)) panel-colors))
+        filled-coords (set (keys white-panels))
+        xs (map :x filled-coords)
+        ys (map :y filled-coords)
         min-x (apply min xs)
         max-x (apply max xs)
         x-range (range min-x (inc max-x))
         min-y (apply min ys)
         max-y (apply max ys)
         y-range (range max-y (dec min-y) -1)
-        rows (map #(get-row x-range % coord-colors) y-range)]
+        rows (map #(get-row x-range % filled-coords) y-range)]
     (str/join "\n" rows)))
 
 (def sample-paint {{:x 1 :y 1} :white
