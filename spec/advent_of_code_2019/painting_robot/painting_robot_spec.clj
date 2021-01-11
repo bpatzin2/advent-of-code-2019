@@ -120,8 +120,9 @@
       :inputs inputs
       :robot-exe-state robot-exe-state)))
 
-(defn paint-hull [robot-runner robot-initializer]
-  (loop [state (init-painting-state-pt2 robot-initializer)
+(defn paint-hull [robot-runner robot-initializer start-on-white]
+  (loop [state (if start-on-white (init-painting-state-pt2 robot-initializer)
+                                  (init-painting-state robot-initializer))
          i 0]
     (let [color (current-panel-color state)
           next-input (color-code color)
@@ -144,7 +145,7 @@
 
 (describe "paint-hull"
   (it "works for provided example"
-      (let [result-state (paint-hull run-test-robot test-robot-initializer)]
+      (let [result-state (paint-hull run-test-robot test-robot-initializer false)]
         (should= {{:x 0, :y 0} :black
                   {:x -1, :y 0} :black
                   {:x -1, :y -1} :white
@@ -170,13 +171,13 @@
 
 (describe "part1 solution"
   (it "works for provided input"
-      (let [painting-result (paint-hull actual-robot robot-initializer)]
+      (let [painting-result (paint-hull actual-robot robot-initializer false)]
         (should= 1876 (count (:painted-panels painting-result))))))
 
 
 (defn get-row [x-range y coord-colors]
   (let [row-colors (map #(get coord-colors {:x % :y y} :black) x-range)
-        row-color-codes (apply str (map #(if (= % :white) "#" "_") row-colors))]
+        row-color-codes (apply str (map #(if (= % :white) "#" " ") row-colors))]
     row-color-codes))
 
 (defn paint [coord-colors]
@@ -197,6 +198,6 @@
 
 (println (paint sample-paint))
 
-(println (paint (:painted-panels (paint-hull actual-robot robot-initializer))))
+(println (paint (:painted-panels (paint-hull actual-robot robot-initializer true))))
 
 (println "done")
