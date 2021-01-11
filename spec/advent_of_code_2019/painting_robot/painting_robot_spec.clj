@@ -1,7 +1,6 @@
 (ns advent-of-code-2019.painting-robot.painting-robot-spec
   (:require [speclj.core :refer :all]
-            [advent-of-code-2019.input-handling :refer :all]
-            [advent-of-code-2019.intcode.intcode :as intcode]
+            [advent-of-code-2019.painting-robot.robot :as robot]
             [clojure.string :as str]))
 
 (def example-outputs
@@ -21,13 +20,6 @@
    1 ; (0,0) was prev painted white
    0
    0])
-
-(defn init-state [program]
-  {:program (intcode/init-program program)
-   :addr 0
-   :output []
-   :relative-base 0
-   :is-first true})
 
 (def turns {0 :turn-left 1 :turn-right})
 
@@ -57,7 +49,7 @@
 (defn current-panel-color [state]
   (get (:painted-panels state) (:pos state) :black))
 
-(defn run-test-robot [state input i]
+(defn run-test-robot [_ _ i]
   {:output (nth example-outputs i)
    :status (if (= (inc i) (count example-outputs)) :stopped :paused)})
 
@@ -158,22 +150,10 @@
         (should= :left (:dir result-state))
         (should= expected-inputs (:inputs result-state)))))
 
-(defn robot-initializer []
-  (init-state (csv-as-int-vec "input/day11.txt")))
-
-(defn actual-robot [state input i]
-  (let [robot-exe-state (:robot-exe-state state)
-        next-exe-state (intcode/execute-segment robot-exe-state input false)
-        status (:status next-exe-state)
-        output (:output next-exe-state)
-        robot-state (assoc next-exe-state :output [])]
-    {:output output :status status :robot-exe-state robot-state}))
-
 (describe "part1 solution"
   (it "works for provided input"
-      (let [painting-result (paint-hull actual-robot robot-initializer false)]
+      (let [painting-result (paint-hull robot/actual-robot robot/robot-initializer false)]
         (should= 1876 (count (:painted-panels painting-result))))))
-
 
 (defn get-row [x-range y coord-colors]
   (let [row-colors (map #(get coord-colors {:x % :y y} :black) x-range)
@@ -198,6 +178,4 @@
 
 (println (paint sample-paint))
 
-(println (paint (:painted-panels (paint-hull actual-robot robot-initializer true))))
-
-(println "done")
+(println (paint (:painted-panels (paint-hull robot/actual-robot robot/robot-initializer true))))
