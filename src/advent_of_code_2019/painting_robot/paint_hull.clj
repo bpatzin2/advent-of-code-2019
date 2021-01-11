@@ -13,11 +13,9 @@
    :inputs          inputs
    :robot-exe-state robot-exe-state})
 
-(defn init-painting-state [initial-robot-state]
-  (create-painting-state {} {:x 0 :y 0} :up [] initial-robot-state))
-
-(defn init-painting-state-pt2 [initial-robot-state]
-  (create-painting-state {{:x 0 :y 0} :white} {:x 0 :y 0} :up [] initial-robot-state))
+(defn init-painting-state [initial-robot-state start-on-white]
+  (let [initial-painted-panels (if start-on-white {{:x 0 :y 0} :white} {})]
+    (create-painting-state initial-painted-panels {:x 0 :y 0} :up [] initial-robot-state)))
 
 (defn current-panel-color [state]
   (get (:painted-panels state) (:pos state) :black))
@@ -87,9 +85,8 @@
 ; 3. get the robots output
 ; 4. update the current state of the hull
 ; 5. turn and move the robot
-(defn paint-hull [robot start-on-white]
-  (loop [state (if start-on-white (init-painting-state-pt2 (:initial-state robot))
-                                  (init-painting-state (:initial-state robot)))
+(defn run-painting-robot [robot start-on-white]
+  (loop [state (init-painting-state (:initial-state robot) start-on-white)
          i 0]
     (let [color (current-panel-color state)
           next-input (color-code color)
