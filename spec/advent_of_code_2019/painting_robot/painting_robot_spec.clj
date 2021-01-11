@@ -2,6 +2,7 @@
   (:require [speclj.core :refer :all]
             [advent-of-code-2019.painting-robot.paint-hull :refer :all]
             [advent-of-code-2019.painting-robot.robot :as robot]
+            [advent-of-code-2019.ascii-drawing :as ascii]
             [clojure.string :as str]))
 
 (def example-outputs
@@ -57,30 +58,29 @@
       (let [painting-result (paint-hull robot/actual-robot robot/robot-initializer false)]
         (should= 1876 (count (:painted-panels painting-result))))))
 
-(defn get-row [x-range y filled-coords]
-  (let [row-colors (map #(contains? filled-coords {:x % :y y}) x-range)
-        chars (map #(if % "#" " ") row-colors)
-        row-str (apply str chars)]
-    row-str))
-
 (defn paint [panel-colors]
   (let [white-panels (into {} (filter (fn [[_ v]] (= :white v)) panel-colors))
-        filled-coords (set (keys white-panels))
-        xs (map :x filled-coords)
-        ys (map :y filled-coords)
-        min-x (apply min xs)
-        max-x (apply max xs)
-        x-range (range min-x (inc max-x))
-        min-y (apply min ys)
-        max-y (apply max ys)
-        y-range (range max-y (dec min-y) -1)
-        rows (map #(get-row x-range % filled-coords) y-range)]
-    (str/join "\n" rows)))
+        white-panel-coords (keys white-panels)]
+    (ascii/draw white-panel-coords)))
 
-(def sample-paint {{:x 1 :y 1} :white
-                   {:x 0 :y 0} :white
-                   {:x -1 :y -1} :black})
+(def expected-sample-paint
+  [" #"
+   "# "])
+(describe "draw"
+  (it "works"
+      (should= (str/join "\n" expected-sample-paint)
+               (ascii/draw [{:x 1 :y 1} {:x 0 :y 0}]))))
 
-(println (paint sample-paint))
+(def expected-painted-text-strs
+  [
+   " ##   ##  ###    ##  ##   ##   ##  #   "
+   "#  # #  # #  #    # #  # #  # #  # #   "
+   "#    #    #  #    # #    #    #    #   "
+   "#    # ## ###     # #    # ## #    #   "
+   "#  # #  # #    #  # #  # #  # #  # #   "
+   " ##   ### #     ##   ##   ###  ##  ####"])
 
-(println (paint (:painted-panels (paint-hull robot/actual-robot robot/robot-initializer true))))
+(describe "part2 solution"
+  (it "works for provided input"
+      (let [painted-text (paint (:painted-panels (paint-hull robot/actual-robot robot/robot-initializer true)))]
+        (should= (str/join "\n" expected-painted-text-strs) painted-text))))

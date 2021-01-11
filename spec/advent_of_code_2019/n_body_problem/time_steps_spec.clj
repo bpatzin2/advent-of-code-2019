@@ -14,9 +14,9 @@
      (let [updated-moons (apply-gravity test-moons)]
        (should= '(0 -2 2)  (:dv (first updated-moons)))
        (should= '(0 2 0)  (:dv (second updated-moons)))
-       (should= '(0 0 -2)  (:dv (nth updated-moons 2)))
-       ))
- )
+       (should= '(0 0 -2)  (:dv (nth updated-moons 2))))))
+
+
 
 (def test-data
   (str/trim "
@@ -41,7 +41,7 @@
  "apply-velocity"
  (it "works for test input"
      (let [moon (create-moon 0 '(1 2 3) '(1 1 1))
-           moon-w-dv (assoc moon :dv '(0 -1 2)) ]
+           moon-w-dv (assoc moon :dv '(0 -1 2))]
        (should= '(1 0 3)  (new-velocity moon-w-dv))
        (should= '(1 0 3)  (:vel (apply-velocity moon-w-dv)))
        (should= '(2 2 6)  (:pos (apply-velocity moon-w-dv))))))
@@ -67,7 +67,7 @@
 (describe
  "apply-time"
  (it "works for test input"
-     (let [moons (apply-time moons-for-updating) ]
+     (let [moons (apply-time moons-for-updating)]
        (assert-moon '(2 -1 1) '(3 -1 -1) (nth moons 0))
        (assert-moon '(3 -7 -4) '(1 3 3) (nth moons 1))
        (assert-moon '(1 -7 5) '(-3 1 -3) (nth moons 2))
@@ -95,8 +95,8 @@
  "energy"
  (it "works for test input"
      (let [moons10 (apply-time moons-for-updating 10)]
-       (assert-moon '(2 1 -3) '(-3 -2 1) (nth moons10 0))
-       )))
+       (assert-moon '(2 1 -3) '(-3 -2 1) (nth moons10 0)))))
+
 
 
 (def test-data2
