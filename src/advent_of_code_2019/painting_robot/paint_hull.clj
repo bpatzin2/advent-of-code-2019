@@ -1,6 +1,5 @@
 (ns advent-of-code-2019.painting-robot.paint-hull
-  (:require [advent-of-code-2019.painting-robot.robot :as robot]
-            [clojure.string :as str]))
+  (:require [advent-of-code-2019.ascii-drawing :as ascii]))
 
 (def turns {0 :turn-left 1 :turn-right})
 
@@ -22,7 +21,6 @@
 
 (defn current-panel-color [state]
   (get (:painted-panels state) (:pos state) :black))
-
 
 (defn stopped? [robot-state]
   (= :stopped (:status robot-state)))
@@ -100,3 +98,8 @@
       (if (stopped? robot-state)
         painting-state
         (recur painting-state (inc i))))))
+
+(defn paint [panel-colors]
+  (let [white-panels (into {} (filter (fn [[_ v]] (= :white v)) panel-colors))
+        white-panel-coords (keys white-panels)]
+    (ascii/draw white-panel-coords)))

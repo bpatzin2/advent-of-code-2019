@@ -2,7 +2,6 @@
   (:require [speclj.core :refer :all]
             [advent-of-code-2019.painting-robot.paint-hull :refer :all]
             [advent-of-code-2019.painting-robot.robot :as robot]
-            [advent-of-code-2019.ascii-drawing :as ascii]
             [clojure.string :as str]))
 
 (def example-outputs
@@ -57,11 +56,6 @@
   (it "works for provided input"
       (let [painting-result (paint-hull robot/actual-robot robot/robot-initializer false)]
         (should= 1876 (count (:painted-panels painting-result))))))
-
-(defn paint [panel-colors]
-  (let [white-panels (into {} (filter (fn [[_ v]] (= :white v)) panel-colors))
-        white-panel-coords (keys white-panels)]
-    (ascii/draw white-panel-coords)))
 
 (def expected-painted-text-strs
   [
