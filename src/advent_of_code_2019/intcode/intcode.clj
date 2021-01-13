@@ -9,9 +9,6 @@
 (defn prog-to-vec [prog start len]
   (reduce #(conj %1 (mem-access prog %2)) [] (range start (+ start len))))
 
-(defn abort? [is-diag output]
-  (and is-diag (and (not (empty? output)) (not= 0 (last output)))))
-
 (defn init-program [program-vec]
   (apply merge (map-indexed hash-map program-vec)))
 
@@ -46,10 +43,9 @@
 (defn next-instruction-address [instruction instruction-address]
   (+ instruction-address (inst/instruction-length instruction)))
 
-(defn pause-or-stop [instruction input-consumed is-diag output]
+(defn pause-or-stop [instruction input-consumed]
   (or (inst/stop? instruction)
-      (and input-consumed (inst/input? instruction))
-      (abort? is-diag output)))
+      (and input-consumed (inst/input? instruction))))
 
 (defn publish-state [state prog-len]
   (let [program (:program state)] 
@@ -67,25 +63,23 @@
      (let [curr-program (get exe-ctx :program)
            curr-output (get exe-ctx :output)
            instruction (get-instruction curr-program instruction-address)
-           status (if (inst/stop? instruction) :stopped (if (abort? false output) :aborted :paused))]
+           status (if (inst/stop? instruction) :stopped :paused)]
        (if
-        (pause-or-stop instruction input-consumed false curr-output)
+        (pause-or-stop instruction input-consumed)
         (execution-state curr-program instruction-address status (get exe-ctx :relative-base) curr-output)
         (let [exe-result (inst/execute-instruction instruction input exe-ctx)
               next-addr (or (get exe-result :next-addr) (next-instruction-address instruction instruction-address))
               is-input-consumed (or input-consumed (inst/input? instruction))]
           (recur next-addr exe-result (boolean is-input-consumed))))))))
 
-(defn execute-with-output
-  ([program inputs] (execute-with-output program inputs false))
-  ([program inputs diag-mode]
-   (loop [state (init-state program)
-          inputs inputs]
-     (if
+(defn execute-with-output [program inputs]
+  (loop [state (init-state program)
+         inputs inputs]
+    (if
       (contains? #{:stopped :aborted} (:status state))
       (publish-state state (count program))
-      (let [next-state (execute-segment state (first inputs) diag-mode)]
-        (recur next-state (rest inputs)))))))
+      (let [next-state (execute-segment state (first inputs))]
+        (recur next-state (rest inputs))))))
 
 (defn execute
   ([program] (execute program [0]))
