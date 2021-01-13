@@ -57,36 +57,26 @@
 
 (defn execute-segment
   ([state input]
-   (execute-segment state input false))
-  ([state input diag-mode]
-   (execute-segment (:program state) (:addr state) input (:output state) (:relative-base state) diag-mode false))
+   (execute-segment (:program state) (:addr state) input (:output state) (:relative-base state) false))
   ([program addr input output relative-base]  
-   (execute-segment program addr input output relative-base false false))
+   (execute-segment program addr input output relative-base false))
   ([program addr input output relative-base is-first]
-   (execute-segment program addr input output relative-base is-first false))
-  ([program addr input output relative-base is-first is-diag]
    (loop [instruction-address addr
           exe-ctx (create-ctx (if is-first (init-program program) program) output relative-base)
           input-consumed (= nil input)]
      (let [curr-program (get exe-ctx :program)
            curr-output (get exe-ctx :output)
            instruction (get-instruction curr-program instruction-address)
-           status (if (inst/stop? instruction) :stopped (if (abort? is-diag output) :aborted :paused))]
+           status (if (inst/stop? instruction) :stopped (if (abort? false output) :aborted :paused))]
        (if
-        (pause-or-stop instruction input-consumed is-diag curr-output)
+        (pause-or-stop instruction input-consumed false curr-output)
         (execution-state curr-program instruction-address status (get exe-ctx :relative-base) curr-output)
         (let [exe-result (inst/execute-instruction instruction input exe-ctx)
               next-addr (or (get exe-result :next-addr) (next-instruction-address instruction instruction-address))
               is-input-consumed (or input-consumed (inst/input? instruction))]
           (recur next-addr exe-result (boolean is-input-consumed))))))))
 
-(defn execute-segment-diag
-  ([program addr input output relative-base]
-   (execute-segment program addr input output relative-base false true))
-  ([program addr input output relative-base is-first]
-   (execute-segment program addr input output relative-base is-first true)))
-
-(defn execute-with-output 
+(defn execute-with-output
   ([program inputs] (execute-with-output program inputs false))
   ([program inputs diag-mode]
    (loop [state (init-state program)
