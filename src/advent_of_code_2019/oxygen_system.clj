@@ -1,6 +1,7 @@
 (ns advent-of-code-2019.oxygen-system
   (:gen-class)
-  (:require [advent-of-code-2019.intcode.intcode :as intcode]))
+  (:require [advent-of-code-2019.intcode.intcode :as intcode])
+  (:import (clojure.lang PersistentQueue)))
 
 (defn execute-segment [exe-state dir]
   (intcode/execute-segment
@@ -61,7 +62,7 @@
        (filter #(not (hit-wall? %)))))
 
 (defn find-path-to-oxygen [droid-state]
-  (loop [queue (conj clojure.lang.PersistentQueue/EMPTY droid-state)
+  (loop [queue (conj PersistentQueue/EMPTY droid-state)
          memo #{}]
       (let [state (peek queue)
             new-memo (conj memo (last-coord state))]
