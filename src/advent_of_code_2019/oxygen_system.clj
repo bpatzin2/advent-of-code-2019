@@ -4,13 +4,7 @@
   (:import (clojure.lang PersistentQueue)))
 
 (defn execute-segment [exe-state dir]
-  (intcode/execute-segment
-   (:program exe-state)
-   (:addr exe-state)
-   dir
-   (:output exe-state)
-   (:relative-base exe-state)
-   (:is-first exe-state)))
+  (intcode/execute-segment exe-state dir))
 
 (defn new-coord [prev-coord dir]
   (let [x (first prev-coord)

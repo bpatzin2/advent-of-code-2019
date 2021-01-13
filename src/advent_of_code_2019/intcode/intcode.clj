@@ -26,7 +26,8 @@
    :output []
    :addr 0
    :relative-base 0
-   :status :paused})
+   :status :paused
+   :is-first false}) ;TODO rename is-first to program-needs-loading
 
 (defn create-ctx [program output relative-base]
   {:relative-base relative-base
@@ -53,7 +54,7 @@
 
 (defn execute-segment
   ([state input]
-   (execute-segment (:program state) (:addr state) input (:output state) (:relative-base state) false))
+   (execute-segment (:program state) (:addr state) input (:output state) (:relative-base state) (:is-first state)))
   ([program addr input output relative-base]  
    (execute-segment program addr input output relative-base false))
   ([program addr input output relative-base is-first]
