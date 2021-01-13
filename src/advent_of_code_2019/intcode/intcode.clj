@@ -56,6 +56,8 @@
     (assoc state :program (prog-to-vec program 0 prog-len))))
 
 (defn execute-segment
+  ([state input]
+   (execute-segment state input false))
   ([state input diag-mode]
    (execute-segment (:program state) (:addr state) input (:output state) (:relative-base state) diag-mode false))
   ([program addr input output relative-base]  
