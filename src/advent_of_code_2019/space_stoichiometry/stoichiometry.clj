@@ -44,8 +44,10 @@
               new-result (merge-with + remove-decomposed (:result decomposed))]
           (recur (drop 1 rest) new-result))))))
 
-(defn min-ore-to-reach-fuel [reactions]
-  (get (decompose-all reactions {"FUEL" 1}) "ORE"))
+(defn min-ore-to-reach-fuel
+  ([reactions] (min-ore-to-reach-fuel reactions 1))
+  ([reactions, fuel-count]
+   (get (decompose-all reactions {"FUEL" fuel-count}) "ORE")))
 
 (defn parse-and-min-ore-to-reach-fuel [reactions-str]
   (let [reactions (reaction/parse-reactions reactions-str)]
