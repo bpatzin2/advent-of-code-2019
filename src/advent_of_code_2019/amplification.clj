@@ -28,24 +28,21 @@
 (defn merge-amps [new-amp amps index]
   (assoc amps index new-amp))
 
-(defn process-amp [amp prev-output] 
-  (loop [rem-inputs (concat (get amp :input) [prev-output])
-         addr (get amp :addr 0)
-         outputs (get amp :output [])
-         relative-base (get amp :relative-base 0)
-         updated-amp amp
-         program (get amp :program)]
-    (if
-     (empty? rem-inputs)
-     (assoc updated-amp :input [])
-     (let [input (first rem-inputs)
-            new-state (intcode/execute-segment program addr input outputs relative-base false)
-            new-amp (merge updated-amp new-state)
-            next-addr (:addr new-amp)
-            new-outputs (vec (concat outputs (:output new-amp)))
-            new-relative-base (:relative-base new-amp)
-            new-prog (:program new-amp)]
-        (recur (rest rem-inputs) next-addr new-outputs new-relative-base new-amp new-prog)))))
+(defn process-amp [amp prev-output]
+  (let [addr (get amp :addr 0)
+        outputs (get amp :output [])
+        relative-base (get amp :relative-base 0)
+        program (get amp :program)]
+    (loop [rem-inputs (concat (get amp :input) [prev-output])
+           updated-amp amp
+           exe-state {:program program :addr addr :output outputs :relative-base relative-base :is-first false}]
+      (if
+        (empty? rem-inputs)
+        (assoc updated-amp :input [])
+        (let [input (first rem-inputs)
+              new-state (intcode/execute-segment exe-state input)
+              new-amp (merge updated-amp new-state)]
+          (recur (rest rem-inputs) new-amp new-state))))))
 
 (defn run-in-loop [program phase-settings]
   (loop [amps
