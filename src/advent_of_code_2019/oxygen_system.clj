@@ -24,14 +24,14 @@
   (let [new-exe-state (execute-segment (:exe-state droid-state) dir)]
     (create-droid-state new-exe-state (:path droid-state) dir)))
 
-(defn init-droid-state [program]
+(defn init-droid-state [program start-coord]
   {:exe-state
    {:program program
     :addr 0
     :output []
     :relative-base 0
     :is-first true}
-   :path [[0,0]]
+   :path [start-coord]
    :last-response 1})
 
 (defn move-all-dirs [droid-state]
@@ -68,4 +68,4 @@
                  new-memo)))))
 
 (defn num-steps-to-oxygen [droid-program]
-  (dec (count (find-path-to-oxygen (init-droid-state droid-program)))))
+  (dec (count (find-path-to-oxygen (init-droid-state droid-program [0,0])))))

@@ -14,7 +14,8 @@
                                104 0
                                1005 100 0
                                104 2 ;found it
-                               99])))))
+                               99]
+                              [0,0])))))
           
           (it "the oxygen is one move to the east"
               (should= 1 (num-steps-to-oxygen [3 99
