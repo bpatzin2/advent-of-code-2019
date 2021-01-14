@@ -91,7 +91,13 @@
                :is-first false
                :relative-base 0
                :status :paused}
-              (execute-segment [3 11 3 12 1 11 12 12 4 12 99 -1 -1] 0 1 [] 0)))
+              (execute-segment
+                {:program [3 11 3 12 1 11 12 12 4 12 99 -1 -1]
+                 :addr 0
+                 :output []
+                 :relative-base 0
+                 :is-first false}
+                1)))
 
  (it "relative mode"
      (should= [44402,0,0,0,99] (execute [22201,0,0,0,99]))

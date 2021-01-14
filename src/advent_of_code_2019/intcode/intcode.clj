@@ -55,8 +55,6 @@
 (defn execute-segment
   ([state input]
    (execute-segment (:program state) (:addr state) input (:output state) (:relative-base state) (:is-first state)))
-  ([program addr input output relative-base]  
-   (execute-segment program addr input output relative-base false))
   ([program addr input output relative-base is-first]
    (loop [instruction-address addr
           exe-ctx (create-ctx (if is-first (init-program program) program) output relative-base)

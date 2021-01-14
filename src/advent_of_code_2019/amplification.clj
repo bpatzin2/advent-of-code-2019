@@ -65,7 +65,7 @@
      (empty? rem-inputs)
       (assoc updated-amp :input [])
       (let [input (first rem-inputs)
-            new-state (intcode/execute-segment program addr input outputs relative-base)
+            new-state (intcode/execute-segment program addr input outputs relative-base false)
             new-amp (merge updated-amp new-state)
             next-addr (:addr new-amp)
             new-outputs (vec (concat outputs (:output new-amp)))
