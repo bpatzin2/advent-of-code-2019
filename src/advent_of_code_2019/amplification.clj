@@ -28,21 +28,23 @@
 (defn merge-amps [new-amp amps index]
   (assoc amps index new-amp))
 
+(defn initialize-exe-state-if-needed [amp]
+  (assoc amp
+    :addr (get amp :addr 0)
+    :output (get amp :output [])
+    :relative-base (get amp :relative-base 0)))
+
 (defn process-amp [amp prev-output]
-  (let [addr (get amp :addr 0)
-        outputs (get amp :output [])
-        relative-base (get amp :relative-base 0)
-        program (get amp :program)]
+  (let [initial-amp (initialize-exe-state-if-needed amp)]
     (loop [rem-inputs (concat (get amp :input) [prev-output])
-           updated-amp amp
-           exe-state {:program program :addr addr :output outputs :relative-base relative-base :is-first false}]
+           updated-amp initial-amp]
       (if
         (empty? rem-inputs)
         (assoc updated-amp :input [])
         (let [input (first rem-inputs)
-              new-state (intcode/execute-segment exe-state input)
+              new-state (intcode/execute-segment updated-amp input)
               new-amp (merge updated-amp new-state)]
-          (recur (rest rem-inputs) new-amp new-state))))))
+          (recur (rest rem-inputs) new-amp))))))
 
 (defn run-in-loop [program phase-settings]
   (loop [amps
