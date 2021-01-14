@@ -1,6 +1,7 @@
 (ns advent-of-code-2019.oxygen-system-spec
   (:require [speclj.core :refer :all]
-            [advent-of-code-2019.oxygen-system :refer :all]))
+            [advent-of-code-2019.oxygen-system :refer :all]
+            [advent-of-code-2019.core :as core]))
 
 (describe "run"
           (it "move-all-dirs"
@@ -34,3 +35,7 @@
                                                1005 100 0
                                                104 2 ;found it
                                                99]))))
+
+(describe "day15pt1"
+          (it "works for real input"
+              (should= 304 (core/day15pt1))))
