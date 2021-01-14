@@ -62,7 +62,6 @@
             new-memo (conj memo (last-coord state))]
         (cond
           (found-oxygen? state) (:path state)
-          (hit-wall? state) (recur (pop queue) memo)
           :else (recur
                  (into (pop queue) (next-valid-moves state memo))
                  new-memo)))))
