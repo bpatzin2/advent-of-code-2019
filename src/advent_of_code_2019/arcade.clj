@@ -21,13 +21,7 @@
   (count-blocks (run-game game-num-vec)))
 
 (defn play-move [exe-state move]
-  (intcode/execute-segment
-   (:program exe-state)
-   (:addr exe-state)
-   move
-   (:output exe-state)
-   (:relative-base exe-state)
-   (:is-first exe-state)))
+  (intcode/execute-segment exe-state move))
 
 (defn get-score [exe-state]
   (last (get exe-state :output)))

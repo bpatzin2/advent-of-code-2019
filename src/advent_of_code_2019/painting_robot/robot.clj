@@ -8,14 +8,14 @@
    :addr 0
    :output []
    :relative-base 0
-   :is-first true})
+   :is-first false})
 
 (defn get-initial-state []
   (init-state (input/csv-as-int-vec "input/day11.txt")))
 
 (defn actual-robot [state input _]
   (let [robot-exe-state (:robot-exe-state state)
-        next-exe-state (intcode/execute-segment robot-exe-state input false)
+        next-exe-state (intcode/execute-segment robot-exe-state input) ;called with two
         status (:status next-exe-state)
         output (:output next-exe-state)
         robot-state (assoc next-exe-state :output [])]

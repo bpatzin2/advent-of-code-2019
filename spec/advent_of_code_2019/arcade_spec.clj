@@ -34,8 +34,8 @@
                                      104 -1
                                      104 0
                                      4 1 
-                                     99]))
-              )
+                                     99])))
+
           (it "move joystick left"
               (should= 1 (play-game [
                                       ;block at [1 1]
@@ -57,8 +57,8 @@
                                      104 -1
                                      104 0
                                      4 100
-                                     99])))
-          )
+                                     99]))))
+
 
 (describe "score"
           (it "works"
