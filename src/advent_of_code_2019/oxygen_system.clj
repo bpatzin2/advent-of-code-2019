@@ -24,18 +24,15 @@
   (let [new-exe-state (execute-segment (:exe-state droid-state) dir)]
     (create-droid-state new-exe-state (:path droid-state) dir)))
 
-(defn init-droid-state [program]
+(defn init-droid-state [program start-coord]
   {:exe-state
    {:program program
     :addr 0
     :output []
     :relative-base 0
     :is-first true}
-   :path [[0,0]]
+   :path [start-coord]
    :last-response 1})
-
-(defn move-all-dirs [droid-state]
-  (map #(move-driod droid-state %) [1 2 3 4]))
 
 (defn found-oxygen? [droid-state]
   (= 2 (:last-response droid-state)))
@@ -49,7 +46,7 @@
 (defn not-already-processed? [state memo dir]
   (not (contains? memo (new-coord (last-coord state) dir))))
 
-(defn next-valid-moves [droid-state memo]
+(defn make-next-valid-moves [droid-state memo]
   (->> [1 2 3 4]
        (filter #(not-already-processed? droid-state memo %))
        (map #(move-driod droid-state %))
@@ -60,12 +57,12 @@
          memo #{}]
       (let [state (peek queue)
             new-memo (conj memo (last-coord state))]
-        (cond
-          (found-oxygen? state) (:path state)
-          (hit-wall? state) (recur (pop queue) memo)
-          :else (recur
-                 (into (pop queue) (next-valid-moves state memo))
-                 new-memo)))))
+        (if
+          (found-oxygen? state)
+          (:path state)
+          (recur
+           (into (pop queue) (make-next-valid-moves state new-memo))
+           new-memo)))))
 
 (defn num-steps-to-oxygen [droid-program]
-  (dec (count (find-path-to-oxygen (init-droid-state droid-program)))))
+  (dec (count (find-path-to-oxygen (init-droid-state droid-program [0,0])))))
