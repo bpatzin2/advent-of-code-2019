@@ -24,12 +24,11 @@
      :last-response (last (:output exe-state))}))
 
 (defn init-droid-state [program start-coord]
-  {:exe-state
-   {:program program
-    :addr 0
-    :output []
-    :relative-base 0
-    :is-first true}
+  {:exe-state {:program program
+               :addr 0
+               :output []
+               :relative-base 0
+               :is-first true}
    :path [start-coord]
    :last-response 1})
 
@@ -76,6 +75,7 @@
     (droid-num-steps-to-oxygen droid)))
 
 (defn longest-path [droid]
+  (println "droid" droid)
   (loop [queue (conj PersistentQueue/EMPTY (:init-state droid))
          memo #{}]
     (let [state (peek queue)
@@ -88,8 +88,13 @@
         (:path state)
         (recur next-q new-memo)))))
 
+(defn droid-max-steps-from-oxygen [droid]
+  (let [oxygen-loc (last (shortest-path-to-oxygen droid))
+        droid-as-oxygen (assoc-in droid [:init-state :path] [oxygen-loc])
+        longest-path (longest-path droid-as-oxygen)]
+    (println "path" longest-path)
+    (dec (count longest-path))))
+
 (defn max-steps-from-oxygen [droid-program]
-  (let [starting-droid (create-droid droid-program)
-        oxygen-loc (last (shortest-path-to-oxygen starting-droid))
-        droid-as-oxygen (init-droid-state droid-program oxygen-loc)]
-    (dec (count (longest-path droid-as-oxygen)))))
+  (let [starting-droid (create-droid droid-program)]
+    (droid-max-steps-from-oxygen starting-droid)))

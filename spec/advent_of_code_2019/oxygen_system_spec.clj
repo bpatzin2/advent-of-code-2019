@@ -25,7 +25,19 @@
         oxygen-cell [2, 0]
         test-droid (create-test-droid open-cells oxygen-cell)]
     (it "the oxygen is two moves to the east"
+        (should= 2 (droid-num-steps-to-oxygen test-droid))))
+  (let [open-cells #{[0, 0][1, 0][0 -1]}
+        oxygen-cell [-1 -1]
+        test-droid (create-test-droid open-cells oxygen-cell)]
+    (it "the oxygen is down one left one"
         (should= 2 (droid-num-steps-to-oxygen test-droid)))))
+
+(describe "droid-max-steps-from-oxygen"
+  (let [open-cells #{[0, 0][1, 0][0 -1][-2 -1] [-2 0][-2 1][-1 1]}
+        oxygen-cell [-1 -1]
+        test-droid (create-test-droid open-cells oxygen-cell)]
+    (it "the oxygen is down one left one and "
+        (should= 4 (droid-max-steps-from-oxygen test-droid)))))
 
 (describe "run"
   (it "the oxygen is one move to the east"
