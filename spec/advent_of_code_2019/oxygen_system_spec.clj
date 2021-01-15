@@ -32,12 +32,54 @@
     (it "the oxygen is down one left one"
         (should= 2 (droid-num-steps-to-oxygen test-droid)))))
 
+"
+ ##
+#OO##
+#O#DO#
+#OXO#
+ ###  "
 (describe "droid-max-steps-from-oxygen"
   (let [open-cells #{[0, 0][1, 0][0 -1][-2 -1] [-2 0][-2 1][-1 1]}
         oxygen-cell [-1 -1]
         test-droid (create-test-droid open-cells oxygen-cell)]
-    (it "the oxygen is down one left one and "
+    (it "finds longest path"
         (should= 4 (droid-max-steps-from-oxygen test-droid)))))
+
+"
+#OO#7O
+#OO##O
+#O#DOO
+#OXO#
+ ###  "
+(describe "droid-max-steps-from-oxygen"
+  (let [open-cells
+        #{[-2, 2] [-1, 2] [1 2] [2 2]
+          [-2, 1] [-1, 1] [2 1]
+          [-2, 0] [0 0] [1 0] [2 0]
+          [-2 -1] [0 -1]}
+        oxygen-cell [-1 -1]
+        test-droid (create-test-droid open-cells oxygen-cell)]
+    (it "finds longest path"
+        (should= 7 (droid-max-steps-from-oxygen test-droid)))))
+
+"
+#OOOO#
+#OOOO#
+#OOOO#
+##ODOO
+#OXO#
+ ###  "
+(describe "droid-max-steps-from-oxygen"
+          (let [open-cells
+                #{[-2, 3] [-1, 3] [0 3] [1 3]
+                  [-2, 2] [-1, 2] [0 2] [1 2]
+                  [-2, 1] [-1, 1] [0 1] [1 1]
+                  [-1, 0] [0 0] [1 0] [2 0]
+                  [-2 -1] [0 -1]}
+                oxygen-cell [-1 -1]
+                test-droid (create-test-droid open-cells oxygen-cell)]
+            (it "finds longest path"
+                (should= 6 (droid-max-steps-from-oxygen test-droid)))))
 
 (describe "run"
   (it "the oxygen is one move to the east"
@@ -66,4 +108,4 @@
 
 (describe "day15pt2"
   (it "works for real input"
-      (should-not= 394 (core/day15pt2))))
+      (should= 310 (core/day15pt2))))

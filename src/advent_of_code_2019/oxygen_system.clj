@@ -1,6 +1,8 @@
 (ns advent-of-code-2019.oxygen-system
   (:gen-class)
-  (:require [advent-of-code-2019.intcode.intcode :as intcode])
+  (:require
+    [advent-of-code-2019.intcode.intcode :as intcode]
+    [advent-of-code-2019.ascii-drawing :as ascii])
   (:import (clojure.lang PersistentQueue)))
 
 (defn execute-segment [exe-state dir]
@@ -51,30 +53,33 @@
        (map #((:move droid) droid-state %))
        (filter #(not (hit-wall? %)))))
 
-(defn shortest-path-to-oxygen [droid]
+(defn move-droid-to-oxygen [droid]
   (loop [queue (conj PersistentQueue/EMPTY (:init-state droid))
          memo #{}]
-      (let [state (peek queue)
-            new-memo (conj memo (last-coord state))]
-        (if
-          (found-oxygen? state)
-          (:path state)
-          (recur
-           (into (pop queue) (make-next-valid-moves droid state new-memo))
-           new-memo)))))
+    (let [state (peek queue)
+          new-memo (conj memo (last-coord state))]
+      (if
+        (found-oxygen? state)
+        state
+        (recur
+          (into (pop queue) (make-next-valid-moves droid state new-memo))
+          new-memo)))))
+
+(defn path-to-oxygen [droid]
+  (:path (move-droid-to-oxygen droid)))
 
 (defn create-droid [droid-program]
   {:move       move-droid
    :init-state (init-droid-state droid-program [0,0])})
 
 (defn droid-num-steps-to-oxygen [droid]
-  (dec (count (shortest-path-to-oxygen droid))))
+  (dec (count (path-to-oxygen droid))))
 
 (defn num-steps-to-oxygen [droid-program]
   (let [droid (create-droid droid-program)]
     (droid-num-steps-to-oxygen droid)))
 
-(defn longest-path [droid]
+(defn move-droid-on-longest-path [droid]
   (loop [queue (conj PersistentQueue/EMPTY (:init-state droid))
          memo #{}]
     (let [state (peek queue)
@@ -84,14 +89,16 @@
           next-q (into remaining-q next-droid-states)]
       (if
         (empty? next-q)
-        (:path state)
+        state
         (recur next-q new-memo)))))
 
 (defn droid-max-steps-from-oxygen [droid]
-  (let [oxygen-loc (last (shortest-path-to-oxygen droid))
-        droid-as-oxygen (assoc-in droid [:init-state :path] [oxygen-loc])
-        longest-path (longest-path droid-as-oxygen)]
-    (dec (count longest-path))))
+  (let [droid-state-at-oxygen (move-droid-to-oxygen droid)
+        oxygen-loc (last (:path droid-state-at-oxygen))
+        modified-droid-state-at-oxygen (assoc droid-state-at-oxygen :path [oxygen-loc])
+        droid-as-oxygen (assoc droid :init-state modified-droid-state-at-oxygen)
+        droid-on-longest-path (move-droid-on-longest-path droid-as-oxygen)]
+    (dec (count (:path droid-on-longest-path)))))
 
 (defn max-steps-from-oxygen [droid-program]
   (let [starting-droid (create-droid droid-program)]
