@@ -53,6 +53,7 @@
        (map #((:move droid) droid-state %))
        (filter #(not (hit-wall? %)))))
 
+;TODO refactor these two methods to a more generic BFS
 (defn move-droid-to-oxygen [droid]
   (loop [queue (conj PersistentQueue/EMPTY (:init-state droid))
          memo #{}]
@@ -61,9 +62,23 @@
       (if
         (found-oxygen? state)
         state
-        (recur
-          (into (pop queue) (make-next-valid-moves droid state new-memo))
-          new-memo)))))
+        (let [next-droid-states (make-next-valid-moves droid state new-memo)
+              remaining-q (pop queue)
+              next-q (into remaining-q next-droid-states)]
+          (recur next-q new-memo))))))
+
+(defn move-droid-on-longest-path [droid]
+  (loop [queue (conj PersistentQueue/EMPTY (:init-state droid))
+         memo #{}]
+    (let [state (peek queue)
+          new-memo (conj memo (last-coord state))
+          next-droid-states (make-next-valid-moves droid state new-memo)
+          remaining-q (pop queue)
+          next-q (into remaining-q next-droid-states)]
+      (if
+        (empty? next-q)
+        state
+        (recur next-q new-memo)))))
 
 (defn path-to-oxygen [droid]
   (:path (move-droid-to-oxygen droid)))
@@ -79,25 +94,15 @@
   (let [droid (create-droid droid-program)]
     (droid-num-steps-to-oxygen droid)))
 
-(defn move-droid-on-longest-path [droid]
-  (loop [queue (conj PersistentQueue/EMPTY (:init-state droid))
-         memo #{}]
-    (let [state (peek queue)
-          new-memo (conj memo (last-coord state))
-          next-droid-states (make-next-valid-moves droid state new-memo)
-          remaining-q (pop queue)
-          next-q (into remaining-q next-droid-states)]
-      (if
-        (empty? next-q)
-        state
-        (recur next-q new-memo)))))
+(defn reset-droid [droid state loc]
+  (let [reset-droid-state (assoc state :path [loc])]
+    (assoc droid :init-state reset-droid-state)))
 
 (defn droid-max-steps-from-oxygen [droid]
   (let [droid-state-at-oxygen (move-droid-to-oxygen droid)
         oxygen-loc (last (:path droid-state-at-oxygen))
-        modified-droid-state-at-oxygen (assoc droid-state-at-oxygen :path [oxygen-loc])
-        droid-as-oxygen (assoc droid :init-state modified-droid-state-at-oxygen)
-        droid-on-longest-path (move-droid-on-longest-path droid-as-oxygen)]
+        droid-at-oxygen (reset-droid droid droid-state-at-oxygen oxygen-loc)
+        droid-on-longest-path (move-droid-on-longest-path droid-at-oxygen)]
     (dec (count (:path droid-on-longest-path)))))
 
 (defn max-steps-from-oxygen [droid-program]
