@@ -118,6 +118,9 @@
 (defn day15pt1 []
   (os/num-steps-to-oxygen (input/day15-num-vec)))
 
+(defn day15pt2 []
+  (os/max-steps-from-oxygen (input/day15-num-vec)))
+
 (defn day16pt1
   ([] (day16pt1 100))
   ([phases] (fft/run-fft-str (input/day16-str) phases 8)))

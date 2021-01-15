@@ -27,3 +27,8 @@
 (describe "day15pt1"
           (it "works for real input"
               (should= 304 (core/day15pt1))))
+
+
+;(describe "day15pt2"
+;          (it "works for real input"
+;              (should= 42 (core/day15pt2))))
