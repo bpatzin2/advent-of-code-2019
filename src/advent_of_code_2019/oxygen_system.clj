@@ -6,7 +6,7 @@
 (defn execute-segment [exe-state dir]
   (intcode/execute-segment exe-state dir))
 
-(defn new-coord [prev-coord dir]
+(defn next-coord [prev-coord dir]
   (let [x (first prev-coord)
         y (second prev-coord)]
     (case dir
@@ -17,10 +17,10 @@
 
 (defn create-droid-state [exe-state prev-path dir]
   {:exe-state exe-state
-   :path (conj prev-path (new-coord (last prev-path) dir))
+   :path (conj prev-path (next-coord (last prev-path) dir))
    :last-response (last (:output exe-state))})
 
-(defn move-driod [droid-state dir]
+(defn move-droid [droid-state dir]
   (let [new-exe-state (execute-segment (:exe-state droid-state) dir)]
     (create-droid-state new-exe-state (:path droid-state) dir)))
 
@@ -44,16 +44,17 @@
   (last (:path state)))
 
 (defn not-already-processed? [state memo dir]
-  (not (contains? memo (new-coord (last-coord state) dir))))
+  (let [next-coord (next-coord (last-coord state) dir)]
+    (not (contains? memo next-coord))))
 
-(defn make-next-valid-moves [droid-state memo]
+(defn make-next-valid-moves [droid droid-state memo]
   (->> [1 2 3 4]
        (filter #(not-already-processed? droid-state memo %))
-       (map #(move-driod droid-state %))
+       (map #((:move droid) droid-state %))
        (filter #(not (hit-wall? %)))))
 
-(defn find-path-to-oxygen [droid-state]
-  (loop [queue (conj PersistentQueue/EMPTY droid-state)
+(defn shortest-path-to-oxygen [droid]
+  (loop [queue (conj PersistentQueue/EMPTY (:init-state droid))
          memo #{}]
       (let [state (peek queue)
             new-memo (conj memo (last-coord state))]
@@ -61,18 +62,26 @@
           (found-oxygen? state)
           (:path state)
           (recur
-           (into (pop queue) (make-next-valid-moves state new-memo))
+           (into (pop queue) (make-next-valid-moves droid state new-memo))
            new-memo)))))
 
-(defn num-steps-to-oxygen [droid-program]
-  (dec (count (find-path-to-oxygen (init-droid-state droid-program [0,0])))))
+(defn create-droid [droid-program]
+  {:move       move-droid
+   :init-state (init-droid-state droid-program [0,0])})
 
-(defn longest-path [droid-state]
-  (loop [queue (conj PersistentQueue/EMPTY droid-state)
+(defn droid-num-steps-to-oxygen [droid]
+  (dec (count (shortest-path-to-oxygen droid))))
+
+(defn num-steps-to-oxygen [droid-program]
+  (let [droid (create-droid droid-program)]
+    (droid-num-steps-to-oxygen droid)))
+
+(defn longest-path [droid]
+  (loop [queue (conj PersistentQueue/EMPTY (:init-state droid))
          memo #{}]
     (let [state (peek queue)
           new-memo (conj memo (last-coord state))
-          next-droid-states (make-next-valid-moves state new-memo)
+          next-droid-states (make-next-valid-moves droid state new-memo)
           remaining-q (pop queue)
           next-q (into remaining-q next-droid-states)]
       (if
@@ -81,7 +90,7 @@
         (recur next-q new-memo)))))
 
 (defn max-steps-from-oxygen [droid-program]
-  (let [starting-droid (init-droid-state droid-program [0,0])
-        oxygen-loc (last (find-path-to-oxygen starting-droid))
+  (let [starting-droid (create-droid droid-program)
+        oxygen-loc (last (shortest-path-to-oxygen starting-droid))
         droid-as-oxygen (init-droid-state droid-program oxygen-loc)]
     (dec (count (longest-path droid-as-oxygen)))))
