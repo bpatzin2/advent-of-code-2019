@@ -75,7 +75,6 @@
     (droid-num-steps-to-oxygen droid)))
 
 (defn longest-path [droid]
-  (println "droid" droid)
   (loop [queue (conj PersistentQueue/EMPTY (:init-state droid))
          memo #{}]
     (let [state (peek queue)
@@ -92,7 +91,6 @@
   (let [oxygen-loc (last (shortest-path-to-oxygen droid))
         droid-as-oxygen (assoc-in droid [:init-state :path] [oxygen-loc])
         longest-path (longest-path droid-as-oxygen)]
-    (println "path" longest-path)
     (dec (count longest-path))))
 
 (defn max-steps-from-oxygen [droid-program]
