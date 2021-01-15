@@ -15,14 +15,13 @@
       3 [(dec x) y]
       4 [(inc x) y])))
 
-(defn create-droid-state [exe-state prev-path dir]
-  {:exe-state exe-state
-   :path (conj prev-path (next-coord (last prev-path) dir))
-   :last-response (last (:output exe-state))})
-
 (defn move-droid [droid-state dir]
-  (let [new-exe-state (execute-segment (:exe-state droid-state) dir)]
-    (create-droid-state new-exe-state (:path droid-state) dir)))
+  (let [prev-path (:path droid-state)
+        next-coord (next-coord (last prev-path) dir)
+        exe-state (execute-segment (:exe-state droid-state) dir)]
+    {:exe-state exe-state
+     :path (conj prev-path next-coord)
+     :last-response (last (:output exe-state))}))
 
 (defn init-droid-state [program start-coord]
   {:exe-state
