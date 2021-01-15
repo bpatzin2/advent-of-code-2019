@@ -1,8 +1,7 @@
 (ns advent-of-code-2019.oxygen-system
   (:gen-class)
   (:require
-    [advent-of-code-2019.intcode.intcode :as intcode]
-    [advent-of-code-2019.ascii-drawing :as ascii])
+    [advent-of-code-2019.intcode.intcode :as intcode])
   (:import (clojure.lang PersistentQueue)))
 
 (defn execute-segment [exe-state dir]
