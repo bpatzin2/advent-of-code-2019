@@ -1,5 +1,4 @@
 (ns advent-of-code-2019.fft
-  (:gen-class)
   (:require [clojure.string :as str-lib]))
 
 (defn apply-pattern [nums, pattern]
@@ -21,8 +20,8 @@
          i 0]
     (if
      (= len (count res))
-      res
-      (let [val (pattern-val pos-in-list i)]
+     res
+     (let [val (pattern-val pos-in-list i)]
         (recur
          (if (>= i 1) (conj res val) res)
          (inc i))))))

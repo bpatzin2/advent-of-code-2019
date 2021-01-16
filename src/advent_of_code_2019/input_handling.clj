@@ -57,7 +57,7 @@
   (csv-as-int-vec "input/day15.txt"))
 
 (defn day16-str []
-  (slurp "day16_input.txt"))
+  (slurp "input/day16.txt"))
 
 (defn day20-str []
  (slurp "day20_input.txt"))
