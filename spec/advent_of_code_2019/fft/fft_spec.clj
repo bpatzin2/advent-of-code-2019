@@ -1,6 +1,6 @@
-(ns advent-of-code-2019.fft-spec
+(ns advent-of-code-2019.fft.fft-spec
   (:require [speclj.core :refer :all]
-            [advent-of-code-2019.fft :refer :all]
+            [advent-of-code-2019.fft.fft :refer :all]
             [advent-of-code-2019.core :as core]))
 
 (describe "gen-pattern"

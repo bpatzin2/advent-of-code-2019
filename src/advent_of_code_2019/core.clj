@@ -10,7 +10,7 @@
             [advent-of-code-2019.password-guessing :as pw]  
             [advent-of-code-2019.arcade :as arcade]  
             [advent-of-code-2019.oxygen-system :as os]      
-            [advent-of-code-2019.fft :as fft]
+            [advent-of-code-2019.fft.fft :as fft]
             [advent-of-code-2019.space-stoichiometry.stoichiometry :as space-stoichiometry]
             [advent-of-code-2019.pluto-maze :as pluto-maze]   
             [advent-of-code-2019.pluto-maze-recursive :as pluto-maze-recursive]

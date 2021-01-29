@@ -1,4 +1,4 @@
-(ns advent-of-code-2019.fft
+(ns advent-of-code-2019.fft.fft
   (:require [clojure.string :as str-lib]))
 
 (defn apply-pattern [nums, pattern]
