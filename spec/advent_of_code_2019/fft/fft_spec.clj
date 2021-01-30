@@ -1,6 +1,7 @@
-(ns advent-of-code-2019.fft-spec
+(ns advent-of-code-2019.fft.fft-spec
   (:require [speclj.core :refer :all]
-            [advent-of-code-2019.fft :refer :all]))
+            [advent-of-code-2019.fft.fft :refer :all]
+            [advent-of-code-2019.core :as core]))
 
 (describe "gen-pattern"
           (it "works for test input"
@@ -12,12 +13,14 @@
               (should= [4 8 2 2 6 1 5 8] 
                        (run-fft [1 2 3 4 5 6 7 8] 1))
               (should= [3 4 0 4 0 4 3 8]
-                       (run-fft [1 2 3 4 5 6 7 8] 2))
-              ))
+                       (run-fft [1 2 3 4 5 6 7 8] 2))))
 
 (describe "run-fft-str"
           (it "works for test input"
               (should= "24176176"
                        (run-fft-str "80871224585914546619083218645595" 
-                                    100 8))
-              ))
+                                    100 8))))
+
+(describe "day16pt1"
+          (it "works for real input"
+              (should= "33717412" (core/day16pt1 3))))

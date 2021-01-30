@@ -1,5 +1,4 @@
-(ns advent-of-code-2019.fft
-  (:gen-class)
+(ns advent-of-code-2019.fft.fft
   (:require [clojure.string :as str-lib]))
 
 (defn apply-pattern [nums, pattern]
@@ -21,14 +20,14 @@
          i 0]
     (if
      (= len (count res))
-      res
-      (let [val (pattern-val pos-in-list i)]
-        (recur
-         (if (>= i 1) (conj res val) res)
-         (inc i))))))
+     res
+     (let [val (pattern-val pos-in-list i)
+           new-res (if (>= i 1) (conj res val) res)]
+        (recur new-res (inc i))))))
 
 (defn output-digit [pos-in-list nums]
-  (apply-pattern nums (gen-pattern pos-in-list (count nums))))
+  (let [pattern (gen-pattern pos-in-list (count nums))]
+    (apply-pattern nums pattern)))
 
 (defn apply-phase [nums _]
   (flatten (map-indexed (fn [index, _] (output-digit index nums)) nums)))
@@ -37,8 +36,10 @@
   (reduce apply-phase nums (range 0 phases)))
 
 (defn str-as-int-vec [str]
-  (vec (map #(Integer/parseInt %) (str-lib/split str #""))))
+  (let [chars (str-lib/split str #"")]
+    (mapv #(Integer/parseInt %) chars)))
 
 (defn run-fft-str [str phases out-count] 
- (let [res (vec (run-fft (str-as-int-vec str) phases))]
+ (let [ints (str-as-int-vec str)
+       res (vec (run-fft ints phases))]
    (apply clojure.core/str (subvec res 0 out-count))))
